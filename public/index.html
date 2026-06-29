@@ -3,129 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a2744">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Peritare">
 <title>Peritare – Perícia Grafotécnica</title>
 <meta name="sb-url" content="SUPABASE_URL_PLACEHOLDER">
 <meta name="sb-key" content="SUPABASE_KEY_PLACEHOLDER">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-/* ── reset & tokens ─────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#1a2744;--navy2:#243358;--gold:#c8a84b;
+  --navy:#1a2744;--navy2:#243358;--gold:#c8a84b;--gold2:#e8c96e;
   --surface:#f8f7f4;--card:#fff;--border:#e2ddd5;
   --text:#1a1a18;--text2:#5a5854;--text3:#9a9690;
-  --radius:8px;
+  --r:8px;--success:#14532d;--danger:#991b1b;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--surface);color:var(--text);font-size:13px}
- 
-/* ── header ─────────────────────────────────────────────── */
-#hdr{background:var(--navy);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
-#nav{display:flex;gap:4px}
-.nbtn{background:transparent;color:rgba(255,255,255,.65);border:none;padding:6px 13px;border-radius:5px;font-size:13px;cursor:pointer}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--surface);color:var(--text);font-size:13px;display:flex;flex-direction:column}
+/* HEADER */
+#hdr{background:var(--navy);padding:0 1.2rem;display:flex;align-items:center;justify-content:space-between;height:48px;flex-shrink:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-ico{width:26px;height:26px;background:var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center}
+.logo span{color:#fff;font-size:14px;font-weight:500}
+.logo em{color:var(--gold);font-size:10px;font-style:normal;margin-left:-4px;opacity:.8}
+#nav{display:flex;gap:3px}
+.nbtn{background:transparent;color:rgba(255,255,255,.6);border:none;padding:5px 12px;border-radius:5px;font-size:12px;cursor:pointer;transition:.15s}
 .nbtn.on,.nbtn:hover{background:rgba(200,168,75,.18);color:var(--gold)}
- 
-/* ── layout ─────────────────────────────────────────────── */
-#main{padding:1.5rem;max-width:1060px;margin:0 auto}
- 
-/* ── cards ───────────────────────────────────────────────── */
-.card{background:var(--card);border:.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1rem}
-.card-hd{padding:12px 16px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafaf8}
-.card-hd h3{font-size:13px;font-weight:500;color:var(--navy)}
-.card-bd{padding:16px}
- 
-/* ── forms ───────────────────────────────────────────────── */
-label.lbl{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bottom:4px}
-input,select,textarea{width:100%;padding:7px 10px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--surface);color:var(--text);font-family:inherit}
+/* MAIN SCROLL AREA */
+#main{flex:1;overflow-y:auto;padding:1.2rem;max-width:1100px;width:100%;margin:0 auto}
+/* CARDS */
+.card{background:var(--card);border:.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:.9rem}
+.chd{padding:10px 14px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafaf8}
+.chd h3{font-size:12px;font-weight:500;color:var(--navy)}
+.cbd{padding:14px}
+/* FORMS */
+.lbl{font-size:11px;color:var(--text2);font-weight:500;display:block;margin-bottom:3px}
+input,select,textarea{width:100%;padding:6px 9px;border:.5px solid var(--border);border-radius:var(--r);font-size:13px;background:var(--surface);color:var(--text);font-family:inherit}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-color:transparent}
 textarea{resize:vertical}
-.row{display:grid;gap:12px}
-.r2{grid-template-columns:1fr 1fr}
-.r3{grid-template-columns:1fr 1fr 1fr}
- 
-/* ── buttons ─────────────────────────────────────────────── */
-.btn{padding:7px 16px;border-radius:var(--radius);font-size:13px;cursor:pointer;font-weight:500;border:none}
-.btn-p{background:var(--navy);color:#fff}
-.btn-s{background:var(--surface);color:var(--text2);border:.5px solid var(--border)}
-.btn-g{background:var(--gold);color:var(--navy)}
-.btn-d{background:#fee2e2;color:#991b1b;border:.5px solid #fca5a5}
-.btn-sm{padding:4px 10px;font-size:11px}
- 
-/* ── badges ──────────────────────────────────────────────── */
-.bdg{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+/* BUTTONS */
+.btn{padding:6px 14px;border-radius:var(--r);font-size:12px;cursor:pointer;font-weight:500;border:none;transition:.15s;display:inline-flex;align-items:center;gap:5px}
+.bp{background:var(--navy);color:#fff}.bp:hover{background:var(--navy2)}
+.bs{background:var(--surface);color:var(--text2);border:.5px solid var(--border)}.bs:hover{background:var(--border)}
+.bg{background:var(--gold);color:var(--navy)}
+.bd{background:#fee2e2;color:var(--danger);border:.5px solid #fca5a5}
+.bsm{padding:3px 9px;font-size:11px}
+/* BADGES */
+.b{display:inline-flex;align-items:center;font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
 .bk{background:#dcfce7;color:#14532d}.bw{background:#fef3cd;color:#7c5c00}
-.bb{background:#dbeafe;color:#1e40af}.bg{background:#f3f4f6;color:#4b5563}
-.br{background:#fee2e2;color:#991b1b}
- 
-/* ── tabs ────────────────────────────────────────────────── */
-.tbar{display:flex;gap:2px;border-bottom:.5px solid var(--border);margin-bottom:1rem;padding:0 16px;background:#fafaf8;overflow-x:auto}
-.tab{padding:8px 14px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text3);font-weight:500;white-space:nowrap}
+.bb{background:#dbeafe;color:#1e40af}.bgr{background:#f3f4f6;color:#4b5563}
+.br{background:#fee2e2;color:var(--danger)}
+/* TABS */
+.tbar{display:flex;gap:2px;border-bottom:.5px solid var(--border);margin-bottom:1rem;padding:0 14px;background:#fafaf8;overflow-x:auto;flex-shrink:0}
+.tab{padding:7px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text3);font-weight:500;white-space:nowrap;transition:.15s}
 .tab.on{border-bottom-color:var(--navy);color:var(--navy)}
- 
-/* ── misc ────────────────────────────────────────────────── */
-.info{background:#eff6ff;border:.5px solid #bfdbfe;border-radius:8px;padding:10px 14px;font-size:12px;color:#1e40af;margin-bottom:12px}
-.warn{background:#fffbeb;border:.5px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px}
-.ok{background:#f0fdf4;border:.5px solid #86efac;border-radius:8px;padding:10px 14px;font-size:12px;color:#14532d;margin-bottom:12px}
-.divider{height:.5px;background:var(--border);margin:14px 0}
-.nb{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
-.pq-item{border:.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px;background:var(--card)}
-.pq-item.done{border-color:#86efac;background:#f0fdf4}
-.upload-z{border:1.5px dashed var(--border);border-radius:var(--radius);padding:18px;text-align:center;cursor:pointer;color:var(--text3)}
-.upload-z:hover{border-color:var(--gold);background:#fffbeb}
-.upload-z input{display:none}
-.chk{display:flex;align-items:flex-start;gap:8px;padding:5px 0}
-.chk input[type=checkbox]{width:16px;height:16px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)}
-.chk label{font-weight:400;color:var(--text);cursor:pointer;margin:0}
-.section-title{font-size:16px;font-weight:500;color:var(--navy);margin-bottom:3px}
-.section-sub{font-size:12px;color:var(--text3);margin-bottom:1.25rem}
-.progress{height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:6px}
-.progress-fill{height:100%;background:var(--gold);border-radius:4px;transition:.3s}
-#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:999;display:none}
+/* INFO BOXES */
+.ibox{background:#eff6ff;border:.5px solid #bfdbfe;border-radius:var(--r);padding:9px 12px;font-size:11px;color:#1e40af;margin-bottom:10px}
+.wbox{background:#fffbeb;border:.5px solid #fde68a;border-radius:var(--r);padding:9px 12px;font-size:11px;color:#92400e;margin-bottom:10px}
+.obox{background:#f0fdf4;border:.5px solid #86efac;border-radius:var(--r);padding:9px 12px;font-size:11px;color:#14532d;margin-bottom:10px}
+.dvd{height:.5px;background:var(--border);margin:12px 0}
+.nb{width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.prog{height:3px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:5px}
+.prog-f{height:100%;background:var(--gold);border-radius:3px;transition:.3s}
+.upz{border:1.5px dashed var(--border);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;color:var(--text3);transition:.15s}
+.upz:hover{border-color:var(--gold);background:#fffbeb;color:var(--text2)}
+.upz input{display:none}
+.chk{display:flex;align-items:flex-start;gap:7px;padding:4px 0}
+.chk input[type=checkbox]{width:14px;height:14px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)}
+.chk label{font-weight:400;color:var(--text);cursor:pointer;margin:0;font-size:12px}
+/* MESA GRÁFICA */
+#mesa-wrap{display:flex;gap:10px;height:calc(100vh - 200px);min-height:420px}
+#mesa-left{width:150px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+#mesa-center{flex:1;display:flex;flex-direction:column;gap:0;background:var(--card);border:.5px solid var(--border);border-radius:10px;overflow:hidden}
+#mesa-right{width:160px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+#mesa-toolbar{padding:8px 10px;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fafaf8}
+#mesa-canvas-wrap{flex:1;position:relative;overflow:hidden;background:#e0e0e0}
+#mesa-canvas{display:block;cursor:crosshair}
+#mesa-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);pointer-events:none}
+#mesa-ruler-info{display:none;position:absolute;top:8px;right:8px;background:rgba(26,39,68,.88);color:#fff;font-size:11px;padding:5px 9px;border-radius:5px}
+.tool-btn{width:32px;height:32px;border-radius:5px;border:1.5px solid transparent;background:transparent;color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.tool-btn.on{border-color:var(--navy);background:#e8eeff;color:var(--navy)}
+.tool-btn:hover{background:var(--surface)}
+.color-dot{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:.15s}
+.color-dot.on{border-color:var(--navy);transform:scale(1.15)}
+/* TOAST */
+#toast{position:fixed;bottom:16px;right:16px;background:var(--navy);color:#fff;padding:9px 16px;border-radius:var(--r);font-size:12px;z-index:999;display:none;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* PWA install banner */
+#pwa-banner{display:none;background:var(--gold);color:var(--navy);padding:8px 16px;font-size:12px;font-weight:500;align-items:center;justify-content:space-between;flex-shrink:0}
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
 <body>
- 
-<!-- ── HEADER ──────────────────────────────────────────────── -->
+<div id="pwa-banner">
+  <span>📲 Instale o Peritare na sua área de trabalho para acesso rápido</span>
+  <div style="display:flex;gap:8px">
+    <button class="btn bp bsm" id="pwa-install-btn">Instalar</button>
+    <button class="btn bs bsm" onclick="document.getElementById('pwa-banner').style.display='none'">Agora não</button>
+  </div>
+</div>
 <div id="hdr">
-  <div style="display:flex;align-items:center;gap:12px">
-    <div style="width:28px;height:28px;background:var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a2744" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-    </div>
-    <span style="color:#fff;font-size:15px;font-weight:500">Peritare</span>
-    <span style="color:var(--gold);font-size:11px;opacity:.8;margin-left:-4px">Grafotécnica</span>
-    <span id="sync-badge" style="display:none;font-size:10px;color:rgba(255,255,255,.5);margin-left:4px">● sincronizando…</span>
+  <div class="logo">
+    <div class="logo-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a2744" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+    <span>Peritare</span><em>Grafotécnica</em>
   </div>
   <div id="nav"></div>
 </div>
 <div id="main"></div>
 <div id="toast"></div>
- 
+
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────
-// Valores injetados pelo Netlify via _headers ou meta tags — não edite aqui
 const SUPABASE_URL = document.querySelector('meta[name="sb-url"]')?.content || '';
 const SUPABASE_KEY = document.querySelector('meta[name="sb-key"]')?.content || '';
 const NETLIFY_BASE = '';
- 
-// ── SUPABASE CLIENT LEVE (sem SDK, usa REST direto) ──────────────────────
+
+// PDF.js worker
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+// ── PWA ───────────────────────────────────────────────────────────────────
+let pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); pwaPrompt = e;
+  document.getElementById('pwa-banner').style.display = 'flex';
+});
+document.getElementById('pwa-install-btn').onclick = async () => {
+  if (!pwaPrompt) return;
+  pwaPrompt.prompt();
+  const { outcome } = await pwaPrompt.userChoice;
+  if (outcome === 'accepted') document.getElementById('pwa-banner').style.display = 'none';
+};
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+
+// ── SUPABASE CLIENT ───────────────────────────────────────────────────────
 const sb = {
   async req(method, path, body) {
+    if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Supabase não configurado');
     const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
       method,
       headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`,
         'Content-Type': 'application/json',
         'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal',
       },
       body: body ? JSON.stringify(body) : undefined,
     });
-    if (!r.ok) { const e = await r.text(); throw new Error(e); }
+    if (!r.ok) throw new Error(await r.text());
     return r.status === 204 ? null : r.json();
   },
-  get: (path) => sb.req('GET', path),
-  post: (path, body) => sb.req('POST', path, body),
-  patch: (path, body) => sb.req('PATCH', path, body),
-  delete: (path) => sb.req('DELETE', path),
- 
+  get: p => sb.req('GET', p),
+  post: (p, b) => sb.req('POST', p, b),
+  patch: (p, b) => sb.req('PATCH', p, b),
+  del: p => sb.req('DELETE', p),
   async upload(bucket, path, file) {
     const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
       method: 'POST',
@@ -135,23 +176,10 @@ const sb = {
     if (!r.ok) throw new Error(await r.text());
     return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
   },
- 
-  publicUrl: (bucket, path) => `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`,
 };
- 
-// ── STATE ─────────────────────────────────────────────────────────────────
-const S = {
-  view: 'processos',
-  subview: 'info',
-  processos: [],
-  proc: null,         // processo ativo completo
-  pqAtivo: null,      // id do PQ em análise
-  novoPQ: {},
-  novoPG: {},
-  loading: false,
-};
- 
-const MET_ITENS = [
+
+// ── CONSTANTES ────────────────────────────────────────────────────────────
+const MET = [
   'a) Minuciosos exames dos documentos questionados (item 5.1)',
   'b) Minuciosos exames dos padrões de confronto (itens 5.2-A e 5.2-B)',
   'c) Cotejos e transcotejos entre documentos questionados e respectivos paradigmas',
@@ -163,633 +191,907 @@ const MET_ITENS = [
   'i) Revisão do laudo',
   'j) Apresentação do laudo ao juizado competente',
 ];
- 
+
 const EOG_N = ['Ritmo','Dinamismo','Velocidade','Habilidade','Espontaneidade','Ataques','Remates','Pressão e Progressão','Hábitos Gráficos','Momentos Gráficos','Comportamento de Base','Comportamento de Pauta','Inclinação Axial','Espaçamentos Gráficos','Tendência de Punho','Trajetórias','Calibres','Gladiolagem','Gramas','Proporcionalidade','Sobreposição de Peças','Microscopia','Separação','Cronologia','Vídeos','Imagem do Grafismo','Escavalamento','Cultura Gráfica','Maneirismos Gráficos','Afinamento','Grafogeometria','Traçados das Letras','Polimorfismo Gráfico','Caligrafia','Diversos'];
 const EOG_G = [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+const EOG_DICAS = ['Regularidade e cadência dos movimentos. Punhos treinados têm ritmo constante; falsificações tendem a ser irregulares.','Vigor e energia imprimidos no traçado. Escritas espontâneas são dinâmicas; cópias costumam ser lentas.','Rapidez de execução. Velocidade afeta ataques, remates e curvas — difícil de simular.','Grau de coordenação psicomotora: canhestro, pouco habilidoso, médio, habilidoso ou muito habilidoso.','Naturalidade e fluidez. Traçados espontâneos não têm hesitações ou tremores artificiais.','Modo como o instrumento toca a superfície no início de cada traço.','Finalização dos traços. Remates em arpão, gancho, cortados ou afuselados são hábitos pessoais.','Força sobre o papel e continuidade do movimento. Analisado pelo sulco; prejudicado em cópias.','Particularidades individuais e repetitivas: laçadas, pontos de apoio, formas incomuns.','Quantidade e posição das levantadas da caneta. Padrão próprio de cada escritor.','Relação dos grafismos com a linha de base: regular, irregular, ascendente ou descendente.','Como a escrita se relaciona com a pauta do papel.','Ângulo de inclinação dos eixos das letras: dextrogira, sinistrogira ou vertical.','Distâncias entre letras e palavras. Hábito automatizado que persiste mesmo em disfarces.','Direção predominante dos movimentos: para a direita, esquerda ou mista.','Caminho percorrido na construção de cada letra, incluindo sentido horário/anti-horário.','Dimensão vertical dos grafismos. Medido nas não-passantes para maior precisão.','Variação de altura e calibre ao longo da linha: constante, crescente ou decrescente.','Unidades gráficas que compõem a assinatura. Número, forma e disposição são personalíssimos.','Relação entre dimensões: maiúsculas vs. minúsculas, passantes vs. não-passantes.','Sobreposição das peças PQ e PC para verificar coincidência de traçados.','Análise com instrumentos de ampliação. Revela detalhes de pressão invisíveis a olho nu.','Ligação ou não entre letras. Escritores têm padrão estável de letras unidas ou separadas.','Análise temporal: assinaturas de épocas diferentes devem apresentar evolução natural.','Registro em vídeo da coleta confirma naturalidade da escrita.','Aspecto visual geral: elegância, complexidade e imagem característica da assinatura.','Sobreposição de traços em pontos específicos. Padrão idiossincrático do punho.','Nível de desenvolvimento gráfico: infantil, canhestro, emancipado ou senil.','Peculiaridades únicas e repetitivas: pontuação, estilo de certas letras, ornamentos pessoais.','Redução gradual da espessura do traço. Relacionado à pressão e velocidade.','Análise geométrica: ângulos, proporções e construções que caracterizam o punho.','Forma específica de construção de cada letra. Variações em a, d, g são identificadoras.','Existência de múltiplas formas para uma mesma letra. Ausência pode indicar cópia.','Legibilidade e cuidado com a forma dos caracteres.','Outros elementos gráficos relevantes não classificados nos critérios anteriores.'];
 const TIPOS_DOC = ['Cédula de Crédito Bancário','Proposta de Abertura de Limite de Crédito','Contrato de Empréstimo Consignado','Contrato de Cartão de Crédito','Procuração','Declaração','Escritura Pública','Cheque','Outro'];
- 
-// ── UTILITÁRIOS ───────────────────────────────────────────────────────────
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+const S = {
+  view: 'lista', sub: 'info',
+  processos: [], proc: null,
+  pqId: null,      // PQ em análise
+  mesaTool: 'seta', mesaCor: '#e74c3c', mesaEsp: 2,
+  mesaZoom: 1, mesaOX: 0, mesaOY: 0,
+  mesaAnots: [],   // anotações do PQ ativo
+  mesaImg: null,   // ImageBitmap atual
+  mesaImgNome: '',
+  mesaImgStack: [], // histórico de recortes
+  mesaCropRect: null, mesaCropDrawing: false, mesaCropStart: null, mesaCropCurrent: null,
+  mesaCriterioAtivo: null,
+  mesaPanning: false, mesaPanStart: null,
+  drawing: false, dSt: null, dCur: null,
+  pdfDoc: null, pdfPage: 1, pdfTotal: 0,
+  novoPQ: {}, novoPG: {},
+};
+
+// ── UTILS ─────────────────────────────────────────────────────────────────
+function novoEOG() { return EOG_N.map((_,i) => ({criterio_id:i+1,resultado:'SA',consideracoes:''})); }
 function toast(msg, dur=2500) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.style.display='block';
-  setTimeout(() => t.style.display='none', dur);
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._t); t._t = setTimeout(()=>t.style.display='none', dur);
 }
- 
-function novoEOG() {
-  return EOG_N.map((_,i) => ({ criterio_id: i+1, resultado: 'SA', consideracoes: '', texto_juridico: '' }));
-}
- 
-// ── RENDER ────────────────────────────────────────────────────────────────
+function sv(v) { S.view=v; render(); }
+function stab(t) { S.sub=t; S.pqId=null; render(); }
+
+// ── RENDER PRINCIPAL ──────────────────────────────────────────────────────
 function render() {
   document.getElementById('nav').innerHTML = buildNav();
   const m = document.getElementById('main');
-  if (S.view === 'processos') m.innerHTML = rLista();
-  else if (S.view === 'proc') m.innerHTML = rProc();
+  if (S.view === 'lista') m.innerHTML = rLista();
+  else if (S.view === 'proc') { m.innerHTML = rProc(); if (S.sub === 'mesa') setTimeout(initMesa, 50); }
 }
- 
 function buildNav() {
-  const vs = [{v:'processos',l:'Processos'}];
-  if (S.proc) vs.push({v:'proc',l:'Processo ativo'});
+  const vs = [{v:'lista',l:'Processos'}];
+  if (S.proc) vs.push({v:'proc',l:S.proc.numero ? S.proc.numero.substring(0,15)+'…' : 'Processo'});
   return vs.map(({v,l}) => `<button class="nbtn ${S.view===v?'on':''}" onclick="sv('${v}')">${l}</button>`).join('');
 }
- 
-// ── LISTA DE PROCESSOS ────────────────────────────────────────────────────
+
+// ── LISTA ─────────────────────────────────────────────────────────────────
 function rLista() {
   const ps = S.processos;
   return `
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
-    <div><div class="section-title">Processos periciais</div><div class="section-sub">Carlos Eduardo Soares Menezes · CRA-RJ 20-60660</div></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
+    <div>
+      <div style="font-size:15px;font-weight:500;color:var(--navy)">Processos periciais</div>
+      <div style="font-size:11px;color:var(--text3)">Carlos Eduardo Soares Menezes · CRA-RJ 20-60660</div>
+    </div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-s" onclick="carregarProcessos()">↻ Atualizar</button>
-      <button class="btn btn-p" onclick="novoProcesso()">+ Novo processo</button>
+      <button class="btn bs bsm" onclick="carregarProcessos()">↻</button>
+      <button class="btn bp" onclick="novoProcesso()">+ Novo processo</button>
     </div>
   </div>
-  ${ps.length===0?`<div class="card"><div class="card-bd" style="text-align:center;padding:3rem;color:var(--text3)">${S.loading?'Carregando…':'Nenhum processo. Clique em "+ Novo processo" para começar.'}</div></div>`:''}
+  ${ps.length===0?`<div class="card"><div class="cbd" style="text-align:center;padding:2.5rem;color:var(--text3)">Nenhum processo. Clique em "+ Novo processo" para começar.</div></div>`:''}
   ${ps.map(p => {
-    const total = (p.pqs||[]).length;
-    const done = (p.pqs||[]).filter(q=>q.status==='done').length;
-    const pct = total ? Math.round(done/total*100) : 0;
-    const stMap = {pendente:'bw',analise:'bb',concluido:'bk'};
-    return `<div class="card"><div class="card-bd">
-      <div style="display:flex;align-items:center;gap:12px">
+    const total=(p.pqs||[]).length, done=(p.pqs||[]).filter(q=>q.status==='done').length;
+    const pct=total?Math.round(done/total*100):0;
+    const stC={pendente:'bw',analise:'bb',concluido:'bk'};
+    return `<div class="card"><div class="cbd">
+      <div style="display:flex;align-items:center;gap:10px">
         <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-            <span style="font-family:monospace;font-size:12px;color:var(--navy);font-weight:500">${p.numero}</span>
-            <span class="bdg ${stMap[p.status]||'bg'}">${p.status==='analise'?'Em análise':p.status==='concluido'?'Concluído':'Aguardando'}</span>
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px">
+            <span style="font-family:monospace;font-size:11px;color:var(--navy);font-weight:500">${p.numero}</span>
+            <span class="b ${stC[p.status]||'bgr'}">${p.status==='analise'?'Em análise':p.status==='concluido'?'Concluído':'Aguardando'}</span>
           </div>
-          <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.autor} <span style="color:var(--text3)">vs</span> ${p.reu}</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:2px">${p.comarca||'—'} · ${p.vara||'—'}</div>
-          <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
-          <div style="font-size:10px;color:var(--text3);margin-top:3px">${done}/${total} assinaturas analisadas</div>
+          <div style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.autor} <span style="color:var(--text3)">vs</span> ${p.reu}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:1px">${p.comarca||'—'} · ${p.vara||'—'}</div>
+          <div class="prog"><div class="prog-f" style="width:${pct}%"></div></div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${done}/${total} PQs analisados</div>
         </div>
-        <button class="btn btn-p" onclick="abrirProcesso('${p.id}')">Abrir →</button>
+        <button class="btn bp" onclick="abrirProcesso('${p.id}')">Abrir →</button>
       </div>
     </div></div>`;
   }).join('')}`;
 }
- 
-// ── PROCESSO ATIVO ────────────────────────────────────────────────────────
+
+// ── PROCESSO ──────────────────────────────────────────────────────────────
 function rProc() {
-  const p = S.proc;
-  if (!p) return '';
+  const p = S.proc; if (!p) return '';
   const TABS = [
-    {id:'info',l:'1 · Dados'},
-    {id:'pqs',l:'2 · Documentos PQ'},
-    {id:'met',l:'3 · Metodologia'},
-    {id:'par',l:'5.2 · Paradigmas'},
-    {id:'anal',l:'6 · Análises'},
+    {id:'info',l:'1 · Dados'},{id:'pqs',l:'2 · Documentos PQ'},
+    {id:'met',l:'3 · Metodologia'},{id:'par',l:'5.2 · Paradigmas'},
+    {id:'anal',l:'6 · Análise'},{id:'mesa',l:'🖊 Mesa gráfica'},
     {id:'laudo',l:'Laudo'},
   ];
-  const done = (p.pqs||[]).filter(q=>q.status==='done').length;
-  const total = (p.pqs||[]).length;
+  const done=(p.pqs||[]).filter(q=>q.status==='done').length, total=(p.pqs||[]).length;
   return `
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
     <div>
-      <div class="section-title">${p.numero}</div>
-      <div class="section-sub">${p.autor} vs ${p.reu} · ${done}/${total} PQs analisados</div>
+      <div style="font-size:14px;font-weight:500;color:var(--navy)">${p.numero||'Novo processo'}</div>
+      <div style="font-size:11px;color:var(--text3)">${p.autor||'—'} vs ${p.reu||'—'} · ${done}/${total} PQs analisados</div>
     </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-g" onclick="sv('processos')">← Processos</button>
-      <button class="btn btn-p" onclick="exportarLaudo()">⬇ Exportar laudo</button>
+    <div style="display:flex;gap:7px">
+      <button class="btn bg bsm" onclick="sv('lista')">← Processos</button>
+      <button class="btn bp bsm" onclick="exportarLaudo()">⬇ Exportar laudo</button>
     </div>
   </div>
-  <div class="tbar">${TABS.map(t=>`<div class="tab ${S.subview===t.id?'on':''}" onclick="stab('${t.id}')">${t.l}</div>`).join('')}</div>
+  <div class="tbar">${TABS.map(t=>`<div class="tab ${S.sub===t.id?'on':''}" onclick="stab('${t.id}')">${t.l}</div>`).join('')}</div>
   <div id="tc">${rTab()}</div>`;
 }
- 
+
 function rTab() {
-  const t = S.subview;
+  const t = S.sub;
   if (t==='info') return rInfo();
   if (t==='pqs') return rPQs();
   if (t==='met') return rMet();
   if (t==='par') return rPar();
   if (t==='anal') return rAnal();
-  if (t==='laudo') return rLaudo();
+  if (t==='mesa') return rMesa();
+  if (t==='laudo') return rLaudoTab();
   return '';
 }
- 
+
 // ── TAB INFO ──────────────────────────────────────────────────────────────
 function rInfo() {
   const p = S.proc;
   return `
-  <div class="info">Estes campos alimentam automaticamente a Seção 1 (Apresentação e Endereçamento) e o cabeçalho do laudo.</div>
-  <div class="card">
-    <div class="card-hd"><h3>Dados do processo judicial</h3><button class="btn btn-p btn-sm" onclick="salvarInfo()">Salvar</button></div>
-    <div class="card-bd">
-      <div class="row r2" style="margin-bottom:10px">
-        <div><label class="lbl">Número do processo (CNJ)</label><input id="f-num" value="${p.numero||''}" placeholder="0000000-00.0000.0.00.0000"></div>
-        <div><label class="lbl">Status</label><select id="f-st">
-          <option ${p.status==='pendente'?'selected':''} value="pendente">Aguardando</option>
-          <option ${p.status==='analise'?'selected':''} value="analise">Em análise</option>
-          <option ${p.status==='concluido'?'selected':''} value="concluido">Concluído</option>
-        </select></div>
-      </div>
-      <div class="row r2" style="margin-bottom:10px">
-        <div><label class="lbl">Autor(a)</label><input id="f-aut" value="${p.autor||''}"></div>
-        <div><label class="lbl">Réu</label><input id="f-reu" value="${p.reu||''}"></div>
-      </div>
-      <div class="row r2" style="margin-bottom:10px">
-        <div><label class="lbl">Vara</label><input id="f-vara" value="${p.vara||''}" placeholder="ex: 1ª Vara Cível"></div>
-        <div><label class="lbl">Comarca</label><input id="f-com" value="${p.comarca||''}" placeholder="ex: Duque de Caxias - RJ"></div>
-      </div>
+  <div class="ibox">Estes campos alimentam a Seção 1 (Apresentação) e o cabeçalho do laudo.</div>
+  <div class="card"><div class="chd"><h3>Processo judicial</h3><button class="btn bp bsm" onclick="salvarInfo()">Salvar</button></div><div class="cbd">
+    <div class="g2" style="margin-bottom:9px">
+      <div><label class="lbl">Número CNJ</label><input id="f-num" value="${p.numero||''}" placeholder="0000000-00.0000.0.00.0000"></div>
+      <div><label class="lbl">Status</label><select id="f-st">
+        <option ${p.status==='pendente'?'selected':''} value="pendente">Aguardando</option>
+        <option ${p.status==='analise'?'selected':''} value="analise">Em análise</option>
+        <option ${p.status==='concluido'?'selected':''} value="concluido">Concluído</option>
+      </select></div>
     </div>
-  </div>
-  <div class="card">
-    <div class="card-hd"><h3>Nomeação pericial</h3></div>
-    <div class="card-bd">
-      <div class="info">Alimenta o trecho "nomeado por este Juízo através do documento id. XXXX, de YY/YY/YYYY" na Seção 1 do laudo.</div>
-      <div class="row r2">
-        <div><label class="lbl">ID do documento de nomeação</label><input id="f-nid" value="${p.nomeacao_id||''}" placeholder="ex: 215046780"></div>
-        <div><label class="lbl">Data da nomeação</label><input id="f-ndt" value="${p.nomeacao_data||''}" placeholder="DD/MM/AAAA"></div>
-      </div>
+    <div class="g2" style="margin-bottom:9px">
+      <div><label class="lbl">Autor(a)</label><input id="f-aut" value="${p.autor||''}"></div>
+      <div><label class="lbl">Réu</label><input id="f-reu" value="${p.reu||''}"></div>
     </div>
-  </div>`;
+    <div class="g2">
+      <div><label class="lbl">Vara</label><input id="f-vara" value="${p.vara||''}" placeholder="1ª Vara Cível"></div>
+      <div><label class="lbl">Comarca</label><input id="f-com" value="${p.comarca||''}" placeholder="Duque de Caxias - RJ"></div>
+    </div>
+  </div></div>
+  <div class="card"><div class="chd"><h3>Nomeação pericial</h3></div><div class="cbd">
+    <div class="ibox">Alimenta "nomeado por este Juízo através do documento id. XXXX, de YY/YY/YYYY" na Seção 1.</div>
+    <div class="g2">
+      <div><label class="lbl">ID do documento de nomeação</label><input id="f-nid" value="${p.nomeacao_id||''}" placeholder="ex: 215046780"></div>
+      <div><label class="lbl">Data da nomeação</label><input id="f-ndt" value="${p.nomeacao_data||''}" placeholder="DD/MM/AAAA"></div>
+    </div>
+  </div></div>`;
 }
- 
+
 // ── TAB PQs ───────────────────────────────────────────────────────────────
 function rPQs() {
   const p = S.proc;
   return `
-  <div class="info">Cada documento cadastrado aqui vira um PQ numerado no laudo, aparece na tabela do Item 2 e é inserido como Anexo na ordem de cadastro. O PDF enviado fica disponível para recorte de assinatura na análise.</div>
+  <div class="ibox">Cada documento = um PQ numerado no laudo. O PDF enviado fica disponível para recorte de assinatura na Mesa Gráfica.</div>
   ${(p.pqs||[]).map((pq,i) => `
-  <div class="pq-item ${pq.status==='done'?'done':''}">
-    <div style="display:flex;align-items:flex-start;gap:10px">
-      <div class="nb">${i+1}</div>
-      <div style="flex:1">
-        <div style="font-weight:500;color:var(--navy)">${pq.tipo||'Documento'} nº ${pq.numero||'—'}</div>
-        <div style="font-size:11px;color:var(--text2);margin-top:2px">${pq.data_doc||'—'} · fls. ${pq.fls||'—'} · ID proc. ${pq.id_proc||'—'}</div>
-        <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap">
-          <span class="bdg ${pq.status==='done'?'bk':'bg'}">${pq.status==='done'?'✓ Analisado':'Pendente'}</span>
-          <span class="bdg ${pq.sig_path?'bb':'bg'}">${pq.sig_path?'✓ Assinatura':'Sem recorte'}</span>
-          <span class="bdg ${pq.pdf_path?'bk':'bg'}">${pq.pdf_path?'✓ PDF':'Sem PDF'}</span>
+  <div class="card" style="${pq.status==='done'?'border-color:#86efac':''};${pq.id===S.pqId?'border-color:var(--gold)':''}">
+    <div class="cbd">
+      <div style="display:flex;align-items:flex-start;gap:9px">
+        <div class="nb">${i+1}</div>
+        <div style="flex:1">
+          <div style="font-weight:500;color:var(--navy);font-size:12px">${pq.tipo||'Documento'} nº ${pq.numero||'—'}</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:1px">${pq.data_doc||'—'} · fls. ${pq.fls||'—'} · ID proc. ${pq.id_proc||'—'}</div>
+          <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap">
+            <span class="b ${pq.status==='done'?'bk':'bgr'}">${pq.status==='done'?'✓ Analisado':'Pendente'}</span>
+            <span class="b ${pq.sig_path?'bb':'bgr'}">${pq.sig_path?'✓ Assinatura':'Sem recorte'}</span>
+            <span class="b ${pq.pdf_path?'bk':'bgr'}">${pq.pdf_path?'✓ PDF':'Sem PDF'}</span>
+          </div>
         </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:5px">
-        <button class="btn btn-s btn-sm" onclick="stab('anal');S.pqAtivo='${pq.id}';render()">Analisar</button>
-        <button class="btn btn-d btn-sm" onclick="removerPQ('${pq.id}')">Remover</button>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <button class="btn bs bsm" onclick="abrirAnalise('${pq.id}')">Analisar</button>
+          <button class="btn bs bsm" onclick="abrirMesaPQ('${pq.id}')">🖊 Mesa</button>
+          <button class="btn bd bsm" onclick="remPQ('${pq.id}')">×</button>
+        </div>
       </div>
     </div>
   </div>`).join('')}
   <div class="card" style="border:1.5px dashed var(--gold)">
-    <div class="card-hd"><h3>+ Adicionar documento questionado</h3></div>
-    <div class="card-bd">
-      <div class="row r2" style="margin-bottom:10px">
+    <div class="chd"><h3>+ Adicionar documento questionado</h3></div>
+    <div class="cbd">
+      <div class="g2" style="margin-bottom:8px">
         <div><label class="lbl">Tipo do documento</label>
           <select id="npq-tipo"><option value="">Selecione…</option>${TIPOS_DOC.map(t=>`<option>${t}</option>`).join('')}</select>
         </div>
-        <div><label class="lbl">Número do contrato / documento</label><input id="npq-num" placeholder="ex: 582434573"></div>
+        <div><label class="lbl">Número do contrato</label><input id="npq-num" placeholder="ex: 582434573"></div>
       </div>
-      <div class="row r3" style="margin-bottom:10px">
-        <div><label class="lbl">Data do documento</label><input id="npq-data" placeholder="DD/MM/AAAA"></div>
-        <div><label class="lbl">Folhas (fls.)</label><input id="npq-fls" placeholder="ex: 1 e 2"></div>
+      <div class="g3" style="margin-bottom:8px">
+        <div><label class="lbl">Data</label><input id="npq-data" placeholder="DD/MM/AAAA"></div>
+        <div><label class="lbl">Fls.</label><input id="npq-fls" placeholder="ex: 1 e 2"></div>
         <div><label class="lbl">ID processual</label><input id="npq-idp" placeholder="ex: 23926099"></div>
       </div>
-      <label class="upload-z">
-        <div style="font-size:22px;margin-bottom:4px">📄</div>
-        <div style="font-weight:500">Clique para selecionar o PDF do documento</div>
-        <div style="font-size:11px;margin-top:2px">Será armazenado e disponibilizado para recorte de assinatura na análise</div>
-        <input type="file" accept=".pdf,image/*" id="npq-file">
+      <label class="upz">
+        <div style="font-size:20px;margin-bottom:3px">📄</div>
+        <div style="font-size:12px;font-weight:500">Clique para selecionar o PDF</div>
+        <div style="font-size:10px;margin-top:1px">Disponível para visualização e recorte de assinatura na Mesa Gráfica</div>
+        <input type="file" accept=".pdf,image/*" id="npq-file" onchange="document.getElementById('npq-file-st').textContent='✓ '+this.files[0]?.name">
       </label>
-      <div id="npq-file-status" style="font-size:11px;color:var(--text3);margin:6px 0"></div>
-      <div style="text-align:right;margin-top:10px"><button class="btn btn-p" onclick="adicionarPQ()">Adicionar documento</button></div>
+      <div id="npq-file-st" style="font-size:10px;color:var(--text3);margin-top:4px"></div>
+      <div style="text-align:right;margin-top:8px"><button class="btn bp" onclick="adicionarPQ()">Adicionar documento</button></div>
     </div>
   </div>`;
 }
- 
+
 // ── TAB METODOLOGIA ───────────────────────────────────────────────────────
 function rMet() {
   const p = S.proc;
   const sel = p.metodologia_items || [0,1,2,3,4,5,6,7,8,9];
   return `
-  <div class="ok">O conteúdo marcado abaixo aparece na Seção 3 (Metodologia Geral) do laudo na ordem listada.</div>
-  <div class="card">
-    <div class="card-hd"><h3>Itens metodológicos</h3><button class="btn btn-p btn-sm" onclick="salvarMet()">Salvar</button></div>
-    <div class="card-bd">
-      ${MET_ITENS.map((it,i)=>`<div class="chk"><input type="checkbox" id="m${i}" ${sel.includes(i)?'checked':''}><label for="m${i}">${it}</label></div>`).join('')}
-      <div class="divider"></div>
-      <label class="lbl">Outros itens metodológicos (opcional)</label>
-      <textarea id="met-outros" rows="3" placeholder="Cada linha será inserida como um item sequencial">${p.metodologia_outros||''}</textarea>
-    </div>
-  </div>`;
+  <div class="obox">Itens marcados aparecem na Seção 3 (Metodologia) do laudo na ordem listada.</div>
+  <div class="card"><div class="chd"><h3>Itens metodológicos</h3><button class="btn bp bsm" onclick="salvarMet()">Salvar</button></div><div class="cbd">
+    ${MET.map((it,i)=>`<div class="chk"><input type="checkbox" id="m${i}" ${sel.includes(i)?'checked':''}><label for="m${i}">${it}</label></div>`).join('')}
+    <div class="dvd"></div>
+    <label class="lbl">Outros itens (cada linha = um item)</label>
+    <textarea id="met-outros" rows="2" placeholder="Metodologias adicionais…">${p.metodologia_outros||''}</textarea>
+  </div></div>`;
 }
- 
+
 // ── TAB PARADIGMAS ────────────────────────────────────────────────────────
 function rPar() {
   const p = S.proc;
   return `
-  <div class="info">PCE = padrões encontrados nos autos. PCA = padrões colhidos presencialmente. PDFs de PCA vão automaticamente para os Adendos do laudo.</div>
-  <div class="card">
-    <div class="card-hd"><h3>Paradigmas cadastrados</h3></div>
-    <div class="card-bd">
-      ${(p.paradigmas||[]).length===0?'<div style="color:var(--text3);text-align:center;padding:1rem">Nenhum paradigma cadastrado</div>':''}
-      ${(p.paradigmas||[]).map((pg,i) => `
-      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;${i<(p.paradigmas||[]).length-1?'border-bottom:.5px solid var(--border)':''}">
-        <span class="bdg ${pg.tipo==='PCA'?'bb':'bk'}">${pg.tipo}</span>
-        <div style="flex:1"><div style="font-weight:500">${pg.descricao||'—'}</div><div style="font-size:11px;color:var(--text3)">${pg.data_assinatura||'—'} · ${pg.referencia||'—'}</div></div>
-        <span class="bdg ${pg.arquivo_path?'bk':'bg'}">${pg.arquivo_path?'✓ Arquivo':'Sem arquivo'}</span>
-        <button class="btn btn-d btn-sm" onclick="remParadigma('${pg.id}')">×</button>
-      </div>`).join('')}
+  <div class="ibox">PCE = encontrados nos autos. PCA = colhidos presencialmente. PDFs de PCA vão automaticamente para os Adendos do laudo.</div>
+  <div class="card"><div class="chd"><h3>Paradigmas cadastrados</h3></div><div class="cbd">
+    ${(p.paradigmas||[]).length===0?'<div style="color:var(--text3);text-align:center;padding:1rem;font-size:12px">Nenhum paradigma cadastrado</div>':''}
+    ${(p.paradigmas||[]).map((pg,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;${i<(p.paradigmas||[]).length-1?'border-bottom:.5px solid var(--border)':''}">
+      <span class="b ${pg.tipo==='PCA'?'bb':'bk'}">${pg.tipo}</span>
+      <div style="flex:1"><div style="font-size:12px;font-weight:500">${pg.descricao||'—'}</div><div style="font-size:10px;color:var(--text3)">${pg.data_assinatura||'—'} · ${pg.referencia||'—'}</div></div>
+      <span class="b ${pg.arquivo_path?'bk':'bgr'}">${pg.arquivo_path?'✓':'Sem arquivo'}</span>
+      <button class="btn bd bsm" onclick="remPG('${pg.id}')">×</button>
+    </div>`).join('')}
+  </div></div>
+  <div class="card" style="border:1.5px dashed #bfdbfe"><div class="chd"><h3>+ Adicionar paradigma</h3></div><div class="cbd">
+    <div class="g2" style="margin-bottom:8px">
+      <div><label class="lbl">Tipo</label><select id="npg-tipo">
+        <option value="PCE">PCE – Encontrado nos autos</option>
+        <option value="PCA">PCA – Colhido presencialmente</option>
+      </select></div>
+      <div><label class="lbl">Descrição</label><input id="npg-desc" placeholder="ex: RG da Autora"></div>
     </div>
-  </div>
-  <div class="card" style="border:1.5px dashed #bfdbfe">
-    <div class="card-hd"><h3>+ Adicionar paradigma</h3></div>
-    <div class="card-bd">
-      <div class="row r2" style="margin-bottom:10px">
-        <div><label class="lbl">Tipo</label>
-          <select id="npg-tipo">
-            <option value="PCE">PCE – Encontrado nos autos</option>
-            <option value="PCA">PCA – Colhido presencialmente</option>
-          </select>
-        </div>
-        <div><label class="lbl">Descrição</label><input id="npg-desc" placeholder="ex: RG da Autora"></div>
-      </div>
-      <div class="row r2" style="margin-bottom:10px">
-        <div><label class="lbl">Data da assinatura</label><input id="npg-data" placeholder="DD/MM/AAAA"></div>
-        <div><label class="lbl">Referência processual</label><input id="npg-ref" placeholder="ex: id. 20552230 ou Adendo 1"></div>
-      </div>
-      <label class="upload-z">
-        <div style="font-size:22px;margin-bottom:4px">📎</div>
-        <div style="font-weight:500">Clique para selecionar imagem ou PDF</div>
-        <div style="font-size:11px;margin-top:2px">Para PCA: será inserido nos Adendos do laudo automaticamente</div>
-        <input type="file" accept=".pdf,image/*" id="npg-file">
-      </label>
-      <div style="text-align:right;margin-top:10px"><button class="btn btn-p" onclick="adicionarParadigma()">Adicionar paradigma</button></div>
+    <div class="g2" style="margin-bottom:8px">
+      <div><label class="lbl">Data da assinatura</label><input id="npg-data" placeholder="DD/MM/AAAA"></div>
+      <div><label class="lbl">Referência</label><input id="npg-ref" placeholder="ex: id. 20552230"></div>
     </div>
-  </div>`;
+    <label class="upz">
+      <div style="font-size:20px;margin-bottom:3px">📎</div>
+      <div style="font-size:12px;font-weight:500">Imagem ou PDF do paradigma</div>
+      <input type="file" accept=".pdf,image/*" id="npg-file">
+    </label>
+    <div style="text-align:right;margin-top:8px"><button class="btn bp" onclick="adicionarPG()">Adicionar</button></div>
+  </div></div>`;
 }
- 
-// ── TAB ANÁLISE ───────────────────────────────────────────────────────────
+
+// ── TAB ANÁLISE (seletor de PQ) ───────────────────────────────────────────
 function rAnal() {
   const p = S.proc;
-  const pqAtivo = S.pqAtivo ? (p.pqs||[]).find(q=>q.id===S.pqAtivo) : null;
- 
+  const pqAtivo = S.pqId ? (p.pqs||[]).find(q=>q.id===S.pqId) : null;
+
   if (!pqAtivo) {
     return `
-    <div class="info">Selecione um documento para iniciar ou continuar a análise individual.</div>
+    <div class="ibox">Selecione um PQ para preencher o Quadro EOG e as considerações periciais daquele documento específico.</div>
     ${(p.pqs||[]).map((pq,i)=>`
-    <div class="pq-item ${pq.status==='done'?'done':''}">
-      <div style="display:flex;align-items:center;gap:10px">
+    <div class="card" style="${pq.status==='done'?'border-color:#86efac':''}">
+      <div class="cbd"><div style="display:flex;align-items:center;gap:9px">
         <div class="nb">${i+1}</div>
         <div style="flex:1">
-          <div style="font-weight:500">PQ${i+1} – ${pq.tipo||'Documento'} nº ${pq.numero||'—'}</div>
-          <div style="font-size:11px;color:var(--text2)">${pq.data_doc||'—'} · fls. ${pq.fls||'—'} · ID ${pq.id_proc||'—'}</div>
-          <div style="display:flex;gap:5px;margin-top:5px">
-            <span class="bdg ${pq.sig_path?'bk':'bg'}">${pq.sig_path?'✓ Assinatura':'Sem assinatura'}</span>
-            <span class="bdg ${(pq.eog&&pq.eog.some(e=>(e.resultado||e.res)!=='SA'))?'bk':'bg'}">EOG ${(pq.eog&&pq.eog.some(e=>(e.resultado||e.res)!=='SA'))?'em andamento':'pendente'}</span>
-            <span class="bdg ${pq.status==='done'?'bk':'bw'}">${pq.status==='done'?'✓ Concluído':'Em andamento'}</span>
+          <div style="font-size:12px;font-weight:500">PQ${i+1} – ${pq.tipo||'Documento'} nº ${pq.numero||'—'}</div>
+          <div style="font-size:10px;color:var(--text2)">${pq.data_doc||'—'} · fls. ${pq.fls||'—'} · ID ${pq.id_proc||'—'}</div>
+          <div style="display:flex;gap:4px;margin-top:4px">
+            <span class="b ${pq.sig_path?'bk':'bgr'}">${pq.sig_path?'✓ Assinatura':'Sem assinatura'}</span>
+            <span class="b ${(pq.eog||[]).some(e=>e.resultado!=='SA')?'bk':'bgr'}">EOG ${(pq.eog||[]).some(e=>e.resultado!=='SA')?'iniciado':'pendente'}</span>
+            <span class="b ${pq.status==='done'?'bk':'bw'}">${pq.status==='done'?'✓ Concluído':'Em andamento'}</span>
           </div>
         </div>
-        <button class="btn btn-p" onclick="S.pqAtivo='${pq.id}';render()">Analisar PQ${i+1} →</button>
-      </div>
+        <button class="btn bp" onclick="S.pqId='${pq.id}';render()">Abrir EOG →</button>
+      </div></div>
     </div>`).join('')}`;
   }
- 
+
   const idx = (p.pqs||[]).findIndex(q=>q.id===pqAtivo.id);
-  if (!pqAtivo.eog || pqAtivo.eog.length===0) pqAtivo.eog = novoEOG();
+  if (!pqAtivo.eog||pqAtivo.eog.length===0) pqAtivo.eog = novoEOG();
   const eog = pqAtivo.eog;
   const cnt = {C:0,D:0,SD:0,SA:0};
-  eog.forEach(e => { const r=e.resultado||e.res||'SA'; cnt[r]=(cnt[r]||0)+1; });
+  eog.forEach(e=>{const r=e.resultado||'SA';cnt[r]=(cnt[r]||0)+1;});
   const conc = cnt.D>cnt.C?'DIVERGÊNCIA':cnt.C>cnt.D?'CONVERGÊNCIA':'INCONCLUSIVO';
   const cCor = conc==='DIVERGÊNCIA'?'#991b1b':conc==='CONVERGÊNCIA'?'#14532d':'#7c5c00';
- 
+
   let grp=-1;
   const linhas = eog.map((e,i)=>{
-    let hdr='';
-    const g=EOG_G[i];
-    if(g!==grp){grp=g;hdr=`<tr><td colspan="3" style="background:#f0f0ec;padding:5px 10px;font-size:11px;font-weight:500;color:var(--text2)">${g===0?'SUBJETIVOS':'OBJETIVOS'}</td></tr>`;}
-    const r=e.resultado||e.res||'SA';
-    const opts=[{k:'C',l:'Conv.',co:'#14532d',bg:'#dcfce7'},{k:'D',l:'Div.',co:'#991b1b',bg:'#fee2e2'},{k:'SD',l:'S/Def.',co:'#7c5c00',bg:'#fef3cd'},{k:'SA',l:'S/Anál.',co:'#4b5563',bg:'#f3f4f6'}];
-    const btns=opts.map(o=>`<button onclick="setRes('${pqAtivo.id}',${e.criterio_id},'${o.k}')" style="padding:2px 6px;border-radius:4px;font-size:11px;cursor:pointer;font-weight:500;border:1.5px solid ${r===o.k?o.co:'transparent'};background:${r===o.k?o.bg:'transparent'};color:${r===o.k?o.co:'var(--text3)'}">${o.l}</button>`).join('');
-    return `${hdr}<tr style="border-bottom:.5px solid var(--border)"><td style="padding:6px 10px;font-size:11px;color:var(--text3);width:24px">${e.criterio_id}</td><td style="padding:6px 10px;font-size:12px">${EOG_N[i]}</td><td style="padding:6px 6px;white-space:nowrap">${btns}</td></tr>`;
+    let hdr='';const g=EOG_G[i];
+    if(g!==grp){grp=g;hdr=`<tr><td colspan="3" style="background:#f0f0ec;padding:5px 10px;font-size:10px;font-weight:500;color:var(--text2)">${g===0?'SUBJETIVOS':'OBJETIVOS'}</td></tr>`;}
+    const r=e.resultado||'SA';
+    const opts=[{k:'C',l:'C',co:'#14532d',bg:'#dcfce7'},{k:'D',l:'D',co:'#991b1b',bg:'#fee2e2'},{k:'SD',l:'SD',co:'#7c5c00',bg:'#fef3cd'},{k:'SA',l:'—',co:'#4b5563',bg:'#f3f4f6'}];
+    const btns=opts.map(o=>`<button title="${o.k}" onclick="setRes('${pqAtivo.id}',${e.criterio_id},'${o.k}')" style="width:28px;height:22px;border-radius:3px;font-size:10px;cursor:pointer;font-weight:600;border:1.5px solid ${r===o.k?o.co:'transparent'};background:${r===o.k?o.bg:'transparent'};color:${r===o.k?o.co:'var(--text3)'}">${o.l}</button>`).join('');
+    return `${hdr}<tr style="border-bottom:.5px solid var(--border)" title="${EOG_DICAS[i]}">
+      <td style="padding:5px 8px;font-size:10px;color:var(--text3);width:22px">${e.criterio_id}</td>
+      <td style="padding:5px 8px;font-size:12px;cursor:help">${EOG_N[i]}</td>
+      <td style="padding:5px 5px;white-space:nowrap">${btns}</td>
+    </tr>`;
   }).join('');
- 
+
   return `
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
-    <button class="btn btn-s btn-sm" onclick="S.pqAtivo=null;render()">← Voltar</button>
-    <div style="flex:1"><div style="font-weight:500;color:var(--navy)">Análise: PQ${idx+1} – ${pqAtivo.tipo||'Documento'} nº ${pqAtivo.numero||'—'}</div><div style="font-size:11px;color:var(--text3)">${pqAtivo.data_doc||'—'} · fls. ${pqAtivo.fls||'—'} · ID ${pqAtivo.id_proc||'—'}</div></div>
-    <button class="btn btn-p btn-sm" onclick="salvarAnalise('${pqAtivo.id}')">Salvar análise</button>
-    <button class="btn btn-g btn-sm" onclick="concluirPQ('${pqAtivo.id}')">✓ Marcar concluído</button>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:.8rem">
+    <button class="btn bs bsm" onclick="S.pqId=null;render()">← Voltar</button>
+    <div style="flex:1">
+      <div style="font-size:12px;font-weight:500;color:var(--navy)">PQ${idx+1} – ${pqAtivo.tipo||'Documento'} nº ${pqAtivo.numero||'—'}</div>
+      <div style="font-size:10px;color:var(--text3)">${pqAtivo.data_doc||'—'} · ID ${pqAtivo.id_proc||'—'}</div>
+    </div>
+    <button class="btn bs bsm" onclick="abrirMesaPQ('${pqAtivo.id}')">🖊 Mesa gráfica</button>
+    <button class="btn bp bsm" onclick="salvarAnalise('${pqAtivo.id}')">Salvar</button>
+    <button class="btn bg bsm" onclick="concluirPQ('${pqAtivo.id}')">✓ Concluir</button>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
     <div>
-      <div class="card">
-        <div class="card-hd"><h3>Assinatura PQ${idx+1}</h3>
-          <label class="btn btn-s btn-sm" style="cursor:pointer">Carregar imagem<input type="file" accept="image/*" style="display:none" onchange="uploadSig('${pqAtivo.id}',event)"></label>
-        </div>
-        <div class="card-bd">
-          ${pqAtivo.sig_path
-            ? `<img src="${pqAtivo.sig_path}" style="max-width:100%;max-height:150px;object-fit:contain;border-radius:6px;border:.5px solid var(--border)">`
-            : `<div style="border:.5px solid var(--border);border-radius:6px;min-height:80px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:12px">Carregue a imagem recortada da assinatura</div>`}
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-hd"><h3>Considerações do perito</h3></div>
-        <div class="card-bd">
-          <textarea id="cons-${pqAtivo.id}" rows="6" placeholder="Descreva suas observações específicas sobre este documento. Será incluído na Seção 6 do laudo, antes do quadro EOG.">${pqAtivo.consideracoes||''}</textarea>
-        </div>
-      </div>
+      <div class="card"><div class="chd"><h3>Assinatura recortada – PQ${idx+1}</h3>
+        <label class="btn bs bsm" style="cursor:pointer">Carregar<input type="file" accept="image/*" style="display:none" onchange="uploadSig('${pqAtivo.id}',event)"></label>
+      </div><div class="cbd" style="padding:10px">
+        ${pqAtivo.sig_path?`<img src="${pqAtivo.sig_path}" style="max-width:100%;max-height:120px;object-fit:contain;border-radius:5px;border:.5px solid var(--border)">`:`<div style="border:.5px solid var(--border);border-radius:5px;min-height:70px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:11px">Sem assinatura · use a Mesa Gráfica para recortar</div>`}
+      </div></div>
+      <div class="card"><div class="chd"><h3>Considerações do perito</h3></div><div class="cbd">
+        <textarea id="cons-${pqAtivo.id}" rows="7" placeholder="Descreva suas observações sobre este documento. Será incluído na Seção 6 do laudo antes do quadro EOG.">${pqAtivo.consideracoes||''}</textarea>
+      </div></div>
     </div>
-    <div class="card">
-      <div class="card-hd"><h3>Quadro EOG – PQ${idx+1}</h3></div>
-      <div class="card-bd" style="padding:0">
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px">
-          <div style="background:#fee2e2;border-radius:6px;padding:8px"><div style="font-size:10px;color:#991b1b">Divergentes</div><div style="font-size:20px;font-weight:500;color:#991b1b">${cnt.D}</div></div>
-          <div style="background:#dcfce7;border-radius:6px;padding:8px"><div style="font-size:10px;color:#14532d">Convergentes</div><div style="font-size:20px;font-weight:500;color:#14532d">${cnt.C}</div></div>
-          <div style="background:#fef3cd;border-radius:6px;padding:8px"><div style="font-size:10px;color:#7c5c00">S/ def.</div><div style="font-size:20px;font-weight:500;color:#7c5c00">${cnt.SD||0}</div></div>
-          <div style="background:${conc==='DIVERGÊNCIA'?'#fee2e2':conc==='CONVERGÊNCIA'?'#dcfce7':'#fef3cd'};border-radius:6px;padding:8px"><div style="font-size:10px;color:${cCor}">Resultado</div><div style="font-size:11px;font-weight:500;color:${cCor}">${conc}</div></div>
-        </div>
-        <div style="max-height:360px;overflow-y:auto">
-          <table style="width:100%;border-collapse:collapse">
-            <thead><tr style="background:#f5f4f0;position:sticky;top:0">
-              <th style="padding:6px 10px;text-align:left;font-size:10px;color:var(--text3);width:24px">#</th>
-              <th style="padding:6px 10px;text-align:left;font-size:10px;color:var(--text3)">Critério</th>
-              <th style="padding:6px 10px;text-align:left;font-size:10px;color:var(--text3)">Resultado</th>
-            </tr></thead>
-            <tbody>${linhas}</tbody>
-          </table>
-        </div>
+    <div class="card"><div class="chd"><h3>Quadro EOG – PQ${idx+1}</h3></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px">
+        <div style="background:#fee2e2;border-radius:5px;padding:7px"><div style="font-size:9px;color:#991b1b">Div.</div><div style="font-size:18px;font-weight:500;color:#991b1b">${cnt.D}</div></div>
+        <div style="background:#dcfce7;border-radius:5px;padding:7px"><div style="font-size:9px;color:#14532d">Conv.</div><div style="font-size:18px;font-weight:500;color:#14532d">${cnt.C}</div></div>
+        <div style="background:#fef3cd;border-radius:5px;padding:7px"><div style="font-size:9px;color:#7c5c00">S/def</div><div style="font-size:18px;font-weight:500;color:#7c5c00">${cnt.SD||0}</div></div>
+        <div style="background:${conc==='DIVERGÊNCIA'?'#fee2e2':conc==='CONVERGÊNCIA'?'#dcfce7':'#fef3cd'};border-radius:5px;padding:7px"><div style="font-size:9px;color:${cCor}">Resultado</div><div style="font-size:10px;font-weight:600;color:${cCor}">${conc}</div></div>
+      </div>
+      <div style="max-height:380px;overflow-y:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr style="background:#f5f4f0;position:sticky;top:0">
+            <th style="padding:5px 8px;text-align:left;font-size:9px;color:var(--text3);width:22px">#</th>
+            <th style="padding:5px 8px;text-align:left;font-size:9px;color:var(--text3)">Critério <span style="font-weight:400">(passe o mouse para ver a descrição)</span></th>
+            <th style="padding:5px 8px;font-size:9px;color:var(--text3)">C / D / SD / —</th>
+          </tr></thead>
+          <tbody>${linhas}</tbody>
+        </table>
       </div>
     </div>
   </div>`;
 }
- 
-// ── TAB LAUDO ─────────────────────────────────────────────────────────────
-function rLaudo() {
+
+// ── MESA GRÁFICA ──────────────────────────────────────────────────────────
+function rMesa() {
   const p = S.proc;
-  const done = (p.pqs||[]).filter(q=>q.status==='done').length;
-  const total = (p.pqs||[]).length;
-  const checks = [
-    {n:'Seção 1 – Apresentação',ok:!!(p.vara&&p.comarca&&p.nomeacao_id),obs:!p.nomeacao_id?'ID de nomeação ausente':''},
-    {n:'Seção 2 – Objetivos / Documentos PQ',ok:(p.pqs||[]).length>0,obs:(p.pqs||[]).length===0?'Nenhum PQ cadastrado':''},
-    {n:'Seção 3 – Metodologia',ok:(p.metodologia_items||[]).length>0,obs:''},
-    {n:'Seção 4 – Introdução',ok:true,obs:'Texto fixo'},
-    {n:'Seção 5.1 – Documentos Questionados',ok:(p.pqs||[]).length>0,obs:''},
-    {n:'Seção 5.2 – Paradigmas',ok:(p.paradigmas||[]).length>0,obs:(p.paradigmas||[]).length===0?'Nenhum paradigma cadastrado':''},
-    {n:'Seção 6 – Exames Periciais',ok:done>0,obs:done===0?'Nenhum PQ analisado':''},
-    {n:'Seção 7 – Conclusão',ok:done>0,obs:''},
-    {n:'Seção 8 – Quesitos',ok:true,obs:'Edição manual após exportação'},
-    {n:'Seção 9 – Encerramento',ok:true,obs:'Texto padrão'},
-    {n:'Adendos (PDFs de coleta)',ok:(p.paradigmas||[]).some(pg=>pg.tipo==='PCA'),obs:''},
-    {n:'Anexos (documentos PQ)',ok:(p.pqs||[]).length>0,obs:''},
+  const pqAtivo = S.pqId ? (p.pqs||[]).find(q=>q.id===S.pqId) : null;
+  const CORES = ['#e74c3c','#2980b9','#27ae60','#f39c12','#8e44ad','#000000','#ffffff'];
+  const TOOLS = [
+    {id:'seta',ic:'↖',tip:'Selecionar'},
+    {id:'linha',ic:'╱',tip:'Linha livre'},
+    {id:'reta',ic:'—',tip:'Linha reta'},
+    {id:'seta-mark',ic:'→',tip:'Seta'},
+    {id:'circulo',ic:'○',tip:'Círculo'},
+    {id:'rect',ic:'□',tip:'Retângulo'},
+    {id:'regua',ic:'⊢',tip:'Régua (distância e ângulo)'},
+    {id:'crop',ic:'⊡',tip:'Recortar área'},
+    {id:'pan',ic:'✥',tip:'Mover (ou segure Espaço)'},
+    {id:'lixo',ic:'⌫',tip:'Apagar última'},
   ];
+  const cSel = EOG_N.map((n,i)=>`<option value="${i+1}" ${S.mesaCriterioAtivo==i+1?'selected':''}>${i+1}. ${n}</option>`).join('');
+  const pqOpts = (p.pqs||[]).map((pq,i)=>`<option value="${pq.id}" ${S.pqId===pq.id?'selected':''}>PQ${i+1} – ${pq.numero||'—'}</option>`).join('');
+  const isCrop = S.mesaTool === 'crop';
   return `
-  <div class="${done<total?'warn':'ok'}">${done<total?`${done}/${total} PQs analisados. O laudo parcial já pode ser exportado.`:`Todos os ${total} PQs analisados. Laudo pronto.`}</div>
-  <div class="card">
-    <div class="card-hd"><h3>Checklist de integridade</h3></div>
-    <div class="card-bd">
-      ${checks.map(c=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border)">
-        <span style="font-size:13px">${c.ok?'✅':'⚠️'}</span>
-        <span style="flex:1;font-size:13px;${c.ok?'':'color:var(--text3)'}">${c.n}</span>
-        ${c.obs?`<span style="font-size:11px;color:var(--text3)">${c.obs}</span>`:''}
-      </div>`).join('')}
+  <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
+    <div><label class="lbl" style="margin:0;margin-right:4px">PQ ativo:</label>
+      <select style="width:auto;padding:4px 8px" onchange="S.pqId=this.value||null;render();setTimeout(initMesa,50)">
+        <option value="">— Selecione o PQ —</option>${pqOpts}
+      </select>
+    </div>
+    ${isCrop&&S.mesaCropRect?`<button class="btn bp bsm" onclick="confirmarCrop()">✂ Confirmar recorte</button>`:''}
+    ${S.mesaImgStack.length>1?`<button class="btn bs bsm" onclick="desfazerCrop()">↩ Desfazer</button>`:''}
+    ${S.mesaAnots.length?`<button class="btn bd bsm" onclick="limparAnots()">Limpar anotações</button>`:''}
+    <div style="margin-left:auto;display:flex;gap:6px">
+      ${pqAtivo?`<button class="btn bp bsm" onclick="salvarRecortePQ('${pqAtivo.id}')">💾 Salvar como assinatura PQ</button>`:''}
     </div>
   </div>
-  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:1rem">
-    <button class="btn btn-p" onclick="exportarLaudo()">⬇ Exportar laudo (.docx)</button>
+  <div id="mesa-wrap">
+    <!-- barra esquerda -->
+    <div id="mesa-left">
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Ferramentas</h3></div><div class="cbd" style="padding:8px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px">
+          ${TOOLS.map(t=>`<button class="tool-btn ${S.mesaTool===t.id?'on':''}" title="${t.tip}" onclick="setMesaTool('${t.id}')">${t.ic}</button>`).join('')}
+        </div>
+        ${isCrop?`<div style="margin-top:6px;font-size:10px;color:#92400e;background:#fef3c7;padding:4px 6px;border-radius:4px">Desenhe o recorte e clique "✂ Confirmar"</div>`:''}
+      </div></div>
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Cor</h3></div><div class="cbd" style="padding:8px">
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
+          ${CORES.map(c=>`<div class="color-dot ${S.mesaCor===c?'on':''}" style="background:${c};${c==='#ffffff'?'border:.5px solid var(--border)':''}" onclick="setMesaCor('${c}')"></div>`).join('')}
+          <input type="color" value="${S.mesaCor}" oninput="setMesaCor(this.value)" style="width:22px;height:22px;border:.5px solid var(--border);border-radius:50%;padding:0;cursor:pointer">
+        </div>
+      </div></div>
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Espessura: ${S.mesaEsp}px</h3></div><div class="cbd" style="padding:8px">
+        <input type="range" min="1" max="10" value="${S.mesaEsp}" oninput="S.mesaEsp=parseInt(this.value);document.querySelector('.chd h3:last-of-type')&&render()">
+      </div></div>
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Zoom: ${Math.round(S.mesaZoom*100)}%</h3></div><div class="cbd" style="padding:8px">
+        <div style="display:flex;gap:3px">
+          <button class="btn bs bsm" style="flex:1" onclick="adjZ(-0.25)">−</button>
+          <button class="btn bs bsm" style="flex:1" onclick="adjZ(0);S.mesaOX=0;S.mesaOY=0;redraw()">1:1</button>
+          <button class="btn bp bsm" style="flex:1" onclick="adjZ(0.25)">+</button>
+        </div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px;text-align:center">Scroll do mouse</div>
+      </div></div>
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Imagem</h3></div><div class="cbd" style="padding:8px">
+        <label class="upz" style="padding:10px">
+          <div style="font-size:16px">🖼</div>
+          <div style="font-size:11px;font-weight:500;margin-top:2px">Carregar imagem</div>
+          <input type="file" accept="image/*,.pdf" onchange="loadMesaImg(event)">
+        </label>
+        ${S.mesaImgNome?`<div style="font-size:9px;color:var(--text3);margin-top:4px;word-break:break-all">${S.mesaImgNome}</div>`:''}
+        ${S.mesaImgStack.length>1?`<div style="font-size:9px;color:#0c4a8a;margin-top:3px">Recorte ${S.mesaImgStack.length-1} aplicado</div>`:''}
+      </div></div>
+      <!-- PDF -->
+      ${S.pdfDoc?`<div class="card"><div class="chd" style="padding:7px 10px"><h3>PDF</h3></div><div class="cbd" style="padding:8px">
+        <div style="display:flex;align-items:center;gap:4px;margin-bottom:6px">
+          <button class="btn bs bsm" onclick="pdfNav(-1)">‹</button>
+          <span style="font-size:10px;flex:1;text-align:center">${S.pdfPage}/${S.pdfTotal}</span>
+          <button class="btn bs bsm" onclick="pdfNav(1)">›</button>
+        </div>
+        <button class="btn bp bsm" style="width:100%" onclick="renderPdfPage(S.pdfPage)">Renderizar página</button>
+      </div></div>`:''}
+    </div>
+
+    <!-- canvas -->
+    <div id="mesa-center">
+      <div id="mesa-toolbar">
+        <span style="font-size:11px;color:var(--text2);font-weight:500">Critério EOG vinculado:</span>
+        <select style="width:160px;padding:3px 6px;font-size:11px" onchange="S.mesaCriterioAtivo=this.value?parseInt(this.value):null">
+          <option value="">— Nenhum —</option>${cSel}
+        </select>
+        ${S.mesaCriterioAtivo?`<span style="font-size:10px;color:var(--text3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${EOG_DICAS[S.mesaCriterioAtivo-1]||''}</span>`:''}
+        <span style="margin-left:auto;font-size:10px;color:var(--text3)">${S.mesaAnots.length} anotação${S.mesaAnots.length!==1?'s':''}</span>
+      </div>
+      <div id="mesa-canvas-wrap">
+        <canvas id="mesa-canvas"></canvas>
+        <div id="mesa-empty">
+          <div style="font-size:32px;margin-bottom:6px">🖊</div>
+          <div style="font-size:13px;font-weight:500">Mesa gráfica</div>
+          <div style="font-size:11px;margin-top:3px">Carregue uma imagem ou PDF pela barra lateral</div>
+        </div>
+        <div id="mesa-ruler-info"></div>
+      </div>
+    </div>
+
+    <!-- painel de anotações -->
+    <div id="mesa-right">
+      <div class="card" style="flex:1"><div class="chd" style="padding:7px 10px"><h3>Anotações (${S.mesaAnots.length})</h3></div>
+        <div style="padding:8px;overflow-y:auto;max-height:calc(100vh - 280px)">
+          ${S.mesaAnots.length===0?'<div style="font-size:11px;color:var(--text3);text-align:center;padding:1rem">Nenhuma ainda</div>':''}
+          ${S.mesaAnots.map((a,i)=>`
+          <div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:7px;padding-bottom:7px;${i<S.mesaAnots.length-1?'border-bottom:.5px solid var(--border)':''}">
+            <div style="width:10px;height:10px;border-radius:50%;background:${a.cor};flex-shrink:0;margin-top:2px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:11px;font-weight:500">${a.tipo}</div>
+              ${a.criterio?`<div style="font-size:9px;color:var(--text3)">EOG ${a.criterio}: ${EOG_N[a.criterio-1]||''}</div>`:''}
+              ${a.medida?`<div style="font-size:9px;color:#0c4a8a">${a.medida}</div>`:''}
+            </div>
+            <button onclick="rmAnot(${i})" style="border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:13px;flex-shrink:0;padding:0;line-height:1">×</button>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
   </div>`;
 }
- 
-// ── AÇÕES: NAVEGAÇÃO ──────────────────────────────────────────────────────
-function sv(v) { S.view=v; render(); }
-function stab(t) { S.subview=t; S.pqAtivo=null; render(); }
- 
-// ── AÇÕES: CARREGAMENTO ───────────────────────────────────────────────────
-async function carregarProcessos() {
-  S.loading=true; render();
-  try {
-    const ps = await sb.get('bee3d_peritare_processos?order=created_at.desc');
-    for (const p of ps) {
-      p.pqs = await sb.get(`bee3d_peritare_pqs?processo_id=eq.${p.id}&order=ordem.asc`);
-      p.paradigmas = await sb.get(`bee3d_peritare_paradigmas?processo_id=eq.${p.id}`);
-      p.metodologia_items = p.metodologia_items || [0,1,2,3,4,5,6,7,8,9];
-    }
-    S.processos = ps;
-  } catch(e) {
-    // fallback: sem Supabase configurado, usa dados de exemplo
-    S.processos = [];
-  }
-  S.loading=false; render();
-}
- 
-async function abrirProcesso(id) {
-  const p = S.processos.find(x=>x.id===id);
-  if (!p) return;
-  // carrega EOG para cada PQ
-  for (const pq of (p.pqs||[])) {
-    try { pq.eog = await sb.get(`bee3d_peritare_eog?pq_id=eq.${pq.id}`); }
-    catch(e) { pq.eog = novoEOG(); }
-  }
-  S.proc = p; S.view='proc'; S.subview='info'; render();
-}
- 
-// ── AÇÕES: PROCESSO ───────────────────────────────────────────────────────
-async function novoProcesso() {
-  const p = {
-    numero:'', autor:'', reu:'', comarca:'', vara:'',
-    nomeacao_id:'', nomeacao_data:'', status:'pendente',
-    metodologia_items:[0,1,2,3,4,5,6,7,8,9], metodologia_outros:'',
-    pqs:[], paradigmas:[],
-  };
-  try {
-    const [criado] = await sb.post('bee3d_peritare_processos', p);
-    p.id = criado.id;
-    S.processos.unshift(p);
-  } catch(e) {
-    p.id = Date.now().toString();
-    S.processos.unshift(p);
-  }
-  S.proc = p; S.view='proc'; S.subview='info'; render();
-}
- 
-async function salvarInfo() {
+
+// ── TAB LAUDO ─────────────────────────────────────────────────────────────
+function rLaudoTab() {
   const p = S.proc;
-  const body = {
-    numero: document.getElementById('f-num')?.value || p.numero,
-    autor: document.getElementById('f-aut')?.value || p.autor,
-    reu: document.getElementById('f-reu')?.value || p.reu,
-    vara: document.getElementById('f-vara')?.value || p.vara,
-    comarca: document.getElementById('f-com')?.value || p.comarca,
-    status: document.getElementById('f-st')?.value || p.status,
-    nomeacao_id: document.getElementById('f-nid')?.value || p.nomeacao_id,
-    nomeacao_data: document.getElementById('f-ndt')?.value || p.nomeacao_data,
-  };
-  Object.assign(p, body);
-  try { await sb.patch(`bee3d_peritare_processos?id=eq.${p.id}`, body); toast('Dados salvos ✓'); }
-  catch(e) { toast('Salvo localmente (Supabase não configurado)'); }
+  const done=(p.pqs||[]).filter(q=>q.status==='done').length, total=(p.pqs||[]).length;
+  const checks = [
+    {n:'Seção 1 – Apresentação', ok:!!(p.vara&&p.comarca&&p.nomeacao_id), obs:!p.nomeacao_id?'ID de nomeação ausente':''},
+    {n:'Seção 2 – Documentos PQ', ok:total>0, obs:total===0?'Nenhum PQ cadastrado':''},
+    {n:'Seção 3 – Metodologia', ok:(p.metodologia_items||[]).length>0, obs:''},
+    {n:'Seção 4 – Introdução', ok:true, obs:'Texto fixo'},
+    {n:'Seção 5.1 – Documentos Questionados', ok:total>0, obs:''},
+    {n:'Seção 5.2 – Paradigmas', ok:(p.paradigmas||[]).length>0, obs:(p.paradigmas||[]).length===0?'Nenhum paradigma':''},
+    {n:'Seção 6 – Exames (EOG por PQ)', ok:done>0, obs:done===0?'Nenhum PQ analisado':''},
+    {n:'Seção 7 – Conclusão', ok:done>0, obs:''},
+    {n:'Adendos (PDFs de coleta PCA)', ok:(p.paradigmas||[]).some(pg=>pg.tipo==='PCA'), obs:''},
+    {n:'Anexos (documentos PQ)', ok:total>0, obs:''},
+  ];
+  const pronto = checks.filter(c=>!c.ok).length === 0;
+  return `
+  <div class="${pronto?'obox':'wbox'}">${pronto?`Laudo completo e pronto para exportação.`:`${checks.filter(c=>!c.ok).length} item(ns) incompleto(s). O laudo parcial já pode ser exportado.`}</div>
+  <div class="card"><div class="chd"><h3>Checklist de integridade</h3></div><div class="cbd">
+    ${checks.map(c=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:.5px solid var(--border)">
+      <span style="font-size:12px">${c.ok?'✅':'⚠️'}</span>
+      <span style="flex:1;font-size:12px;${c.ok?'':'color:var(--text3)'}">${c.n}</span>
+      ${c.obs?`<span style="font-size:10px;color:var(--text3)">${c.obs}</span>`:''}
+    </div>`).join('')}
+  </div></div>
+  <div style="text-align:right;margin-top:1rem">
+    <button class="btn bp" onclick="exportarLaudo()">⬇ Exportar laudo (.docx)</button>
+  </div>`;
+}
+
+// ── CANVAS ENGINE ─────────────────────────────────────────────────────────
+let CV, CX;
+function initMesa() {
+  CV = document.getElementById('mesa-canvas'); if (!CV) return;
+  const wrap = document.getElementById('mesa-canvas-wrap'); if (!wrap) return;
+  CV.width = wrap.clientWidth || 700;
+  CV.height = wrap.clientHeight || 480;
+  CX = CV.getContext('2d');
+  redraw();
+  CV.onmousedown = mDown;
+  CV.onmousemove = mMove;
+  CV.onmouseup = mUp;
+  CV.onmouseleave = mUp;
+  CV.onwheel = mWheel;
+  CV.oncontextmenu = e => e.preventDefault();
+  const mv = document.getElementById('mesa-empty');
+  if (mv) mv.style.display = S.mesaImg ? 'none' : 'flex';
+}
+
+function toImg(x,y) { return {x:(x-S.mesaOX)/S.mesaZoom, y:(y-S.mesaOY)/S.mesaZoom}; }
+
+function redraw() {
+  if (!CX||!CV) return;
+  CX.clearRect(0,0,CV.width,CV.height);
+  // xadrez
+  const sz=16;
+  for(let x=0;x<CV.width;x+=sz) for(let y=0;y<CV.height;y+=sz) {
+    CX.fillStyle=(Math.floor(x/sz)+Math.floor(y/sz))%2===0?'#d8d8d8':'#efefef';
+    CX.fillRect(x,y,sz,sz);
+  }
+  // imagem
+  if (S.mesaImg) {
+    CX.save(); CX.translate(S.mesaOX,S.mesaOY); CX.scale(S.mesaZoom,S.mesaZoom);
+    CX.drawImage(S.mesaImg,0,0); CX.restore();
+  }
+  // anotações
+  S.mesaAnots.forEach(a => drawAnot(a));
+  // preview
+  if (S.drawing && S.dSt && S.dCur) drawPreview();
+  // crop overlay
+  if (S.mesaTool==='crop') {
+    if (S.mesaCropRect) {
+      const r=S.mesaCropRect;
+      const sx=S.mesaOX+r.x*S.mesaZoom, sy=S.mesaOY+r.y*S.mesaZoom, sw=r.w*S.mesaZoom, sh=r.h*S.mesaZoom;
+      CX.save(); CX.fillStyle='rgba(0,0,0,.35)'; CX.fillRect(0,0,CV.width,CV.height);
+      CX.clearRect(sx,sy,sw,sh);
+      CX.strokeStyle='#c8a84b'; CX.lineWidth=2; CX.setLineDash([6,3]);
+      CX.strokeRect(sx,sy,sw,sh); CX.setLineDash([]); CX.restore();
+    }
+    if (S.mesaCropDrawing && S.mesaCropStart && S.mesaCropCurrent) {
+      const {cx:x1,cy:y1}=S.mesaCropStart, {cx:x2,cy:y2}=S.mesaCropCurrent;
+      CX.save(); CX.fillStyle='rgba(0,0,0,.35)'; CX.fillRect(0,0,CV.width,CV.height);
+      CX.clearRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
+      CX.strokeStyle='#c8a84b'; CX.lineWidth=2; CX.setLineDash([6,3]);
+      CX.strokeRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
+      CX.setLineDash([]); CX.restore();
+    }
+  }
+}
+
+function drawAnot(a) {
+  CX.save(); CX.translate(S.mesaOX,S.mesaOY); CX.scale(S.mesaZoom,S.mesaZoom);
+  CX.strokeStyle=a.cor; CX.lineWidth=a.esp/S.mesaZoom; CX.lineCap='round'; CX.lineJoin='round';
+  if (a.tipo==='Linha'||a.tipo==='Reta') { CX.beginPath(); CX.moveTo(a.x1,a.y1); CX.lineTo(a.x2,a.y2); CX.stroke(); }
+  else if (a.tipo==='Seta') { drawArrow(a.x1,a.y1,a.x2,a.y2,a.cor,a.esp/S.mesaZoom); }
+  else if (a.tipo==='Círculo') { const rx=Math.abs(a.x2-a.x1)/2,ry=Math.abs(a.y2-a.y1)/2; CX.beginPath(); CX.ellipse(a.x1+(a.x2-a.x1)/2,a.y1+(a.y2-a.y1)/2,Math.max(1,rx),Math.max(1,ry),0,0,Math.PI*2); CX.stroke(); }
+  else if (a.tipo==='Retângulo') { CX.strokeRect(Math.min(a.x1,a.x2),Math.min(a.y1,a.y2),Math.abs(a.x2-a.x1),Math.abs(a.y2-a.y1)); }
+  else if (a.tipo==='Régua') {
+    CX.setLineDash([5/S.mesaZoom,3/S.mesaZoom]); CX.beginPath(); CX.moveTo(a.x1,a.y1); CX.lineTo(a.x2,a.y2); CX.stroke(); CX.setLineDash([]);
+    CX.fillStyle=a.cor; CX.font=`bold ${12/S.mesaZoom}px Arial`;
+    CX.fillText(a.medida, a.x1+(a.x2-a.x1)/2+3, a.y1+(a.y2-a.y1)/2-3);
+  }
+  CX.restore();
+}
+
+function drawArrow(x1,y1,x2,y2,cor,lw) {
+  const ang=Math.atan2(y2-y1,x2-x1), hs=14/S.mesaZoom;
+  CX.strokeStyle=cor; CX.fillStyle=cor; CX.lineWidth=lw;
+  CX.beginPath(); CX.moveTo(x1,y1); CX.lineTo(x2,y2); CX.stroke();
+  CX.beginPath(); CX.moveTo(x2,y2);
+  CX.lineTo(x2-hs*Math.cos(ang-0.4),y2-hs*Math.sin(ang-0.4));
+  CX.lineTo(x2-hs*Math.cos(ang+0.4),y2-hs*Math.sin(ang+0.4));
+  CX.closePath(); CX.fill();
+}
+
+function drawPreview() {
+  const s=S.dSt, e=S.dCur;
+  CX.save(); CX.translate(S.mesaOX,S.mesaOY); CX.scale(S.mesaZoom,S.mesaZoom);
+  CX.strokeStyle=S.mesaCor; CX.lineWidth=S.mesaEsp/S.mesaZoom; CX.lineCap='round'; CX.globalAlpha=0.7;
+  const t=S.mesaTool;
+  if(t==='linha'||t==='reta'){CX.beginPath();CX.moveTo(s.x,s.y);CX.lineTo(e.x,e.y);CX.stroke();}
+  else if(t==='seta-mark'){drawArrow(s.x,s.y,e.x,e.y,S.mesaCor,S.mesaEsp/S.mesaZoom);}
+  else if(t==='circulo'){const rx=Math.abs(e.x-s.x)/2,ry=Math.abs(e.y-s.y)/2;CX.beginPath();CX.ellipse(s.x+(e.x-s.x)/2,s.y+(e.y-s.y)/2,Math.max(1,rx),Math.max(1,ry),0,0,Math.PI*2);CX.stroke();}
+  else if(t==='rect'){CX.strokeRect(Math.min(s.x,e.x),Math.min(s.y,e.y),Math.abs(e.x-s.x),Math.abs(e.y-s.y));}
+  else if(t==='regua'){
+    CX.setLineDash([5/S.mesaZoom,3/S.mesaZoom]);CX.beginPath();CX.moveTo(s.x,s.y);CX.lineTo(e.x,e.y);CX.stroke();CX.setLineDash([]);
+    const ang=Math.atan2(e.y-s.y,e.x-s.x)*180/Math.PI, dist=Math.round(Math.hypot(e.x-s.x,e.y-s.y));
+    const ri=document.getElementById('mesa-ruler-info');
+    if(ri){ri.style.display='block';ri.textContent=`${dist}px · ${ang.toFixed(1)}°`;}
+  }
+  CX.restore();
+}
+
+function mDown(ev) {
+  const r=CV.getBoundingClientRect(), cx=ev.clientX-r.left, cy=ev.clientY-r.top;
+  const t=S.mesaTool;
+  if(t==='pan'||ev.button===1||(ev.button===0&&ev.altKey)){S.mesaPanning=true;S.mesaPanStart={x:cx-S.mesaOX,y:cy-S.mesaOY};CV.style.cursor='grabbing';return;}
+  if(t==='lixo'){rmAnot(S.mesaAnots.length-1);return;}
+  if(t==='seta')return;
+  if(t==='crop'){
+    S.mesaCropDrawing=true; S.mesaCropRect=null;
+    const ic=toImg(cx,cy);
+    S.mesaCropStart={cx,cy,ix:ic.x,iy:ic.y}; S.mesaCropCurrent={cx,cy}; return;
+  }
+  S.drawing=true;
+  const ic=toImg(cx,cy); S.dSt={x:ic.x,y:ic.y}; S.dCur={x:ic.x,y:ic.y};
+}
+
+function mMove(ev) {
+  const r=CV.getBoundingClientRect(), cx=ev.clientX-r.left, cy=ev.clientY-r.top;
+  if(S.mesaPanning&&S.mesaPanStart){S.mesaOX=cx-S.mesaPanStart.x;S.mesaOY=cy-S.mesaPanStart.y;redraw();return;}
+  if(S.mesaCropDrawing&&S.mesaCropStart){S.mesaCropCurrent={cx,cy};redraw();return;}
+  if(!S.drawing)return;
+  const ic=toImg(cx,cy); S.dCur={x:ic.x,y:ic.y}; redraw();
+}
+
+function mUp(ev) {
+  if(S.mesaPanning){S.mesaPanning=false;CV.style.cursor=S.mesaTool==='pan'?'grab':'crosshair';return;}
+  if(S.mesaCropDrawing){
+    S.mesaCropDrawing=false;
+    if(!S.mesaCropStart||!S.mesaCropCurrent)return;
+    const {cx:x1,cy:y1,ix,iy}=S.mesaCropStart, {cx:x2,cy:y2}=S.mesaCropCurrent;
+    if(Math.abs(x2-x1)<8||Math.abs(y2-y1)<8){S.mesaCropRect=null;redraw();return;}
+    S.mesaCropRect={x:Math.min(ix,(x2-S.mesaOX)/S.mesaZoom),y:Math.min(iy,(y2-S.mesaOY)/S.mesaZoom),w:Math.abs((x2-S.mesaOX)/S.mesaZoom-ix),h:Math.abs((y2-S.mesaOY)/S.mesaZoom-iy)};
+    S.mesaCropStart=null; redraw(); render(); setTimeout(initMesa,30); return;
+  }
+  if(!S.drawing)return; S.drawing=false;
+  const s=S.dSt, e=S.dCur; if(!s||!e)return;
+  const dist=Math.hypot(e.x-s.x,e.y-s.y); if(dist<3)return;
+  const ang=Math.atan2(e.y-s.y,e.x-s.x)*180/Math.PI;
+  const tmap={linha:'Linha',reta:'Reta',circulo:'Círculo',rect:'Retângulo','seta-mark':'Seta',regua:'Régua'};
+  const tipo=tmap[S.mesaTool]||S.mesaTool;
+  const anot={tipo,x1:s.x,y1:s.y,x2:e.x,y2:e.y,cor:S.mesaCor,esp:S.mesaEsp,criterio:S.mesaCriterioAtivo};
+  if(S.mesaTool==='regua') anot.medida=`${Math.round(dist)}px · ${ang.toFixed(1)}°`;
+  S.mesaAnots.push(anot);
+  S.dSt=null; S.dCur=null;
+  const ri=document.getElementById('mesa-ruler-info'); if(ri) ri.style.display='none';
+  render(); setTimeout(initMesa,30);
+}
+
+function mWheel(ev) { ev.preventDefault(); adjZ(ev.deltaY>0?-0.12:0.12); }
+
+function adjZ(d) {
+  S.mesaZoom=Math.max(0.05,Math.min(8,S.mesaZoom+(d===0?-S.mesaZoom+1:d)));
+  redraw();
+  // atualiza label de zoom sem rerender tudo
+  document.querySelectorAll('.chd h3').forEach(h=>{if(h.textContent.startsWith('Zoom:')) h.textContent=`Zoom: ${Math.round(S.mesaZoom*100)}%`;});
+}
+
+function setMesaTool(t) { S.mesaTool=t; S.mesaCropRect=null; CV&&(CV.style.cursor=t==='pan'?'grab':'crosshair'); render(); setTimeout(initMesa,30); }
+function setMesaCor(c) { S.mesaCor=c; render(); setTimeout(initMesa,30); }
+function rmAnot(i) { if(i>=0&&i<S.mesaAnots.length){S.mesaAnots.splice(i,1);render();setTimeout(initMesa,30);} }
+function limparAnots() { if(confirm('Limpar todas as anotações?')){S.mesaAnots=[];render();setTimeout(initMesa,30);} }
+
+async function loadMesaImg(ev) {
+  const f=ev.target.files[0]; if(!f) return;
+  if(f.type==='application/pdf') { await loadPDF(f); return; }
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    const img=new Image(); img.onload=()=>{
+      S.mesaImg=img; S.mesaImgNome=f.name; S.mesaImgStack=[]; S.mesaCropRect=null; S.mesaAnots=[];
+      S.mesaOX=0; S.mesaOY=0;
+      if(CV){const sx=CV.width/img.width,sy=CV.height/img.height;S.mesaZoom=Math.min(sx,sy,1);}
+      document.getElementById('mesa-empty')&&(document.getElementById('mesa-empty').style.display='none');
+      redraw(); render(); setTimeout(initMesa,30);
+    }; img.src=e.target.result;
+  }; reader.readAsDataURL(f);
+}
+
+async function loadPDF(f) {
+  if(typeof pdfjsLib==='undefined'){toast('PDF.js não carregado');return;}
+  const ab=await f.arrayBuffer();
+  S.pdfDoc=await pdfjsLib.getDocument({data:ab}).promise;
+  S.pdfTotal=S.pdfDoc.numPages; S.pdfPage=1; S.mesaImgNome=f.name;
+  toast(`PDF carregado: ${S.pdfTotal} página(s)`);
+  await renderPdfPage(1);
+}
+
+async function renderPdfPage(n) {
+  if(!S.pdfDoc)return;
+  S.pdfPage=n;
+  const page=await S.pdfDoc.getPage(n);
+  const scale=2; const vp=page.getViewport({scale});
+  const tmp=document.createElement('canvas'); tmp.width=vp.width; tmp.height=vp.height;
+  await page.render({canvasContext:tmp.getContext('2d'),viewport:vp}).promise;
+  const img=new Image(); img.onload=()=>{
+    S.mesaImg=img; S.mesaImgStack=[]; S.mesaCropRect=null; S.mesaAnots=[];
+    S.mesaOX=0; S.mesaOY=0;
+    if(CV){const sx=CV.width/img.width,sy=CV.height/img.height;S.mesaZoom=Math.min(sx,sy,1);}
+    document.getElementById('mesa-empty')&&(document.getElementById('mesa-empty').style.display='none');
+    redraw(); render(); setTimeout(initMesa,30);
+  }; img.src=tmp.toDataURL();
+}
+
+async function pdfNav(dir) {
+  const n=S.pdfPage+dir;
+  if(n<1||n>S.pdfTotal)return;
+  await renderPdfPage(n);
+}
+
+function confirmarCrop() {
+  if(!S.mesaImg||!S.mesaCropRect)return;
+  const r=S.mesaCropRect;
+  const tmp=document.createElement('canvas'); tmp.width=r.w; tmp.height=r.h;
+  const tc=tmp.getContext('2d'); tc.drawImage(S.mesaImg,r.x,r.y,r.w,r.h,0,0,r.w,r.h);
+  const nova=new Image(); nova.onload=()=>{
+    S.mesaImgStack.push({img:S.mesaImg,ox:S.mesaOX,oy:S.mesaOY,zoom:S.mesaZoom});
+    S.mesaImg=nova; S.mesaOX=0; S.mesaOY=0;
+    if(CV){const sx=CV.width/r.w,sy=CV.height/r.h;S.mesaZoom=Math.min(sx,sy,1);}
+    S.mesaCropRect=null; S.mesaTool='seta'; S.mesaAnots=[];
+    render(); setTimeout(initMesa,30);
+  }; nova.src=tmp.toDataURL();
+}
+
+function desfazerCrop() {
+  if(!S.mesaImgStack.length)return;
+  const prev=S.mesaImgStack.pop();
+  S.mesaImg=prev.img; S.mesaOX=prev.ox; S.mesaOY=prev.oy; S.mesaZoom=prev.zoom;
+  S.mesaCropRect=null; S.mesaAnots=[];
+  render(); setTimeout(initMesa,30);
+}
+
+async function salvarRecortePQ(pqId) {
+  if(!S.mesaImg||!CV)return;
+  // exporta o canvas atual como imagem
+  const tmp=document.createElement('canvas'); tmp.width=CV.width; tmp.height=CV.height;
+  const tc=tmp.getContext('2d');
+  tc.translate(S.mesaOX,S.mesaOY); tc.scale(S.mesaZoom,S.mesaZoom); tc.drawImage(S.mesaImg,0,0);
+  const dataUrl=tmp.toDataURL('image/png');
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);
+  if(!pq)return;
+  pq.sig_path=dataUrl;
+  toast('Assinatura salva como PQ ✓');
+  // tenta persistir no Supabase
+  try {
+    const blob=await(await fetch(dataUrl)).blob();
+    const f=new File([blob],'sig.png',{type:'image/png'});
+    const url=await sb.upload('peritare-docs',`processos/${S.proc.id}/pqs/${pqId}/sig.png`,f);
+    pq.sig_path=url;
+    await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{sig_path:url});
+  } catch(e){}
+  render(); setTimeout(initMesa,50);
+}
+
+function abrirMesaPQ(pqId) { S.pqId=pqId; stab('mesa'); }
+
+// ── AÇÕES ─────────────────────────────────────────────────────────────────
+async function carregarProcessos() {
+  try {
+    const ps=await sb.get('bee3d_peritare_processos?order=created_at.desc');
+    for(const p of ps){
+      p.pqs=await sb.get(`bee3d_peritare_pqs?processo_id=eq.${p.id}&order=ordem.asc`);
+      p.paradigmas=await sb.get(`bee3d_peritare_paradigmas?processo_id=eq.${p.id}`);
+      p.metodologia_items=p.metodologia_items||[0,1,2,3,4,5,6,7,8,9];
+    }
+    S.processos=ps;
+  } catch(e){ S.processos=[]; }
   render();
 }
- 
-// ── AÇÕES: PQ ─────────────────────────────────────────────────────────────
+
+async function abrirProcesso(id) {
+  const p=S.processos.find(x=>x.id===id); if(!p)return;
+  for(const pq of(p.pqs||[])){
+    try{pq.eog=await sb.get(`bee3d_peritare_eog?pq_id=eq.${pq.id}`);}
+    catch(e){pq.eog=novoEOG();}
+    if(!pq.eog||pq.eog.length===0)pq.eog=novoEOG();
+  }
+  S.proc=p; S.view='proc'; S.sub='info'; render();
+}
+
+async function novoProcesso() {
+  const p={numero:'',autor:'',reu:'',comarca:'',vara:'',nomeacao_id:'',nomeacao_data:'',status:'pendente',metodologia_items:[0,1,2,3,4,5,6,7,8,9],metodologia_outros:'',pqs:[],paradigmas:[]};
+  try{const[c]=await sb.post('bee3d_peritare_processos',p);p.id=c.id;}
+  catch(e){p.id=Date.now().toString();}
+  S.processos.unshift(p); S.proc=p; S.view='proc'; S.sub='info'; render();
+}
+
+async function salvarInfo() {
+  const p=S.proc;
+  const b={numero:document.getElementById('f-num')?.value||'',autor:document.getElementById('f-aut')?.value||'',reu:document.getElementById('f-reu')?.value||'',vara:document.getElementById('f-vara')?.value||'',comarca:document.getElementById('f-com')?.value||'',status:document.getElementById('f-st')?.value||'',nomeacao_id:document.getElementById('f-nid')?.value||'',nomeacao_data:document.getElementById('f-ndt')?.value||''};
+  Object.assign(p,b);
+  try{await sb.patch(`bee3d_peritare_processos?id=eq.${p.id}`,b);toast('Dados salvos ✓');}
+  catch(e){toast('Salvo localmente');}
+  render();
+}
+
 async function adicionarPQ() {
-  const tipo = document.getElementById('npq-tipo')?.value;
-  const numero = document.getElementById('npq-num')?.value;
-  if (!tipo||!numero) { alert('Informe o tipo e o número do documento.'); return; }
-  const pq = {
-    processo_id: S.proc.id,
-    ordem: (S.proc.pqs||[]).length + 1,
-    tipo, numero,
-    data_doc: document.getElementById('npq-data')?.value||'',
-    fls: document.getElementById('npq-fls')?.value||'',
-    id_proc: document.getElementById('npq-idp')?.value||'',
-    status: 'pending',
-  };
-  const file = document.getElementById('npq-file')?.files?.[0];
-  try {
-    const [criado] = await sb.post('bee3d_peritare_pqs', pq);
-    pq.id = criado.id;
-    if (file) {
-      const path = `processos/${S.proc.id}/pqs/${criado.id}/${file.name}`;
-      pq.pdf_path = await sb.upload('peritare-docs', path, file);
-      await sb.patch(`bee3d_peritare_pqs?id=eq.${criado.id}`, { pdf_path: pq.pdf_path });
-    }
-  } catch(e) { pq.id = Date.now().toString(); }
-  pq.eog = novoEOG();
-  S.proc.pqs = [...(S.proc.pqs||[]), pq];
-  toast('Documento adicionado ✓'); render();
+  const tipo=document.getElementById('npq-tipo')?.value, numero=document.getElementById('npq-num')?.value;
+  if(!tipo||!numero){alert('Informe o tipo e o número.');return;}
+  const pq={processo_id:S.proc.id,ordem:(S.proc.pqs||[]).length+1,tipo,numero,data_doc:document.getElementById('npq-data')?.value||'',fls:document.getElementById('npq-fls')?.value||'',id_proc:document.getElementById('npq-idp')?.value||'',status:'pending'};
+  const file=document.getElementById('npq-file')?.files?.[0];
+  try{const[c]=await sb.post('bee3d_peritare_pqs',pq);pq.id=c.id;
+    if(file){const path=`processos/${S.proc.id}/pqs/${c.id}/${file.name}`;pq.pdf_path=await sb.upload('peritare-docs',path,file);await sb.patch(`bee3d_peritare_pqs?id=eq.${c.id}`,{pdf_path:pq.pdf_path});}
+  }catch(e){pq.id=Date.now().toString();}
+  pq.eog=novoEOG();
+  S.proc.pqs=[...(S.proc.pqs||[]),pq]; toast('Documento adicionado ✓'); render();
 }
- 
-async function removerPQ(id) {
-  if (!confirm('Remover este documento e todas as suas análises?')) return;
-  try { await sb.delete(`bee3d_peritare_pqs?id=eq.${id}`); } catch(e){}
-  S.proc.pqs = (S.proc.pqs||[]).filter(q=>q.id!==id);
+
+async function remPQ(id){
+  if(!confirm('Remover este documento?'))return;
+  try{await sb.del(`bee3d_peritare_pqs?id=eq.${id}`);}catch(e){}
+  S.proc.pqs=(S.proc.pqs||[]).filter(q=>q.id!==id); render();
+}
+
+async function salvarMet(){
+  const items=MET.map((_,i)=>document.getElementById(`m${i}`)?.checked?i:-1).filter(x=>x>=0);
+  const outros=document.getElementById('met-outros')?.value||'';
+  S.proc.metodologia_items=items; S.proc.metodologia_outros=outros;
+  try{await sb.patch(`bee3d_peritare_processos?id=eq.${S.proc.id}`,{metodologia_items:items,metodologia_outros:outros});toast('Metodologia salva ✓');}
+  catch(e){toast('Salvo localmente');}
+}
+
+async function adicionarPG(){
+  const desc=document.getElementById('npg-desc')?.value; if(!desc){alert('Informe a descrição.');return;}
+  const pg={processo_id:S.proc.id,tipo:document.getElementById('npg-tipo')?.value||'PCE',descricao:desc,data_assinatura:document.getElementById('npg-data')?.value||'',referencia:document.getElementById('npg-ref')?.value||''};
+  const file=document.getElementById('npg-file')?.files?.[0];
+  try{const[c]=await sb.post('bee3d_peritare_paradigmas',pg);pg.id=c.id;
+    if(file){const path=`processos/${S.proc.id}/paradigmas/${c.id}/${file.name}`;pg.arquivo_path=await sb.upload('peritare-docs',path,file);await sb.patch(`bee3d_peritare_paradigmas?id=eq.${c.id}`,{arquivo_path:pg.arquivo_path});}
+  }catch(e){pg.id=Date.now().toString();}
+  S.proc.paradigmas=[...(S.proc.paradigmas||[]),pg]; toast('Paradigma adicionado ✓'); render();
+}
+
+async function remPG(id){
+  try{await sb.del(`bee3d_peritare_paradigmas?id=eq.${id}`);}catch(e){}
+  S.proc.paradigmas=(S.proc.paradigmas||[]).filter(pg=>pg.id!==id); render();
+}
+
+function setRes(pqId,cid,res){
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId); if(!pq)return;
+  if(!pq.eog||pq.eog.length===0)pq.eog=novoEOG();
+  const e=pq.eog.find(x=>x.criterio_id===cid); if(e){e.resultado=res;}
   render();
 }
- 
-// ── AÇÕES: METODOLOGIA ────────────────────────────────────────────────────
-async function salvarMet() {
-  const items = MET_ITENS.map((_,i) => document.getElementById(`m${i}`)?.checked ? i : -1).filter(x=>x>=0);
-  const outros = document.getElementById('met-outros')?.value||'';
-  S.proc.metodologia_items = items; S.proc.metodologia_outros = outros;
-  try {
-    await sb.patch(`bee3d_peritare_processos?id=eq.${S.proc.id}`, { metodologia_items: items, metodologia_outros: outros });
-    toast('Metodologia salva ✓');
-  } catch(e) { toast('Salvo localmente'); }
-}
- 
-// ── AÇÕES: PARADIGMAS ─────────────────────────────────────────────────────
-async function adicionarParadigma() {
-  const desc = document.getElementById('npg-desc')?.value;
-  if (!desc) { alert('Informe a descrição do paradigma.'); return; }
-  const pg = {
-    processo_id: S.proc.id,
-    tipo: document.getElementById('npg-tipo')?.value||'PCE',
-    descricao: desc,
-    data_assinatura: document.getElementById('npg-data')?.value||'',
-    referencia: document.getElementById('npg-ref')?.value||'',
-  };
-  const file = document.getElementById('npg-file')?.files?.[0];
-  try {
-    const [criado] = await sb.post('bee3d_peritare_paradigmas', pg);
-    pg.id = criado.id;
-    if (file) {
-      const path = `processos/${S.proc.id}/paradigmas/${criado.id}/${file.name}`;
-      pg.arquivo_path = await sb.upload('peritare-docs', path, file);
-      await sb.patch(`bee3d_peritare_paradigmas?id=eq.${criado.id}`, { arquivo_path: pg.arquivo_path });
-    }
-  } catch(e) { pg.id = Date.now().toString(); }
-  S.proc.paradigmas = [...(S.proc.paradigmas||[]), pg];
-  toast('Paradigma adicionado ✓'); render();
-}
- 
-async function remParadigma(id) {
-  try { await sb.delete(`bee3d_peritare_paradigmas?id=eq.${id}`); } catch(e){}
-  S.proc.paradigmas = (S.proc.paradigmas||[]).filter(pg=>pg.id!==id);
-  render();
-}
- 
-// ── AÇÕES: ANÁLISE ────────────────────────────────────────────────────────
-function setRes(pqId, criterioId, res) {
-  const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
-  if (!pq) return;
-  if (!pq.eog || pq.eog.length===0) pq.eog = novoEOG();
-  const e = pq.eog.find(x=>x.criterio_id===criterioId);
-  if (e) { e.resultado = res; e.res = res; }
-  render();
-}
- 
-async function uploadSig(pqId, ev) {
-  const file = ev.target.files[0]; if (!file) return;
-  const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
-  if (!pq) return;
-  const reader = new FileReader();
-  reader.onload = async e => {
-    pq.sig_path = e.target.result; // data URL temporária
-    try {
-      const path = `processos/${S.proc.id}/pqs/${pqId}/sig_${file.name}`;
-      const url = await sb.upload('peritare-docs', path, file);
-      pq.sig_path = url;
-      await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`, { sig_path: url });
-    } catch(err) { /* mantém data URL */ }
+
+async function uploadSig(pqId,ev){
+  const f=ev.target.files[0]; if(!f)return;
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId); if(!pq)return;
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    pq.sig_path=e.target.result;
+    try{const path=`processos/${S.proc.id}/pqs/${pqId}/sig_${f.name}`;const url=await sb.upload('peritare-docs',path,f);pq.sig_path=url;await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{sig_path:url});}
+    catch(err){}
     toast('Assinatura carregada ✓'); render();
-  };
-  reader.readAsDataURL(file);
+  }; reader.readAsDataURL(f);
 }
- 
-async function salvarAnalise(pqId) {
-  const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
-  if (!pq) return;
-  const cons = document.getElementById(`cons-${pqId}`)?.value||'';
-  pq.consideracoes = cons;
-  try {
-    await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`, { consideracoes: cons });
-    for (const e of (pq.eog||[])) {
-      const res = e.resultado||e.res||'SA';
-      try {
-        // upsert: tenta inserir; se já existe, atualiza
-        await sb.post('bee3d_peritare_eog', { pq_id: pqId, criterio_id: e.criterio_id, resultado: res, consideracoes: e.consideracoes||'' });
-      } catch(_) {
-        await sb.patch(`bee3d_peritare_eog?pq_id=eq.${pqId}&criterio_id=eq.${e.criterio_id}`, { resultado: res });
-      }
+
+async function abrirAnalise(pqId){ S.pqId=pqId; stab('anal'); }
+
+async function salvarAnalise(pqId){
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId); if(!pq)return;
+  const cons=document.getElementById(`cons-${pqId}`)?.value||'';
+  pq.consideracoes=cons;
+  try{
+    await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{consideracoes:cons});
+    for(const e of(pq.eog||[])){
+      try{await sb.post('bee3d_peritare_eog',{pq_id:pqId,criterio_id:e.criterio_id,resultado:e.resultado||'SA',consideracoes:e.consideracoes||''});}
+      catch(_){await sb.patch(`bee3d_peritare_eog?pq_id=eq.${pqId}&criterio_id=eq.${e.criterio_id}`,{resultado:e.resultado||'SA'}).catch(()=>{});}
     }
     toast('Análise salva ✓');
-  } catch(e) { toast('Salvo localmente'); }
+  }catch(e){toast('Salvo localmente');}
 }
- 
-async function concluirPQ(pqId) {
+
+async function concluirPQ(pqId){
   await salvarAnalise(pqId);
-  const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
-  if (pq) {
-    pq.status = 'done';
-    try { await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`, { status: 'done' }); } catch(e){}
-  }
-  S.pqAtivo = null; toast('PQ marcado como concluído ✓'); render();
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId); if(pq){pq.status='done';try{await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{status:'done'});}catch(e){}}
+  S.pqId=null; toast('PQ concluído ✓'); render();
 }
- 
-// ── EXPORTAR LAUDO ────────────────────────────────────────────────────────
-async function exportarLaudo() {
-  const p = S.proc;
-  toast('Gerando laudo…', 8000);
-  const payload = {
-    perito: {
-      nome: 'CARLOS EDUARDO SOARES MENEZES',
-      registro: 'Adm. Perito – CRA/RJ: 20-60660',
-      cpf: '086.311.227-77',
-      titulo: 'Perito Grafotécnico Judicial',
-    },
-    processo: p,
-    pqs: (p.pqs||[]).map(pq => ({ ...pq, eog: pq.eog||[] })),
-    paradigmas: p.paradigmas||[],
-    metodologia: { items: p.metodologia_items||[], outros: p.metodologia_outros||'' },
-    doc5_extra: p.doc5_extra||'',
-    quesitos_autor: p.quesitos_autor||'',
-    data_laudo: new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' }),
+
+async function exportarLaudo(){
+  const p=S.proc;
+  toast('Gerando laudo…',8000);
+  const payload={
+    perito:{nome:'CARLOS EDUARDO SOARES MENEZES',registro:'Adm. Perito – CRA/RJ: 20-60660',cpf:'086.311.227-77',titulo:'Perito Grafotécnico Judicial'},
+    processo:p,
+    pqs:(p.pqs||[]).map(pq=>({...pq,eog:pq.eog||[]})),
+    paradigmas:p.paradigmas||[],
+    metodologia:{items:p.metodologia_items||[],outros:p.metodologia_outros||''},
+    data_laudo:new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'}),
   };
-  try {
-    const r = await fetch(`${NETLIFY_BASE}/.netlify/functions/gerar-laudo`, {
-      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload),
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const { docx, filename } = await r.json();
-    const bytes = Uint8Array.from(atob(docx), c=>c.charCodeAt(0));
-    const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = filename || 'laudo.docx'; a.click();
+  try{
+    const r=await fetch(`${NETLIFY_BASE}/.netlify/functions/gerar-laudo`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!r.ok)throw new Error(await r.text());
+    const{docx,filename}=await r.json();
+    const bytes=Uint8Array.from(atob(docx),c=>c.charCodeAt(0));
+    const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename||'laudo.docx'; a.click();
     toast('Laudo exportado ✓');
-  } catch(e) {
-    toast('Erro ao gerar laudo: '+e.message, 5000);
-  }
+  }catch(e){toast('Erro: '+e.message,5000);}
 }
- 
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 carregarProcessos();
 </script>
