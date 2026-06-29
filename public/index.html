@@ -16,22 +16,22 @@
   --radius:8px;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--surface);color:var(--text);font-size:13px}
-
+ 
 /* ── header ─────────────────────────────────────────────── */
 #hdr{background:var(--navy);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
 #nav{display:flex;gap:4px}
 .nbtn{background:transparent;color:rgba(255,255,255,.65);border:none;padding:6px 13px;border-radius:5px;font-size:13px;cursor:pointer}
 .nbtn.on,.nbtn:hover{background:rgba(200,168,75,.18);color:var(--gold)}
-
+ 
 /* ── layout ─────────────────────────────────────────────── */
 #main{padding:1.5rem;max-width:1060px;margin:0 auto}
-
+ 
 /* ── cards ───────────────────────────────────────────────── */
 .card{background:var(--card);border:.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1rem}
 .card-hd{padding:12px 16px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafaf8}
 .card-hd h3{font-size:13px;font-weight:500;color:var(--navy)}
 .card-bd{padding:16px}
-
+ 
 /* ── forms ───────────────────────────────────────────────── */
 label.lbl{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bottom:4px}
 input,select,textarea{width:100%;padding:7px 10px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--surface);color:var(--text);font-family:inherit}
@@ -40,7 +40,7 @@ textarea{resize:vertical}
 .row{display:grid;gap:12px}
 .r2{grid-template-columns:1fr 1fr}
 .r3{grid-template-columns:1fr 1fr 1fr}
-
+ 
 /* ── buttons ─────────────────────────────────────────────── */
 .btn{padding:7px 16px;border-radius:var(--radius);font-size:13px;cursor:pointer;font-weight:500;border:none}
 .btn-p{background:var(--navy);color:#fff}
@@ -48,18 +48,18 @@ textarea{resize:vertical}
 .btn-g{background:var(--gold);color:var(--navy)}
 .btn-d{background:#fee2e2;color:#991b1b;border:.5px solid #fca5a5}
 .btn-sm{padding:4px 10px;font-size:11px}
-
+ 
 /* ── badges ──────────────────────────────────────────────── */
 .bdg{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px}
 .bk{background:#dcfce7;color:#14532d}.bw{background:#fef3cd;color:#7c5c00}
 .bb{background:#dbeafe;color:#1e40af}.bg{background:#f3f4f6;color:#4b5563}
 .br{background:#fee2e2;color:#991b1b}
-
+ 
 /* ── tabs ────────────────────────────────────────────────── */
 .tbar{display:flex;gap:2px;border-bottom:.5px solid var(--border);margin-bottom:1rem;padding:0 16px;background:#fafaf8;overflow-x:auto}
 .tab{padding:8px 14px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text3);font-weight:500;white-space:nowrap}
 .tab.on{border-bottom-color:var(--navy);color:var(--navy)}
-
+ 
 /* ── misc ────────────────────────────────────────────────── */
 .info{background:#eff6ff;border:.5px solid #bfdbfe;border-radius:8px;padding:10px 14px;font-size:12px;color:#1e40af;margin-bottom:12px}
 .warn{background:#fffbeb;border:.5px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px}
@@ -82,7 +82,7 @@ textarea{resize:vertical}
 </style>
 </head>
 <body>
-
+ 
 <!-- ── HEADER ──────────────────────────────────────────────── -->
 <div id="hdr">
   <div style="display:flex;align-items:center;gap:12px">
@@ -97,14 +97,14 @@ textarea{resize:vertical}
 </div>
 <div id="main"></div>
 <div id="toast"></div>
-
+ 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────
 // Valores injetados pelo Netlify via _headers ou meta tags — não edite aqui
 const SUPABASE_URL = document.querySelector('meta[name="sb-url"]')?.content || '';
 const SUPABASE_KEY = document.querySelector('meta[name="sb-key"]')?.content || '';
 const NETLIFY_BASE = '';
-
+ 
 // ── SUPABASE CLIENT LEVE (sem SDK, usa REST direto) ──────────────────────
 const sb = {
   async req(method, path, body) {
@@ -125,7 +125,7 @@ const sb = {
   post: (path, body) => sb.req('POST', path, body),
   patch: (path, body) => sb.req('PATCH', path, body),
   delete: (path) => sb.req('DELETE', path),
-
+ 
   async upload(bucket, path, file) {
     const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
       method: 'POST',
@@ -135,10 +135,10 @@ const sb = {
     if (!r.ok) throw new Error(await r.text());
     return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
   },
-
+ 
   publicUrl: (bucket, path) => `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`,
 };
-
+ 
 // ── STATE ─────────────────────────────────────────────────────────────────
 const S = {
   view: 'processos',
@@ -150,7 +150,7 @@ const S = {
   novoPG: {},
   loading: false,
 };
-
+ 
 const MET_ITENS = [
   'a) Minuciosos exames dos documentos questionados (item 5.1)',
   'b) Minuciosos exames dos padrões de confronto (itens 5.2-A e 5.2-B)',
@@ -163,22 +163,22 @@ const MET_ITENS = [
   'i) Revisão do laudo',
   'j) Apresentação do laudo ao juizado competente',
 ];
-
+ 
 const EOG_N = ['Ritmo','Dinamismo','Velocidade','Habilidade','Espontaneidade','Ataques','Remates','Pressão e Progressão','Hábitos Gráficos','Momentos Gráficos','Comportamento de Base','Comportamento de Pauta','Inclinação Axial','Espaçamentos Gráficos','Tendência de Punho','Trajetórias','Calibres','Gladiolagem','Gramas','Proporcionalidade','Sobreposição de Peças','Microscopia','Separação','Cronologia','Vídeos','Imagem do Grafismo','Escavalamento','Cultura Gráfica','Maneirismos Gráficos','Afinamento','Grafogeometria','Traçados das Letras','Polimorfismo Gráfico','Caligrafia','Diversos'];
 const EOG_G = [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
 const TIPOS_DOC = ['Cédula de Crédito Bancário','Proposta de Abertura de Limite de Crédito','Contrato de Empréstimo Consignado','Contrato de Cartão de Crédito','Procuração','Declaração','Escritura Pública','Cheque','Outro'];
-
+ 
 // ── UTILITÁRIOS ───────────────────────────────────────────────────────────
 function toast(msg, dur=2500) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.style.display='block';
   setTimeout(() => t.style.display='none', dur);
 }
-
+ 
 function novoEOG() {
   return EOG_N.map((_,i) => ({ criterio_id: i+1, resultado: 'SA', consideracoes: '', texto_juridico: '' }));
 }
-
+ 
 // ── RENDER ────────────────────────────────────────────────────────────────
 function render() {
   document.getElementById('nav').innerHTML = buildNav();
@@ -186,13 +186,13 @@ function render() {
   if (S.view === 'processos') m.innerHTML = rLista();
   else if (S.view === 'proc') m.innerHTML = rProc();
 }
-
+ 
 function buildNav() {
   const vs = [{v:'processos',l:'Processos'}];
   if (S.proc) vs.push({v:'proc',l:'Processo ativo'});
   return vs.map(({v,l}) => `<button class="nbtn ${S.view===v?'on':''}" onclick="sv('${v}')">${l}</button>`).join('');
 }
-
+ 
 // ── LISTA DE PROCESSOS ────────────────────────────────────────────────────
 function rLista() {
   const ps = S.processos;
@@ -209,7 +209,7 @@ function rLista() {
     const total = (p.pqs||[]).length;
     const done = (p.pqs||[]).filter(q=>q.status==='done').length;
     const pct = total ? Math.round(done/total*100) : 0;
-    const stMap = {pendente:'bw',analise':'bb',concluido':'bk'};
+    const stMap = {pendente:'bw',analise:'bb',concluido:'bk'};
     return `<div class="card"><div class="card-bd">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="flex:1;min-width:0">
@@ -227,7 +227,7 @@ function rLista() {
     </div></div>`;
   }).join('')}`;
 }
-
+ 
 // ── PROCESSO ATIVO ────────────────────────────────────────────────────────
 function rProc() {
   const p = S.proc;
@@ -256,7 +256,7 @@ function rProc() {
   <div class="tbar">${TABS.map(t=>`<div class="tab ${S.subview===t.id?'on':''}" onclick="stab('${t.id}')">${t.l}</div>`).join('')}</div>
   <div id="tc">${rTab()}</div>`;
 }
-
+ 
 function rTab() {
   const t = S.subview;
   if (t==='info') return rInfo();
@@ -267,7 +267,7 @@ function rTab() {
   if (t==='laudo') return rLaudo();
   return '';
 }
-
+ 
 // ── TAB INFO ──────────────────────────────────────────────────────────────
 function rInfo() {
   const p = S.proc;
@@ -305,7 +305,7 @@ function rInfo() {
     </div>
   </div>`;
 }
-
+ 
 // ── TAB PQs ───────────────────────────────────────────────────────────────
 function rPQs() {
   const p = S.proc;
@@ -355,7 +355,7 @@ function rPQs() {
     </div>
   </div>`;
 }
-
+ 
 // ── TAB METODOLOGIA ───────────────────────────────────────────────────────
 function rMet() {
   const p = S.proc;
@@ -372,7 +372,7 @@ function rMet() {
     </div>
   </div>`;
 }
-
+ 
 // ── TAB PARADIGMAS ────────────────────────────────────────────────────────
 function rPar() {
   const p = S.proc;
@@ -417,12 +417,12 @@ function rPar() {
     </div>
   </div>`;
 }
-
+ 
 // ── TAB ANÁLISE ───────────────────────────────────────────────────────────
 function rAnal() {
   const p = S.proc;
   const pqAtivo = S.pqAtivo ? (p.pqs||[]).find(q=>q.id===S.pqAtivo) : null;
-
+ 
   if (!pqAtivo) {
     return `
     <div class="info">Selecione um documento para iniciar ou continuar a análise individual.</div>
@@ -443,7 +443,7 @@ function rAnal() {
       </div>
     </div>`).join('')}`;
   }
-
+ 
   const idx = (p.pqs||[]).findIndex(q=>q.id===pqAtivo.id);
   if (!pqAtivo.eog || pqAtivo.eog.length===0) pqAtivo.eog = novoEOG();
   const eog = pqAtivo.eog;
@@ -451,7 +451,7 @@ function rAnal() {
   eog.forEach(e => { const r=e.resultado||e.res||'SA'; cnt[r]=(cnt[r]||0)+1; });
   const conc = cnt.D>cnt.C?'DIVERGÊNCIA':cnt.C>cnt.D?'CONVERGÊNCIA':'INCONCLUSIVO';
   const cCor = conc==='DIVERGÊNCIA'?'#991b1b':conc==='CONVERGÊNCIA'?'#14532d':'#7c5c00';
-
+ 
   let grp=-1;
   const linhas = eog.map((e,i)=>{
     let hdr='';
@@ -462,7 +462,7 @@ function rAnal() {
     const btns=opts.map(o=>`<button onclick="setRes('${pqAtivo.id}',${e.criterio_id},'${o.k}')" style="padding:2px 6px;border-radius:4px;font-size:11px;cursor:pointer;font-weight:500;border:1.5px solid ${r===o.k?o.co:'transparent'};background:${r===o.k?o.bg:'transparent'};color:${r===o.k?o.co:'var(--text3)'}">${o.l}</button>`).join('');
     return `${hdr}<tr style="border-bottom:.5px solid var(--border)"><td style="padding:6px 10px;font-size:11px;color:var(--text3);width:24px">${e.criterio_id}</td><td style="padding:6px 10px;font-size:12px">${EOG_N[i]}</td><td style="padding:6px 6px;white-space:nowrap">${btns}</td></tr>`;
   }).join('');
-
+ 
   return `
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
     <button class="btn btn-s btn-sm" onclick="S.pqAtivo=null;render()">← Voltar</button>
@@ -512,7 +512,7 @@ function rAnal() {
     </div>
   </div>`;
 }
-
+ 
 // ── TAB LAUDO ─────────────────────────────────────────────────────────────
 function rLaudo() {
   const p = S.proc;
@@ -548,11 +548,11 @@ function rLaudo() {
     <button class="btn btn-p" onclick="exportarLaudo()">⬇ Exportar laudo (.docx)</button>
   </div>`;
 }
-
+ 
 // ── AÇÕES: NAVEGAÇÃO ──────────────────────────────────────────────────────
 function sv(v) { S.view=v; render(); }
 function stab(t) { S.subview=t; S.pqAtivo=null; render(); }
-
+ 
 // ── AÇÕES: CARREGAMENTO ───────────────────────────────────────────────────
 async function carregarProcessos() {
   S.loading=true; render();
@@ -570,7 +570,7 @@ async function carregarProcessos() {
   }
   S.loading=false; render();
 }
-
+ 
 async function abrirProcesso(id) {
   const p = S.processos.find(x=>x.id===id);
   if (!p) return;
@@ -581,7 +581,7 @@ async function abrirProcesso(id) {
   }
   S.proc = p; S.view='proc'; S.subview='info'; render();
 }
-
+ 
 // ── AÇÕES: PROCESSO ───────────────────────────────────────────────────────
 async function novoProcesso() {
   const p = {
@@ -600,7 +600,7 @@ async function novoProcesso() {
   }
   S.proc = p; S.view='proc'; S.subview='info'; render();
 }
-
+ 
 async function salvarInfo() {
   const p = S.proc;
   const body = {
@@ -618,7 +618,7 @@ async function salvarInfo() {
   catch(e) { toast('Salvo localmente (Supabase não configurado)'); }
   render();
 }
-
+ 
 // ── AÇÕES: PQ ─────────────────────────────────────────────────────────────
 async function adicionarPQ() {
   const tipo = document.getElementById('npq-tipo')?.value;
@@ -647,14 +647,14 @@ async function adicionarPQ() {
   S.proc.pqs = [...(S.proc.pqs||[]), pq];
   toast('Documento adicionado ✓'); render();
 }
-
+ 
 async function removerPQ(id) {
   if (!confirm('Remover este documento e todas as suas análises?')) return;
   try { await sb.delete(`bee3d_peritare_pqs?id=eq.${id}`); } catch(e){}
   S.proc.pqs = (S.proc.pqs||[]).filter(q=>q.id!==id);
   render();
 }
-
+ 
 // ── AÇÕES: METODOLOGIA ────────────────────────────────────────────────────
 async function salvarMet() {
   const items = MET_ITENS.map((_,i) => document.getElementById(`m${i}`)?.checked ? i : -1).filter(x=>x>=0);
@@ -665,7 +665,7 @@ async function salvarMet() {
     toast('Metodologia salva ✓');
   } catch(e) { toast('Salvo localmente'); }
 }
-
+ 
 // ── AÇÕES: PARADIGMAS ─────────────────────────────────────────────────────
 async function adicionarParadigma() {
   const desc = document.getElementById('npg-desc')?.value;
@@ -690,13 +690,13 @@ async function adicionarParadigma() {
   S.proc.paradigmas = [...(S.proc.paradigmas||[]), pg];
   toast('Paradigma adicionado ✓'); render();
 }
-
+ 
 async function remParadigma(id) {
   try { await sb.delete(`bee3d_peritare_paradigmas?id=eq.${id}`); } catch(e){}
   S.proc.paradigmas = (S.proc.paradigmas||[]).filter(pg=>pg.id!==id);
   render();
 }
-
+ 
 // ── AÇÕES: ANÁLISE ────────────────────────────────────────────────────────
 function setRes(pqId, criterioId, res) {
   const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
@@ -706,7 +706,7 @@ function setRes(pqId, criterioId, res) {
   if (e) { e.resultado = res; e.res = res; }
   render();
 }
-
+ 
 async function uploadSig(pqId, ev) {
   const file = ev.target.files[0]; if (!file) return;
   const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
@@ -724,7 +724,7 @@ async function uploadSig(pqId, ev) {
   };
   reader.readAsDataURL(file);
 }
-
+ 
 async function salvarAnalise(pqId) {
   const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
   if (!pq) return;
@@ -744,7 +744,7 @@ async function salvarAnalise(pqId) {
     toast('Análise salva ✓');
   } catch(e) { toast('Salvo localmente'); }
 }
-
+ 
 async function concluirPQ(pqId) {
   await salvarAnalise(pqId);
   const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
@@ -754,7 +754,7 @@ async function concluirPQ(pqId) {
   }
   S.pqAtivo = null; toast('PQ marcado como concluído ✓'); render();
 }
-
+ 
 // ── EXPORTAR LAUDO ────────────────────────────────────────────────────────
 async function exportarLaudo() {
   const p = S.proc;
@@ -789,7 +789,7 @@ async function exportarLaudo() {
     toast('Erro ao gerar laudo: '+e.message, 5000);
   }
 }
-
+ 
 // ── INIT ──────────────────────────────────────────────────────────────────
 carregarProcessos();
 </script>
