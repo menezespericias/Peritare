@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peritare – Perícia Grafotécnica</title>
+<style>
+/* ── reset & tokens ─────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2744;--navy2:#243358;--gold:#c8a84b;
+  --surface:#f8f7f4;--card:#fff;--border:#e2ddd5;
+  --text:#1a1a18;--text2:#5a5854;--text3:#9a9690;
+  --radius:8px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--surface);color:var(--text);font-size:13px}
+
+/* ── header ─────────────────────────────────────────────── */
+#hdr{background:var(--navy);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
+#nav{display:flex;gap:4px}
+.nbtn{background:transparent;color:rgba(255,255,255,.65);border:none;padding:6px 13px;border-radius:5px;font-size:13px;cursor:pointer}
+.nbtn.on,.nbtn:hover{background:rgba(200,168,75,.18);color:var(--gold)}
+
+/* ── layout ─────────────────────────────────────────────── */
+#main{padding:1.5rem;max-width:1060px;margin:0 auto}
+
+/* ── cards ───────────────────────────────────────────────── */
+.card{background:var(--card);border:.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1rem}
+.card-hd{padding:12px 16px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafaf8}
+.card-hd h3{font-size:13px;font-weight:500;color:var(--navy)}
+.card-bd{padding:16px}
+
+/* ── forms ───────────────────────────────────────────────── */
+label.lbl{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bottom:4px}
+input,select,textarea{width:100%;padding:7px 10px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--surface);color:var(--text);font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-color:transparent}
+textarea{resize:vertical}
+.row{display:grid;gap:12px}
+.r2{grid-template-columns:1fr 1fr}
+.r3{grid-template-columns:1fr 1fr 1fr}
+
+/* ── buttons ─────────────────────────────────────────────── */
+.btn{padding:7px 16px;border-radius:var(--radius);font-size:13px;cursor:pointer;font-weight:500;border:none}
+.btn-p{background:var(--navy);color:#fff}
+.btn-s{background:var(--surface);color:var(--text2);border:.5px solid var(--border)}
+.btn-g{background:var(--gold);color:var(--navy)}
+.btn-d{background:#fee2e2;color:#991b1b;border:.5px solid #fca5a5}
+.btn-sm{padding:4px 10px;font-size:11px}
+
+/* ── badges ──────────────────────────────────────────────── */
+.bdg{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px}
+.bk{background:#dcfce7;color:#14532d}.bw{background:#fef3cd;color:#7c5c00}
+.bb{background:#dbeafe;color:#1e40af}.bg{background:#f3f4f6;color:#4b5563}
+.br{background:#fee2e2;color:#991b1b}
+
+/* ── tabs ────────────────────────────────────────────────── */
+.tbar{display:flex;gap:2px;border-bottom:.5px solid var(--border);margin-bottom:1rem;padding:0 16px;background:#fafaf8;overflow-x:auto}
+.tab{padding:8px 14px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text3);font-weight:500;white-space:nowrap}
+.tab.on{border-bottom-color:var(--navy);color:var(--navy)}
+
+/* ── misc ────────────────────────────────────────────────── */
+.info{background:#eff6ff;border:.5px solid #bfdbfe;border-radius:8px;padding:10px 14px;font-size:12px;color:#1e40af;margin-bottom:12px}
+.warn{background:#fffbeb;border:.5px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px}
+.ok{background:#f0fdf4;border:.5px solid #86efac;border-radius:8px;padding:10px 14px;font-size:12px;color:#14532d;margin-bottom:12px}
+.divider{height:.5px;background:var(--border);margin:14px 0}
+.nb{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.pq-item{border:.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px;background:var(--card)}
+.pq-item.done{border-color:#86efac;background:#f0fdf4}
+.upload-z{border:1.5px dashed var(--border);border-radius:var(--radius);padding:18px;text-align:center;cursor:pointer;color:var(--text3)}
+.upload-z:hover{border-color:var(--gold);background:#fffbeb}
+.upload-z input{display:none}
+.chk{display:flex;align-items:flex-start;gap:8px;padding:5px 0}
+.chk input[type=checkbox]{width:16px;height:16px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)}
+.chk label{font-weight:400;color:var(--text);cursor:pointer;margin:0}
+.section-title{font-size:16px;font-weight:500;color:var(--navy);margin-bottom:3px}
+.section-sub{font-size:12px;color:var(--text3);margin-bottom:1.25rem}
+.progress{height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;background:var(--gold);border-radius:4px;transition:.3s}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:999;display:none}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────────────────────── -->
+<div id="hdr">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="width:28px;height:28px;background:var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a2744" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <span style="color:#fff;font-size:15px;font-weight:500">Peritare</span>
+    <span style="color:var(--gold);font-size:11px;opacity:.8;margin-left:-4px">Grafotécnica</span>
+    <span id="sync-badge" style="display:none;font-size:10px;color:rgba(255,255,255,.5);margin-left:4px">● sincronizando…</span>
+  </div>
+  <div id="nav"></div>
+</div>
+<div id="main"></div>
+<div id="toast"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────
+// Substitua pelos seus valores reais do Supabase
+const SUPABASE_URL = window.SUPABASE_URL || 'https://SEU_PROJETO.supabase.co';
+const SUPABASE_KEY = window.SUPABASE_KEY || 'SUA_ANON_KEY';
+const NETLIFY_BASE = window.NETLIFY_BASE || '';  // vazio = mesmo domínio
+
+// ── SUPABASE CLIENT LEVE (sem SDK, usa REST direto) ──────────────────────
+const sb = {
+  async req(method, path, body) {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      method,
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal',
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!r.ok) { const e = await r.text(); throw new Error(e); }
+    return r.status === 204 ? null : r.json();
+  },
+  get: (path) => sb.req('GET', path),
+  post: (path, body) => sb.req('POST', path, body),
+  patch: (path, body) => sb.req('PATCH', path, body),
+  delete: (path) => sb.req('DELETE', path),
+
+  async upload(bucket, path, file) {
+    const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type },
+      body: file,
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
+  },
+
+  publicUrl: (bucket, path) => `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`,
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+const S = {
+  view: 'processos',
+  subview: 'info',
+  processos: [],
+  proc: null,         // processo ativo completo
+  pqAtivo: null,      // id do PQ em análise
+  novoPQ: {},
+  novoPG: {},
+  loading: false,
+};
+
+const MET_ITENS = [
+  'a) Minuciosos exames dos documentos questionados (item 5.1)',
+  'b) Minuciosos exames dos padrões de confronto (itens 5.2-A e 5.2-B)',
+  'c) Cotejos e transcotejos entre documentos questionados e respectivos paradigmas',
+  'd) Utilização de aparelhamento especializado e softwares adequados (Adendo 5)',
+  'e) Determinação de convergências e divergências (Item 6)',
+  'f) Coordenação dos dados técnicos apurados',
+  'g) Preparação das ilustrações necessárias',
+  'h) Elaboração do laudo pericial grafotécnico',
+  'i) Revisão do laudo',
+  'j) Apresentação do laudo ao juizado competente',
+];
+
+const EOG_N = ['Ritmo','Dinamismo','Velocidade','Habilidade','Espontaneidade','Ataques','Remates','Pressão e Progressão','Hábitos Gráficos','Momentos Gráficos','Comportamento de Base','Comportamento de Pauta','Inclinação Axial','Espaçamentos Gráficos','Tendência de Punho','Trajetórias','Calibres','Gladiolagem','Gramas','Proporcionalidade','Sobreposição de Peças','Microscopia','Separação','Cronologia','Vídeos','Imagem do Grafismo','Escavalamento','Cultura Gráfica','Maneirismos Gráficos','Afinamento','Grafogeometria','Traçados das Letras','Polimorfismo Gráfico','Caligrafia','Diversos'];
+const EOG_G = [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+const TIPOS_DOC = ['Cédula de Crédito Bancário','Proposta de Abertura de Limite de Crédito','Contrato de Empréstimo Consignado','Contrato de Cartão de Crédito','Procuração','Declaração','Escritura Pública','Cheque','Outro'];
+
+// ── UTILITÁRIOS ───────────────────────────────────────────────────────────
+function toast(msg, dur=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display='block';
+  setTimeout(() => t.style.display='none', dur);
+}
+
+function novoEOG() {
+  return EOG_N.map((_,i) => ({ criterio_id: i+1, resultado: 'SA', consideracoes: '', texto_juridico: '' }));
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+function render() {
+  document.getElementById('nav').innerHTML = buildNav();
+  const m = document.getElementById('main');
+  if (S.view === 'processos') m.innerHTML = rLista();
+  else if (S.view === 'proc') m.innerHTML = rProc();
+}
+
+function buildNav() {
+  const vs = [{v:'processos',l:'Processos'}];
+  if (S.proc) vs.push({v:'proc',l:'Processo ativo'});
+  return vs.map(({v,l}) => `<button class="nbtn ${S.view===v?'on':''}" onclick="sv('${v}')">${l}</button>`).join('');
+}
+
+// ── LISTA DE PROCESSOS ────────────────────────────────────────────────────
+function rLista() {
+  const ps = S.processos;
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+    <div><div class="section-title">Processos periciais</div><div class="section-sub">Carlos Eduardo Soares Menezes · CRA-RJ 20-60660</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-s" onclick="carregarProcessos()">↻ Atualizar</button>
+      <button class="btn btn-p" onclick="novoProcesso()">+ Novo processo</button>
+    </div>
+  </div>
+  ${ps.length===0?`<div class="card"><div class="card-bd" style="text-align:center;padding:3rem;color:var(--text3)">${S.loading?'Carregando…':'Nenhum processo. Clique em "+ Novo processo" para começar.'}</div></div>`:''}
+  ${ps.map(p => {
+    const total = (p.pqs||[]).length;
+    const done = (p.pqs||[]).filter(q=>q.status==='done').length;
+    const pct = total ? Math.round(done/total*100) : 0;
+    const stMap = {pendente:'bw',analise':'bb',concluido':'bk'};
+    return `<div class="card"><div class="card-bd">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-family:monospace;font-size:12px;color:var(--navy);font-weight:500">${p.numero}</span>
+            <span class="bdg ${stMap[p.status]||'bg'}">${p.status==='analise'?'Em análise':p.status==='concluido'?'Concluído':'Aguardando'}</span>
+          </div>
+          <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.autor} <span style="color:var(--text3)">vs</span> ${p.reu}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${p.comarca||'—'} · ${p.vara||'—'}</div>
+          <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div style="font-size:10px;color:var(--text3);margin-top:3px">${done}/${total} assinaturas analisadas</div>
+        </div>
+        <button class="btn btn-p" onclick="abrirProcesso('${p.id}')">Abrir →</button>
+      </div>
+    </div></div>`;
+  }).join('')}`;
+}
+
+// ── PROCESSO ATIVO ────────────────────────────────────────────────────────
+function rProc() {
+  const p = S.proc;
+  if (!p) return '';
+  const TABS = [
+    {id:'info',l:'1 · Dados'},
+    {id:'pqs',l:'2 · Documentos PQ'},
+    {id:'met',l:'3 · Metodologia'},
+    {id:'par',l:'5.2 · Paradigmas'},
+    {id:'anal',l:'6 · Análises'},
+    {id:'laudo',l:'Laudo'},
+  ];
+  const done = (p.pqs||[]).filter(q=>q.status==='done').length;
+  const total = (p.pqs||[]).length;
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+    <div>
+      <div class="section-title">${p.numero}</div>
+      <div class="section-sub">${p.autor} vs ${p.reu} · ${done}/${total} PQs analisados</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-g" onclick="sv('processos')">← Processos</button>
+      <button class="btn btn-p" onclick="exportarLaudo()">⬇ Exportar laudo</button>
+    </div>
+  </div>
+  <div class="tbar">${TABS.map(t=>`<div class="tab ${S.subview===t.id?'on':''}" onclick="stab('${t.id}')">${t.l}</div>`).join('')}</div>
+  <div id="tc">${rTab()}</div>`;
+}
+
+function rTab() {
+  const t = S.subview;
+  if (t==='info') return rInfo();
+  if (t==='pqs') return rPQs();
+  if (t==='met') return rMet();
+  if (t==='par') return rPar();
+  if (t==='anal') return rAnal();
+  if (t==='laudo') return rLaudo();
+  return '';
+}
+
+// ── TAB INFO ──────────────────────────────────────────────────────────────
+function rInfo() {
+  const p = S.proc;
+  return `
+  <div class="info">Estes campos alimentam automaticamente a Seção 1 (Apresentação e Endereçamento) e o cabeçalho do laudo.</div>
+  <div class="card">
+    <div class="card-hd"><h3>Dados do processo judicial</h3><button class="btn btn-p btn-sm" onclick="salvarInfo()">Salvar</button></div>
+    <div class="card-bd">
+      <div class="row r2" style="margin-bottom:10px">
+        <div><label class="lbl">Número do processo (CNJ)</label><input id="f-num" value="${p.numero||''}" placeholder="0000000-00.0000.0.00.0000"></div>
+        <div><label class="lbl">Status</label><select id="f-st">
+          <option ${p.status==='pendente'?'selected':''} value="pendente">Aguardando</option>
+          <option ${p.status==='analise'?'selected':''} value="analise">Em análise</option>
+          <option ${p.status==='concluido'?'selected':''} value="concluido">Concluído</option>
+        </select></div>
+      </div>
+      <div class="row r2" style="margin-bottom:10px">
+        <div><label class="lbl">Autor(a)</label><input id="f-aut" value="${p.autor||''}"></div>
+        <div><label class="lbl">Réu</label><input id="f-reu" value="${p.reu||''}"></div>
+      </div>
+      <div class="row r2" style="margin-bottom:10px">
+        <div><label class="lbl">Vara</label><input id="f-vara" value="${p.vara||''}" placeholder="ex: 1ª Vara Cível"></div>
+        <div><label class="lbl">Comarca</label><input id="f-com" value="${p.comarca||''}" placeholder="ex: Duque de Caxias - RJ"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><h3>Nomeação pericial</h3></div>
+    <div class="card-bd">
+      <div class="info">Alimenta o trecho "nomeado por este Juízo através do documento id. XXXX, de YY/YY/YYYY" na Seção 1 do laudo.</div>
+      <div class="row r2">
+        <div><label class="lbl">ID do documento de nomeação</label><input id="f-nid" value="${p.nomeacao_id||''}" placeholder="ex: 215046780"></div>
+        <div><label class="lbl">Data da nomeação</label><input id="f-ndt" value="${p.nomeacao_data||''}" placeholder="DD/MM/AAAA"></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── TAB PQs ───────────────────────────────────────────────────────────────
+function rPQs() {
+  const p = S.proc;
+  return `
+  <div class="info">Cada documento cadastrado aqui vira um PQ numerado no laudo, aparece na tabela do Item 2 e é inserido como Anexo na ordem de cadastro. O PDF enviado fica disponível para recorte de assinatura na análise.</div>
+  ${(p.pqs||[]).map((pq,i) => `
+  <div class="pq-item ${pq.status==='done'?'done':''}">
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div class="nb">${i+1}</div>
+      <div style="flex:1">
+        <div style="font-weight:500;color:var(--navy)">${pq.tipo||'Documento'} nº ${pq.numero||'—'}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">${pq.data_doc||'—'} · fls. ${pq.fls||'—'} · ID proc. ${pq.id_proc||'—'}</div>
+        <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap">
+          <span class="bdg ${pq.status==='done'?'bk':'bg'}">${pq.status==='done'?'✓ Analisado':'Pendente'}</span>
+          <span class="bdg ${pq.sig_path?'bb':'bg'}">${pq.sig_path?'✓ Assinatura':'Sem recorte'}</span>
+          <span class="bdg ${pq.pdf_path?'bk':'bg'}">${pq.pdf_path?'✓ PDF':'Sem PDF'}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <button class="btn btn-s btn-sm" onclick="stab('anal');S.pqAtivo='${pq.id}';render()">Analisar</button>
+        <button class="btn btn-d btn-sm" onclick="removerPQ('${pq.id}')">Remover</button>
+      </div>
+    </div>
+  </div>`).join('')}
+  <div class="card" style="border:1.5px dashed var(--gold)">
+    <div class="card-hd"><h3>+ Adicionar documento questionado</h3></div>
+    <div class="card-bd">
+      <div class="row r2" style="margin-bottom:10px">
+        <div><label class="lbl">Tipo do documento</label>
+          <select id="npq-tipo"><option value="">Selecione…</option>${TIPOS_DOC.map(t=>`<option>${t}</option>`).join('')}</select>
+        </div>
+        <div><label class="lbl">Número do contrato / documento</label><input id="npq-num" placeholder="ex: 582434573"></div>
+      </div>
+      <div class="row r3" style="margin-bottom:10px">
+        <div><label class="lbl">Data do documento</label><input id="npq-data" placeholder="DD/MM/AAAA"></div>
+        <div><label class="lbl">Folhas (fls.)</label><input id="npq-fls" placeholder="ex: 1 e 2"></div>
+        <div><label class="lbl">ID processual</label><input id="npq-idp" placeholder="ex: 23926099"></div>
+      </div>
+      <label class="upload-z">
+        <div style="font-size:22px;margin-bottom:4px">📄</div>
+        <div style="font-weight:500">Clique para selecionar o PDF do documento</div>
+        <div style="font-size:11px;margin-top:2px">Será armazenado e disponibilizado para recorte de assinatura na análise</div>
+        <input type="file" accept=".pdf,image/*" id="npq-file">
+      </label>
+      <div id="npq-file-status" style="font-size:11px;color:var(--text3);margin:6px 0"></div>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-p" onclick="adicionarPQ()">Adicionar documento</button></div>
+    </div>
+  </div>`;
+}
+
+// ── TAB METODOLOGIA ───────────────────────────────────────────────────────
+function rMet() {
+  const p = S.proc;
+  const sel = p.metodologia_items || [0,1,2,3,4,5,6,7,8,9];
+  return `
+  <div class="ok">O conteúdo marcado abaixo aparece na Seção 3 (Metodologia Geral) do laudo na ordem listada.</div>
+  <div class="card">
+    <div class="card-hd"><h3>Itens metodológicos</h3><button class="btn btn-p btn-sm" onclick="salvarMet()">Salvar</button></div>
+    <div class="card-bd">
+      ${MET_ITENS.map((it,i)=>`<div class="chk"><input type="checkbox" id="m${i}" ${sel.includes(i)?'checked':''}><label for="m${i}">${it}</label></div>`).join('')}
+      <div class="divider"></div>
+      <label class="lbl">Outros itens metodológicos (opcional)</label>
+      <textarea id="met-outros" rows="3" placeholder="Cada linha será inserida como um item sequencial">${p.metodologia_outros||''}</textarea>
+    </div>
+  </div>`;
+}
+
+// ── TAB PARADIGMAS ────────────────────────────────────────────────────────
+function rPar() {
+  const p = S.proc;
+  return `
+  <div class="info">PCE = padrões encontrados nos autos. PCA = padrões colhidos presencialmente. PDFs de PCA vão automaticamente para os Adendos do laudo.</div>
+  <div class="card">
+    <div class="card-hd"><h3>Paradigmas cadastrados</h3></div>
+    <div class="card-bd">
+      ${(p.paradigmas||[]).length===0?'<div style="color:var(--text3);text-align:center;padding:1rem">Nenhum paradigma cadastrado</div>':''}
+      ${(p.paradigmas||[]).map((pg,i) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;${i<(p.paradigmas||[]).length-1?'border-bottom:.5px solid var(--border)':''}">
+        <span class="bdg ${pg.tipo==='PCA'?'bb':'bk'}">${pg.tipo}</span>
+        <div style="flex:1"><div style="font-weight:500">${pg.descricao||'—'}</div><div style="font-size:11px;color:var(--text3)">${pg.data_assinatura||'—'} · ${pg.referencia||'—'}</div></div>
+        <span class="bdg ${pg.arquivo_path?'bk':'bg'}">${pg.arquivo_path?'✓ Arquivo':'Sem arquivo'}</span>
+        <button class="btn btn-d btn-sm" onclick="remParadigma('${pg.id}')">×</button>
+      </div>`).join('')}
+    </div>
+  </div>
+  <div class="card" style="border:1.5px dashed #bfdbfe">
+    <div class="card-hd"><h3>+ Adicionar paradigma</h3></div>
+    <div class="card-bd">
+      <div class="row r2" style="margin-bottom:10px">
+        <div><label class="lbl">Tipo</label>
+          <select id="npg-tipo">
+            <option value="PCE">PCE – Encontrado nos autos</option>
+            <option value="PCA">PCA – Colhido presencialmente</option>
+          </select>
+        </div>
+        <div><label class="lbl">Descrição</label><input id="npg-desc" placeholder="ex: RG da Autora"></div>
+      </div>
+      <div class="row r2" style="margin-bottom:10px">
+        <div><label class="lbl">Data da assinatura</label><input id="npg-data" placeholder="DD/MM/AAAA"></div>
+        <div><label class="lbl">Referência processual</label><input id="npg-ref" placeholder="ex: id. 20552230 ou Adendo 1"></div>
+      </div>
+      <label class="upload-z">
+        <div style="font-size:22px;margin-bottom:4px">📎</div>
+        <div style="font-weight:500">Clique para selecionar imagem ou PDF</div>
+        <div style="font-size:11px;margin-top:2px">Para PCA: será inserido nos Adendos do laudo automaticamente</div>
+        <input type="file" accept=".pdf,image/*" id="npg-file">
+      </label>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-p" onclick="adicionarParadigma()">Adicionar paradigma</button></div>
+    </div>
+  </div>`;
+}
+
+// ── TAB ANÁLISE ───────────────────────────────────────────────────────────
+function rAnal() {
+  const p = S.proc;
+  const pqAtivo = S.pqAtivo ? (p.pqs||[]).find(q=>q.id===S.pqAtivo) : null;
+
+  if (!pqAtivo) {
+    return `
+    <div class="info">Selecione um documento para iniciar ou continuar a análise individual.</div>
+    ${(p.pqs||[]).map((pq,i)=>`
+    <div class="pq-item ${pq.status==='done'?'done':''}">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="nb">${i+1}</div>
+        <div style="flex:1">
+          <div style="font-weight:500">PQ${i+1} – ${pq.tipo||'Documento'} nº ${pq.numero||'—'}</div>
+          <div style="font-size:11px;color:var(--text2)">${pq.data_doc||'—'} · fls. ${pq.fls||'—'} · ID ${pq.id_proc||'—'}</div>
+          <div style="display:flex;gap:5px;margin-top:5px">
+            <span class="bdg ${pq.sig_path?'bk':'bg'}">${pq.sig_path?'✓ Assinatura':'Sem assinatura'}</span>
+            <span class="bdg ${(pq.eog&&pq.eog.some(e=>(e.resultado||e.res)!=='SA'))?'bk':'bg'}">EOG ${(pq.eog&&pq.eog.some(e=>(e.resultado||e.res)!=='SA'))?'em andamento':'pendente'}</span>
+            <span class="bdg ${pq.status==='done'?'bk':'bw'}">${pq.status==='done'?'✓ Concluído':'Em andamento'}</span>
+          </div>
+        </div>
+        <button class="btn btn-p" onclick="S.pqAtivo='${pq.id}';render()">Analisar PQ${i+1} →</button>
+      </div>
+    </div>`).join('')}`;
+  }
+
+  const idx = (p.pqs||[]).findIndex(q=>q.id===pqAtivo.id);
+  if (!pqAtivo.eog || pqAtivo.eog.length===0) pqAtivo.eog = novoEOG();
+  const eog = pqAtivo.eog;
+  const cnt = {C:0,D:0,SD:0,SA:0};
+  eog.forEach(e => { const r=e.resultado||e.res||'SA'; cnt[r]=(cnt[r]||0)+1; });
+  const conc = cnt.D>cnt.C?'DIVERGÊNCIA':cnt.C>cnt.D?'CONVERGÊNCIA':'INCONCLUSIVO';
+  const cCor = conc==='DIVERGÊNCIA'?'#991b1b':conc==='CONVERGÊNCIA'?'#14532d':'#7c5c00';
+
+  let grp=-1;
+  const linhas = eog.map((e,i)=>{
+    let hdr='';
+    const g=EOG_G[i];
+    if(g!==grp){grp=g;hdr=`<tr><td colspan="3" style="background:#f0f0ec;padding:5px 10px;font-size:11px;font-weight:500;color:var(--text2)">${g===0?'SUBJETIVOS':'OBJETIVOS'}</td></tr>`;}
+    const r=e.resultado||e.res||'SA';
+    const opts=[{k:'C',l:'Conv.',co:'#14532d',bg:'#dcfce7'},{k:'D',l:'Div.',co:'#991b1b',bg:'#fee2e2'},{k:'SD',l:'S/Def.',co:'#7c5c00',bg:'#fef3cd'},{k:'SA',l:'S/Anál.',co:'#4b5563',bg:'#f3f4f6'}];
+    const btns=opts.map(o=>`<button onclick="setRes('${pqAtivo.id}',${e.criterio_id},'${o.k}')" style="padding:2px 6px;border-radius:4px;font-size:11px;cursor:pointer;font-weight:500;border:1.5px solid ${r===o.k?o.co:'transparent'};background:${r===o.k?o.bg:'transparent'};color:${r===o.k?o.co:'var(--text3)'}">${o.l}</button>`).join('');
+    return `${hdr}<tr style="border-bottom:.5px solid var(--border)"><td style="padding:6px 10px;font-size:11px;color:var(--text3);width:24px">${e.criterio_id}</td><td style="padding:6px 10px;font-size:12px">${EOG_N[i]}</td><td style="padding:6px 6px;white-space:nowrap">${btns}</td></tr>`;
+  }).join('');
+
+  return `
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+    <button class="btn btn-s btn-sm" onclick="S.pqAtivo=null;render()">← Voltar</button>
+    <div style="flex:1"><div style="font-weight:500;color:var(--navy)">Análise: PQ${idx+1} – ${pqAtivo.tipo||'Documento'} nº ${pqAtivo.numero||'—'}</div><div style="font-size:11px;color:var(--text3)">${pqAtivo.data_doc||'—'} · fls. ${pqAtivo.fls||'—'} · ID ${pqAtivo.id_proc||'—'}</div></div>
+    <button class="btn btn-p btn-sm" onclick="salvarAnalise('${pqAtivo.id}')">Salvar análise</button>
+    <button class="btn btn-g btn-sm" onclick="concluirPQ('${pqAtivo.id}')">✓ Marcar concluído</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div class="card">
+        <div class="card-hd"><h3>Assinatura PQ${idx+1}</h3>
+          <label class="btn btn-s btn-sm" style="cursor:pointer">Carregar imagem<input type="file" accept="image/*" style="display:none" onchange="uploadSig('${pqAtivo.id}',event)"></label>
+        </div>
+        <div class="card-bd">
+          ${pqAtivo.sig_path
+            ? `<img src="${pqAtivo.sig_path}" style="max-width:100%;max-height:150px;object-fit:contain;border-radius:6px;border:.5px solid var(--border)">`
+            : `<div style="border:.5px solid var(--border);border-radius:6px;min-height:80px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:12px">Carregue a imagem recortada da assinatura</div>`}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><h3>Considerações do perito</h3></div>
+        <div class="card-bd">
+          <textarea id="cons-${pqAtivo.id}" rows="6" placeholder="Descreva suas observações específicas sobre este documento. Será incluído na Seção 6 do laudo, antes do quadro EOG.">${pqAtivo.consideracoes||''}</textarea>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><h3>Quadro EOG – PQ${idx+1}</h3></div>
+      <div class="card-bd" style="padding:0">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px">
+          <div style="background:#fee2e2;border-radius:6px;padding:8px"><div style="font-size:10px;color:#991b1b">Divergentes</div><div style="font-size:20px;font-weight:500;color:#991b1b">${cnt.D}</div></div>
+          <div style="background:#dcfce7;border-radius:6px;padding:8px"><div style="font-size:10px;color:#14532d">Convergentes</div><div style="font-size:20px;font-weight:500;color:#14532d">${cnt.C}</div></div>
+          <div style="background:#fef3cd;border-radius:6px;padding:8px"><div style="font-size:10px;color:#7c5c00">S/ def.</div><div style="font-size:20px;font-weight:500;color:#7c5c00">${cnt.SD||0}</div></div>
+          <div style="background:${conc==='DIVERGÊNCIA'?'#fee2e2':conc==='CONVERGÊNCIA'?'#dcfce7':'#fef3cd'};border-radius:6px;padding:8px"><div style="font-size:10px;color:${cCor}">Resultado</div><div style="font-size:11px;font-weight:500;color:${cCor}">${conc}</div></div>
+        </div>
+        <div style="max-height:360px;overflow-y:auto">
+          <table style="width:100%;border-collapse:collapse">
+            <thead><tr style="background:#f5f4f0;position:sticky;top:0">
+              <th style="padding:6px 10px;text-align:left;font-size:10px;color:var(--text3);width:24px">#</th>
+              <th style="padding:6px 10px;text-align:left;font-size:10px;color:var(--text3)">Critério</th>
+              <th style="padding:6px 10px;text-align:left;font-size:10px;color:var(--text3)">Resultado</th>
+            </tr></thead>
+            <tbody>${linhas}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── TAB LAUDO ─────────────────────────────────────────────────────────────
+function rLaudo() {
+  const p = S.proc;
+  const done = (p.pqs||[]).filter(q=>q.status==='done').length;
+  const total = (p.pqs||[]).length;
+  const checks = [
+    {n:'Seção 1 – Apresentação',ok:!!(p.vara&&p.comarca&&p.nomeacao_id),obs:!p.nomeacao_id?'ID de nomeação ausente':''},
+    {n:'Seção 2 – Objetivos / Documentos PQ',ok:(p.pqs||[]).length>0,obs:(p.pqs||[]).length===0?'Nenhum PQ cadastrado':''},
+    {n:'Seção 3 – Metodologia',ok:(p.metodologia_items||[]).length>0,obs:''},
+    {n:'Seção 4 – Introdução',ok:true,obs:'Texto fixo'},
+    {n:'Seção 5.1 – Documentos Questionados',ok:(p.pqs||[]).length>0,obs:''},
+    {n:'Seção 5.2 – Paradigmas',ok:(p.paradigmas||[]).length>0,obs:(p.paradigmas||[]).length===0?'Nenhum paradigma cadastrado':''},
+    {n:'Seção 6 – Exames Periciais',ok:done>0,obs:done===0?'Nenhum PQ analisado':''},
+    {n:'Seção 7 – Conclusão',ok:done>0,obs:''},
+    {n:'Seção 8 – Quesitos',ok:true,obs:'Edição manual após exportação'},
+    {n:'Seção 9 – Encerramento',ok:true,obs:'Texto padrão'},
+    {n:'Adendos (PDFs de coleta)',ok:(p.paradigmas||[]).some(pg=>pg.tipo==='PCA'),obs:''},
+    {n:'Anexos (documentos PQ)',ok:(p.pqs||[]).length>0,obs:''},
+  ];
+  return `
+  <div class="${done<total?'warn':'ok'}">${done<total?`${done}/${total} PQs analisados. O laudo parcial já pode ser exportado.`:`Todos os ${total} PQs analisados. Laudo pronto.`}</div>
+  <div class="card">
+    <div class="card-hd"><h3>Checklist de integridade</h3></div>
+    <div class="card-bd">
+      ${checks.map(c=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border)">
+        <span style="font-size:13px">${c.ok?'✅':'⚠️'}</span>
+        <span style="flex:1;font-size:13px;${c.ok?'':'color:var(--text3)'}">${c.n}</span>
+        ${c.obs?`<span style="font-size:11px;color:var(--text3)">${c.obs}</span>`:''}
+      </div>`).join('')}
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:1rem">
+    <button class="btn btn-p" onclick="exportarLaudo()">⬇ Exportar laudo (.docx)</button>
+  </div>`;
+}
+
+// ── AÇÕES: NAVEGAÇÃO ──────────────────────────────────────────────────────
+function sv(v) { S.view=v; render(); }
+function stab(t) { S.subview=t; S.pqAtivo=null; render(); }
+
+// ── AÇÕES: CARREGAMENTO ───────────────────────────────────────────────────
+async function carregarProcessos() {
+  S.loading=true; render();
+  try {
+    const ps = await sb.get('bee3d_peritare_processos?order=created_at.desc');
+    for (const p of ps) {
+      p.pqs = await sb.get(`bee3d_peritare_pqs?processo_id=eq.${p.id}&order=ordem.asc`);
+      p.paradigmas = await sb.get(`bee3d_peritare_paradigmas?processo_id=eq.${p.id}`);
+      p.metodologia_items = p.metodologia_items || [0,1,2,3,4,5,6,7,8,9];
+    }
+    S.processos = ps;
+  } catch(e) {
+    // fallback: sem Supabase configurado, usa dados de exemplo
+    S.processos = [];
+  }
+  S.loading=false; render();
+}
+
+async function abrirProcesso(id) {
+  const p = S.processos.find(x=>x.id===id);
+  if (!p) return;
+  // carrega EOG para cada PQ
+  for (const pq of (p.pqs||[])) {
+    try { pq.eog = await sb.get(`bee3d_peritare_eog?pq_id=eq.${pq.id}`); }
+    catch(e) { pq.eog = novoEOG(); }
+  }
+  S.proc = p; S.view='proc'; S.subview='info'; render();
+}
+
+// ── AÇÕES: PROCESSO ───────────────────────────────────────────────────────
+async function novoProcesso() {
+  const p = {
+    numero:'', autor:'', reu:'', comarca:'', vara:'',
+    nomeacao_id:'', nomeacao_data:'', status:'pendente',
+    metodologia_items:[0,1,2,3,4,5,6,7,8,9], metodologia_outros:'',
+    pqs:[], paradigmas:[],
+  };
+  try {
+    const [criado] = await sb.post('bee3d_peritare_processos', p);
+    p.id = criado.id;
+    S.processos.unshift(p);
+  } catch(e) {
+    p.id = Date.now().toString();
+    S.processos.unshift(p);
+  }
+  S.proc = p; S.view='proc'; S.subview='info'; render();
+}
+
+async function salvarInfo() {
+  const p = S.proc;
+  const body = {
+    numero: document.getElementById('f-num')?.value || p.numero,
+    autor: document.getElementById('f-aut')?.value || p.autor,
+    reu: document.getElementById('f-reu')?.value || p.reu,
+    vara: document.getElementById('f-vara')?.value || p.vara,
+    comarca: document.getElementById('f-com')?.value || p.comarca,
+    status: document.getElementById('f-st')?.value || p.status,
+    nomeacao_id: document.getElementById('f-nid')?.value || p.nomeacao_id,
+    nomeacao_data: document.getElementById('f-ndt')?.value || p.nomeacao_data,
+  };
+  Object.assign(p, body);
+  try { await sb.patch(`bee3d_peritare_processos?id=eq.${p.id}`, body); toast('Dados salvos ✓'); }
+  catch(e) { toast('Salvo localmente (Supabase não configurado)'); }
+  render();
+}
+
+// ── AÇÕES: PQ ─────────────────────────────────────────────────────────────
+async function adicionarPQ() {
+  const tipo = document.getElementById('npq-tipo')?.value;
+  const numero = document.getElementById('npq-num')?.value;
+  if (!tipo||!numero) { alert('Informe o tipo e o número do documento.'); return; }
+  const pq = {
+    processo_id: S.proc.id,
+    ordem: (S.proc.pqs||[]).length + 1,
+    tipo, numero,
+    data_doc: document.getElementById('npq-data')?.value||'',
+    fls: document.getElementById('npq-fls')?.value||'',
+    id_proc: document.getElementById('npq-idp')?.value||'',
+    status: 'pending',
+  };
+  const file = document.getElementById('npq-file')?.files?.[0];
+  try {
+    const [criado] = await sb.post('bee3d_peritare_pqs', pq);
+    pq.id = criado.id;
+    if (file) {
+      const path = `processos/${S.proc.id}/pqs/${criado.id}/${file.name}`;
+      pq.pdf_path = await sb.upload('peritare-docs', path, file);
+      await sb.patch(`bee3d_peritare_pqs?id=eq.${criado.id}`, { pdf_path: pq.pdf_path });
+    }
+  } catch(e) { pq.id = Date.now().toString(); }
+  pq.eog = novoEOG();
+  S.proc.pqs = [...(S.proc.pqs||[]), pq];
+  toast('Documento adicionado ✓'); render();
+}
+
+async function removerPQ(id) {
+  if (!confirm('Remover este documento e todas as suas análises?')) return;
+  try { await sb.delete(`bee3d_peritare_pqs?id=eq.${id}`); } catch(e){}
+  S.proc.pqs = (S.proc.pqs||[]).filter(q=>q.id!==id);
+  render();
+}
+
+// ── AÇÕES: METODOLOGIA ────────────────────────────────────────────────────
+async function salvarMet() {
+  const items = MET_ITENS.map((_,i) => document.getElementById(`m${i}`)?.checked ? i : -1).filter(x=>x>=0);
+  const outros = document.getElementById('met-outros')?.value||'';
+  S.proc.metodologia_items = items; S.proc.metodologia_outros = outros;
+  try {
+    await sb.patch(`bee3d_peritare_processos?id=eq.${S.proc.id}`, { metodologia_items: items, metodologia_outros: outros });
+    toast('Metodologia salva ✓');
+  } catch(e) { toast('Salvo localmente'); }
+}
+
+// ── AÇÕES: PARADIGMAS ─────────────────────────────────────────────────────
+async function adicionarParadigma() {
+  const desc = document.getElementById('npg-desc')?.value;
+  if (!desc) { alert('Informe a descrição do paradigma.'); return; }
+  const pg = {
+    processo_id: S.proc.id,
+    tipo: document.getElementById('npg-tipo')?.value||'PCE',
+    descricao: desc,
+    data_assinatura: document.getElementById('npg-data')?.value||'',
+    referencia: document.getElementById('npg-ref')?.value||'',
+  };
+  const file = document.getElementById('npg-file')?.files?.[0];
+  try {
+    const [criado] = await sb.post('bee3d_peritare_paradigmas', pg);
+    pg.id = criado.id;
+    if (file) {
+      const path = `processos/${S.proc.id}/paradigmas/${criado.id}/${file.name}`;
+      pg.arquivo_path = await sb.upload('peritare-docs', path, file);
+      await sb.patch(`bee3d_peritare_paradigmas?id=eq.${criado.id}`, { arquivo_path: pg.arquivo_path });
+    }
+  } catch(e) { pg.id = Date.now().toString(); }
+  S.proc.paradigmas = [...(S.proc.paradigmas||[]), pg];
+  toast('Paradigma adicionado ✓'); render();
+}
+
+async function remParadigma(id) {
+  try { await sb.delete(`bee3d_peritare_paradigmas?id=eq.${id}`); } catch(e){}
+  S.proc.paradigmas = (S.proc.paradigmas||[]).filter(pg=>pg.id!==id);
+  render();
+}
+
+// ── AÇÕES: ANÁLISE ────────────────────────────────────────────────────────
+function setRes(pqId, criterioId, res) {
+  const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
+  if (!pq) return;
+  if (!pq.eog || pq.eog.length===0) pq.eog = novoEOG();
+  const e = pq.eog.find(x=>x.criterio_id===criterioId);
+  if (e) { e.resultado = res; e.res = res; }
+  render();
+}
+
+async function uploadSig(pqId, ev) {
+  const file = ev.target.files[0]; if (!file) return;
+  const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
+  if (!pq) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    pq.sig_path = e.target.result; // data URL temporária
+    try {
+      const path = `processos/${S.proc.id}/pqs/${pqId}/sig_${file.name}`;
+      const url = await sb.upload('peritare-docs', path, file);
+      pq.sig_path = url;
+      await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`, { sig_path: url });
+    } catch(err) { /* mantém data URL */ }
+    toast('Assinatura carregada ✓'); render();
+  };
+  reader.readAsDataURL(file);
+}
+
+async function salvarAnalise(pqId) {
+  const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
+  if (!pq) return;
+  const cons = document.getElementById(`cons-${pqId}`)?.value||'';
+  pq.consideracoes = cons;
+  try {
+    await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`, { consideracoes: cons });
+    for (const e of (pq.eog||[])) {
+      const res = e.resultado||e.res||'SA';
+      try {
+        // upsert: tenta inserir; se já existe, atualiza
+        await sb.post('bee3d_peritare_eog', { pq_id: pqId, criterio_id: e.criterio_id, resultado: res, consideracoes: e.consideracoes||'' });
+      } catch(_) {
+        await sb.patch(`bee3d_peritare_eog?pq_id=eq.${pqId}&criterio_id=eq.${e.criterio_id}`, { resultado: res });
+      }
+    }
+    toast('Análise salva ✓');
+  } catch(e) { toast('Salvo localmente'); }
+}
+
+async function concluirPQ(pqId) {
+  await salvarAnalise(pqId);
+  const pq = (S.proc.pqs||[]).find(q=>q.id===pqId);
+  if (pq) {
+    pq.status = 'done';
+    try { await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`, { status: 'done' }); } catch(e){}
+  }
+  S.pqAtivo = null; toast('PQ marcado como concluído ✓'); render();
+}
+
+// ── EXPORTAR LAUDO ────────────────────────────────────────────────────────
+async function exportarLaudo() {
+  const p = S.proc;
+  toast('Gerando laudo…', 8000);
+  const payload = {
+    perito: {
+      nome: 'CARLOS EDUARDO SOARES MENEZES',
+      registro: 'Adm. Perito – CRA/RJ: 20-60660',
+      cpf: '086.311.227-77',
+      titulo: 'Perito Grafotécnico Judicial',
+    },
+    processo: p,
+    pqs: (p.pqs||[]).map(pq => ({ ...pq, eog: pq.eog||[] })),
+    paradigmas: p.paradigmas||[],
+    metodologia: { items: p.metodologia_items||[], outros: p.metodologia_outros||'' },
+    doc5_extra: p.doc5_extra||'',
+    quesitos_autor: p.quesitos_autor||'',
+    data_laudo: new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' }),
+  };
+  try {
+    const r = await fetch(`${NETLIFY_BASE}/.netlify/functions/gerar-laudo`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload),
+    });
+    if (!r.ok) throw new Error(await r.text());
+    const { docx, filename } = await r.json();
+    const bytes = Uint8Array.from(atob(docx), c=>c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = filename || 'laudo.docx'; a.click();
+    toast('Laudo exportado ✓');
+  } catch(e) {
+    toast('Erro ao gerar laudo: '+e.message, 5000);
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+carregarProcessos();
+</script>
+</body>
+</html>
