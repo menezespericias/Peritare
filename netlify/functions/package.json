@@ -1,8 +1,0 @@
-{
-  "name": "peritare-netlify",
-  "version": "1.0.0",
-  "description": "Peritare – Plataforma de Perícia Grafotécnica",
-  "dependencies": {
-    "docx": "^8.5.0"
-  }
-}
