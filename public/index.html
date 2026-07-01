@@ -233,15 +233,19 @@ html,body{height:100%;overflow:hidden}
   display:flex;align-items:center;justify-content:space-between;
 }
 .pq-staging-body{
-  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  display:grid;grid-template-columns:1fr 380px;gap:0;
 }
 .pq-staging-pdf{
   border-right:.5px solid var(--border);
   display:flex;flex-direction:column;
-  min-height:400px;
+  height:520px;
 }
 .pq-staging-form{
-  padding:14px;overflow-y:auto;
+  padding:16px;overflow-y:auto;max-height:520px;
+}
+@media (max-width:860px){
+  .pq-staging-body{grid-template-columns:1fr;}
+  .pq-staging-pdf{height:320px;border-right:none;border-bottom:.5px solid var(--border);}
 }
 
 </style>
@@ -1653,19 +1657,43 @@ function mimeIco(mime){if(!mime)return{cls:'other',ic:'📄'};if(mime.includes('
 S.arquivos=[];
 
 async function uploadArquivos(ev){
-  const files=Array.from(ev.target?.files||ev);
+  const files=Array.from(ev.target?.files||ev.files||[]);
   if(!files.length||!S.proc)return;
   toast('Enviando '+files.length+' arquivo(s)…',10000);
+  const novos=[];
   for(const file of files){
     const path='processos/'+S.proc.id+'/arquivos/'+Date.now()+'_'+file.name;
     let url='';
-    try{url=await sb.upload('peritare-docs',path,file);}catch(e){url=URL.createObjectURL(file);}
-    const arq={processo_id:S.proc.id,nome:file.name,tipo_mime:file.type||'application/octet-stream',tamanho:file.size,storage_path:path||'local/'+file.name,url_publica:url,classificacao:'outro',descricao:''};
-    try{const[c]=await sb.post('bee3d_peritare_arquivos',arq);arq.id=c.id;}catch(e){arq.id=Date.now().toString();}
+    try{url=await sb.upload('peritare-docs',path,file);}
+    catch(e){url=URL.createObjectURL(file);}
+    const arq={
+      processo_id:S.proc.id,
+      nome:file.name,
+      tipo_mime:file.type||'application/octet-stream',
+      tamanho:file.size,
+      storage_path:path||'local/'+file.name,
+      url_publica:url,
+      classificacao:'outro',
+      descricao:''
+    };
+    try{const[c]=await sb.post('bee3d_peritare_arquivos',arq);arq.id=c.id;}
+    catch(e){arq.id='local_'+Date.now()+'_'+Math.random().toString(36).slice(2);}
     S.arquivos.push(arq);
+    novos.push(arq);
   }
-  toast(files.length+' arquivo(s) enviado(s) ✓');render();
+  toast(files.length+' arquivo(s) enviado(s). Classifique abaixo ✓');
+  render();
+  // Aguardar render e rolar para os novos arquivos
+  setTimeout(()=>{
+    const last=novos[novos.length-1];
+    if(last){
+      const safeid=last.id.replace(/[^a-zA-Z0-9_-]/g,'_');
+      const el=document.getElementById('fitem-'+safeid);
+      if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  },150);
 }
+
 
 async function reclassificarArquivo(el){
   const id=el.getAttribute('data-id'), novaClasse=el.value;
@@ -1686,25 +1714,30 @@ async function remArquivo(id){
 
 function fileItemHtml(a){
   const{cls,ic}=mimeIco(a.tipo_mime);
-  const id=a.id, url=a.url_publica||'', mime=a.tipo_mime||'';
+  const safeid=a.id.replace(/[^a-zA-Z0-9_-]/g,'_');
   const nome=a.nome||'';
   const nomeSafe=nome.replace(/"/g,'&quot;');
-  const opts=CLASS_OPTS.map(function(o){return '<option value="'+o.v+'" '+(a.classificacao===o.v?'selected':'')+'>'+ o.l+'</option>';}).join('');
-  return '<div class="file-item">'+
+  const opts=CLASS_OPTS.map(function(o){
+    return '<option value="'+o.v+'" '+(a.classificacao===o.v?'selected':'')+'>'+o.l+'</option>';
+  }).join('');
+  return '<div class="file-item" id="fitem-'+safeid+'">'+
     '<div class="file-ico '+cls+'">'+ic+'</div>'+
-    '<div style="flex:1;min-width:0"><div style="font-size:var(--fs);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+nomeSafe+'</div>'+
-    '<div style="font-size:calc(var(--fs-sm) - 1px);color:var(--text3)">'+fmtSize(a.tamanho)+'</div></div>'+
-    '<select class="file-class" onchange="classificarEAbrir('+JSON.stringify(id)+',this.value,this)" data-id="'+id+'">'+opts+'</select>'+
-    '<button class="file-view-btn" data-vurl="'+url+'" data-nome="'+nomeSafe+'" data-mime="'+mime+'" onclick="abrirViewerBtn(this)">👁 Ver</button>'+
-    '<button class="btn bd bsm" onclick="remArquivo('+JSON.stringify(id)+')">×</button>'+
+    '<div style="flex:1;min-width:0">'+
+      '<div style="font-size:var(--fs);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+nomeSafe+'</div>'+
+      '<div style="font-size:calc(var(--fs-sm) - 1px);color:var(--text3)">'+fmtSize(a.tamanho)+'</div>'+
+    '</div>'+
+    '<select class="file-class" data-id="'+safeid+'" data-origid="'+a.id+'" onchange="onFileClassChange(this)">'+opts+'</select>'+
+    '<button class="file-view-btn" data-vurl="'+(a.url_publica||'')+'" data-nome="'+nomeSafe+'" data-mime="'+(a.tipo_mime||'')+'" onclick="abrirViewerBtn(this)">👁 Ver</button>'+
+    '<button class="btn bd bsm" onclick="remArquivo('+JSON.stringify(a.id)+')">×</button>'+
   '</div>';
 }
+
 
 
 // drag & drop global
 document.addEventListener('dragover',e=>{e.preventDefault();const dz=document.getElementById('drop-zone');if(dz)dz.classList.add('drag-over');});
 document.addEventListener('dragleave',e=>{if(!e.relatedTarget){const dz=document.getElementById('drop-zone');if(dz)dz.classList.remove('drag-over');}});
-document.addEventListener('drop',e=>{e.preventDefault();const dz=document.getElementById('drop-zone');if(dz)dz.classList.remove('drag-over');if(e.dataTransfer.files.length&&S.proc)uploadArquivos({files:e.dataTransfer.files});});
+document.addEventListener('drop',e=>{e.preventDefault();const dz=document.getElementById('drop-zone');if(dz)dz.classList.remove('drag-over');if(e.dataTransfer.files.length&&S.proc)uploadArquivos({target:{files:e.dataTransfer.files}});});
 
 
 
@@ -1899,42 +1932,52 @@ fecharViewer=function(){
 S._stagingArquivos = []; // {arq, pdfDoc, page, zoom, formData}
 
 async function classificarEAbrir(arqId, novaClasse, el){
-  // atualizar classificação
   const arq = S.arquivos.find(a=>a.id===arqId);
   if(!arq) return;
   arq.classificacao = novaClasse;
-  try{ await sb.patch(`bee3d_peritare_arquivos?id=eq.${arqId}`, {classificacao: novaClasse}); }catch(e){}
+  try{ await sb.patch('bee3d_peritare_arquivos?id=eq.'+arqId, {classificacao: novaClasse}); }catch(e){}
 
-  // Se classificado como PQ, abrir staging inline
   if(novaClasse === 'pq'){
-    // Verificar se já está no staging
-    if(!S._stagingArquivos.find(s=>s.arq.id===arqId)){
-      const staging = {
-        arq,
-        pdfDoc: null, page: 1, total: 1, zoom: 1.0,
-        formData: { tipo:'', numero:'', data_doc:'', fls:'', id_proc:'' }
-      };
-      // Carregar PDF se for pdf
-      if(arq.tipo_mime && arq.tipo_mime.includes('pdf') && arq.url_publica){
-        try{
-          staging.pdfDoc = await pdfjsLib.getDocument(arq.url_publica).promise;
-          staging.total = staging.pdfDoc.numPages;
-        }catch(e){ console.warn('PDF staging:', e); }
-      }
-      S._stagingArquivos.push(staging);
+    // Fechar viewer lateral se estiver aberto
+    fecharViewer();
+
+    // Não duplicar no staging
+    if(S._stagingArquivos.find(s=>s.arq.id===arqId)) {
+      render();
+      return;
     }
+
+    const staging = {
+      arq,
+      pdfDoc: null, page: 1, total: 1, zoom: 1.2,
+      formData: { tipo:'', numero:'', data_doc:'', fls:'', id_proc:'' }
+    };
+
+    // Carregar PDF em background
+    if(arq.tipo_mime && arq.tipo_mime.includes('pdf') && arq.url_publica){
+      try{
+        staging.pdfDoc = await pdfjsLib.getDocument(arq.url_publica).promise;
+        staging.total = staging.pdfDoc.numPages;
+      }catch(e){ console.warn('Staging PDF load:', e.message); }
+    }
+
+    S._stagingArquivos.push(staging);
     render();
-    setTimeout(()=>{
-      const el2=document.getElementById('staging-'+arqId);
-      if(el2) el2.scrollIntoView({behavior:'smooth',block:'start'});
-      renderStagingCanvas(arqId);
-    }, 100);
+
+    // Scroll e render do canvas
+    setTimeout(async ()=>{
+      const card = document.getElementById('staging-'+arqId);
+      if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+      await renderStagingCanvas(arqId);
+    }, 120);
+
   } else {
     // Remover do staging se estava lá
     S._stagingArquivos = S._stagingArquivos.filter(s=>s.arq.id!==arqId);
     render();
   }
 }
+
 
 async function renderStagingCanvas(arqId){
   const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
@@ -2100,6 +2143,13 @@ function stagingCardHtml(st){
       </div>
     </div>
   </div>`;
+}
+
+
+function onFileClassChange(el){
+  const origid = el.getAttribute('data-origid') || el.getAttribute('data-id');
+  const val = el.value;
+  classificarEAbrir(origid, val, el);
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────
