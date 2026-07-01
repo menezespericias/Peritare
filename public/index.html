@@ -210,6 +210,40 @@ html,body{height:100%;overflow:hidden}
   flex:1;
 }
 
+
+/* ── VISUALIZADOR INLINE ─────────────────────────────────────── */
+.inline-viewer{
+  border:.5px solid var(--border);border-radius:var(--r);
+  overflow:hidden;background:#888;position:relative;
+  min-height:300px;
+}
+.inline-viewer canvas{display:block;max-width:100%}
+.inline-viewer img{display:block;max-width:100%;margin:0 auto}
+.inline-viewer-nav{
+  display:flex;align-items:center;gap:8px;padding:6px 10px;
+  background:var(--bg);border-bottom:.5px solid var(--border);
+  flex-wrap:wrap;
+}
+.pq-staging-card{
+  border:2px solid var(--gold);border-radius:10px;
+  overflow:hidden;margin-bottom:1rem;background:var(--card);
+}
+.pq-staging-hd{
+  padding:9px 13px;background:#fffbeb;border-bottom:.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pq-staging-body{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+}
+.pq-staging-pdf{
+  border-right:.5px solid var(--border);
+  display:flex;flex-direction:column;
+  min-height:400px;
+}
+.pq-staging-form{
+  padding:14px;overflow-y:auto;
+}
+
 </style>
 </head>
 <body>
@@ -572,8 +606,10 @@ function rInfo(){
       </div></div>
     </div>
   </div>
+  <!-- Staging cards: arquivos PQ aguardando preenchimento -->
+  ${(S._stagingArquivos||[]).map(st=>stagingCardHtml(st)).join('')}
   <div class="card">
-    <div class="chd"><h3>📂 Arquivos do processo (${arqs.length})</h3><span style="font-size:var(--fs-sm);color:var(--text3)">👁 Ver · Classifique para vincular às abas</span></div>
+    <div class="chd"><h3>📂 Arquivos do processo (${arqs.length})</h3><span style="font-size:var(--fs-sm);color:var(--text3)">👁 Ver · Classifique como PQ para preencher dados inline</span></div>
     ${arqs.length===0?'<div style="text-align:center;padding:2rem;color:var(--text3);font-size:var(--fs-sm)">Nenhum arquivo enviado. Use o upload acima.</div>':'<div>'+
       (pqArqs.length?'<div style="padding:6px 13px;background:var(--bg);border-bottom:.5px solid var(--border);font-size:var(--fs-sm);font-weight:500;color:var(--text2)">Documentos Questionados (PQ) — '+pqArqs.length+'</div>'+pqArqs.map(fileItemHtml).join(''):'')+
       (pgArqs.length?'<div style="padding:6px 13px;background:var(--bg);border-bottom:.5px solid var(--border);font-size:var(--fs-sm);font-weight:500;color:var(--text2)">Paradigmas (PCE/PCA) — '+pgArqs.length+'</div>'+pgArqs.map(fileItemHtml).join(''):'')+
@@ -1377,7 +1413,7 @@ async function abrirProcesso(id){
     if(!pq.eog||pq.eog.length===0)pq.eog=novoEOG();
   }
   await carregarFeed(p.id);
-  S.proc=p;S.view='proc';S.sub='info';render();
+  S.proc=p;S.view='proc';S.sub='info';S._stagingArquivos=[];render();
 }
 
 async function novoProcesso(){
@@ -1394,7 +1430,7 @@ async function novoProcesso(){
     p.id='local_'+Date.now();
     toast('Erro ao criar: '+( e.message||'verifique console'));
   }
-  S.processos.unshift(p);S.proc=p;S.view='proc';S.sub='info';S.feed=[];S.arquivos=[];render();
+  S.processos.unshift(p);S.proc=p;S.view='proc';S.sub='info';S.feed=[];S.arquivos=[];S._stagingArquivos=[];render();
 }
 
 
@@ -1658,7 +1694,7 @@ function fileItemHtml(a){
     '<div class="file-ico '+cls+'">'+ic+'</div>'+
     '<div style="flex:1;min-width:0"><div style="font-size:var(--fs);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+nomeSafe+'</div>'+
     '<div style="font-size:calc(var(--fs-sm) - 1px);color:var(--text3)">'+fmtSize(a.tamanho)+'</div></div>'+
-    '<select class="file-class" onchange="reclassificarArquivo(this)" data-id="'+id+'">'+opts+'</select>'+
+    '<select class="file-class" onchange="classificarEAbrir('+JSON.stringify(id)+',this.value,this)" data-id="'+id+'">'+opts+'</select>'+
     '<button class="file-view-btn" data-vurl="'+url+'" data-nome="'+nomeSafe+'" data-mime="'+mime+'" onclick="abrirViewerBtn(this)">👁 Ver</button>'+
     '<button class="btn bd bsm" onclick="remArquivo('+JSON.stringify(id)+')">×</button>'+
   '</div>';
@@ -1856,6 +1892,215 @@ fecharViewer=function(){
   const panel=document.getElementById('viewer-panel');
   panel.style.width='';
 };
+
+
+// ── STAGING DE ARQUIVOS (visualização + cadastro inline) ──────────────────
+// Arquivos que foram classificados como PQ mas ainda não viraram um registro PQ
+S._stagingArquivos = []; // {arq, pdfDoc, page, zoom, formData}
+
+async function classificarEAbrir(arqId, novaClasse, el){
+  // atualizar classificação
+  const arq = S.arquivos.find(a=>a.id===arqId);
+  if(!arq) return;
+  arq.classificacao = novaClasse;
+  try{ await sb.patch(`bee3d_peritare_arquivos?id=eq.${arqId}`, {classificacao: novaClasse}); }catch(e){}
+
+  // Se classificado como PQ, abrir staging inline
+  if(novaClasse === 'pq'){
+    // Verificar se já está no staging
+    if(!S._stagingArquivos.find(s=>s.arq.id===arqId)){
+      const staging = {
+        arq,
+        pdfDoc: null, page: 1, total: 1, zoom: 1.0,
+        formData: { tipo:'', numero:'', data_doc:'', fls:'', id_proc:'' }
+      };
+      // Carregar PDF se for pdf
+      if(arq.tipo_mime && arq.tipo_mime.includes('pdf') && arq.url_publica){
+        try{
+          staging.pdfDoc = await pdfjsLib.getDocument(arq.url_publica).promise;
+          staging.total = staging.pdfDoc.numPages;
+        }catch(e){ console.warn('PDF staging:', e); }
+      }
+      S._stagingArquivos.push(staging);
+    }
+    render();
+    setTimeout(()=>{
+      const el2=document.getElementById('staging-'+arqId);
+      if(el2) el2.scrollIntoView({behavior:'smooth',block:'start'});
+      renderStagingCanvas(arqId);
+    }, 100);
+  } else {
+    // Remover do staging se estava lá
+    S._stagingArquivos = S._stagingArquivos.filter(s=>s.arq.id!==arqId);
+    render();
+  }
+}
+
+async function renderStagingCanvas(arqId){
+  const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
+  if(!st) return;
+  const cv = document.getElementById('stcv-'+arqId);
+  if(!cv) return;
+
+  if(st.pdfDoc){
+    const page = await st.pdfDoc.getPage(st.page);
+    const vp = page.getViewport({scale: st.zoom});
+    cv.width = vp.width; cv.height = vp.height;
+    await page.render({canvasContext: cv.getContext('2d'), viewport: vp}).promise;
+    const lbl = document.getElementById('stpg-'+arqId);
+    if(lbl) lbl.textContent = st.page+'/'+st.total;
+    const zlbl = document.getElementById('stzm-'+arqId);
+    if(zlbl) zlbl.textContent = Math.round(st.zoom*100)+'%';
+  } else if(st.arq.url_publica){
+    const img = document.getElementById('stimg-'+arqId);
+    if(img){ img.src = st.arq.url_publica; img.style.display='block'; cv.style.display='none'; }
+  }
+}
+
+async function stagingNav(arqId, dir){
+  const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
+  if(!st||!st.pdfDoc) return;
+  const n = st.page + dir;
+  if(n<1||n>st.total) return;
+  st.page = n;
+  await renderStagingCanvas(arqId);
+}
+
+async function stagingZoom(arqId, d){
+  const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
+  if(!st) return;
+  st.zoom = Math.max(0.4, Math.min(4, st.zoom + d));
+  await renderStagingCanvas(arqId);
+}
+
+function stagingField(arqId, campo, valor){
+  const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
+  if(st) st.formData[campo] = valor;
+}
+
+async function criarPQDoStaging(arqId){
+  const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
+  if(!st) return;
+  const fd = st.formData;
+  if(!fd.tipo){ alert('Selecione o tipo do documento.'); return; }
+
+  const pq = {
+    processo_id: S.proc.id,
+    ordem: (S.proc.pqs||[]).length + 1,
+    tipo: fd.tipo,
+    numero: fd.numero||'',
+    data_doc: fd.data_doc||'',
+    fls: fd.fls||'',
+    id_proc: fd.id_proc||'',
+    status: 'pending',
+    pdf_path: st.arq.url_publica||''
+  };
+
+  try{
+    const[c] = await sb.post('bee3d_peritare_pqs', pq);
+    pq.id = c.id;
+    // vincular arquivo ao PQ
+    await sb.patch(`bee3d_peritare_arquivos?id=eq.${arqId}`, {pq_id: c.id});
+    toast('PQ criado e vinculado ao PDF ✓');
+  }catch(e){
+    pq.id = 'local_'+Date.now();
+    toast('PQ criado localmente');
+  }
+
+  pq.eog = novoEOG();
+  S.proc.pqs = [...(S.proc.pqs||[]), pq];
+  // Remover do staging
+  S._stagingArquivos = S._stagingArquivos.filter(s=>s.arq.id!==arqId);
+  registrarFeed(S.proc.id, '📄', 'PQ criado', `${fd.tipo} nº ${fd.numero}`);
+  render();
+  // Ir para aba 2 para ver o PQ criado
+  setTimeout(()=>stab('pqs'), 300);
+}
+
+function descartarStaging(arqId){
+  S._stagingArquivos = S._stagingArquivos.filter(s=>s.arq.id!==arqId);
+  // voltar classificação para 'outro'
+  const arq = S.arquivos.find(a=>a.id===arqId);
+  if(arq){ arq.classificacao='outro'; try{sb.patch(`bee3d_peritare_arquivos?id=eq.${arqId}`,{classificacao:'outro'});}catch(e){} }
+  render();
+}
+
+function stagingCardHtml(st){
+  const a = st.arq;
+  const isPdf = a.tipo_mime && a.tipo_mime.includes('pdf');
+  return `
+  <div class="pq-staging-card" id="staging-${a.id}">
+    <div class="pq-staging-hd">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:18px">📄</span>
+        <div>
+          <div style="font-size:var(--fs);font-weight:500">${a.nome}</div>
+          <div style="font-size:var(--fs-sm);color:var(--text3)">Classifique como PQ e preencha os dados do contrato ao lado</div>
+        </div>
+      </div>
+      <button class="btn bd bsm" onclick="descartarStaging('${a.id}')">Descartar</button>
+    </div>
+    <div class="pq-staging-body">
+      <!-- PDF / imagem à esquerda -->
+      <div class="pq-staging-pdf">
+        ${isPdf ? `
+        <div class="inline-viewer-nav">
+          <button class="btn bs bsm" onclick="stagingNav('${a.id}',-1)">‹</button>
+          <span id="stpg-${a.id}" style="font-size:var(--fs-sm);color:var(--text3)">${st.page}/${st.total}</span>
+          <button class="btn bs bsm" onclick="stagingNav('${a.id}',1)">›</button>
+          <div style="margin-left:auto;display:flex;gap:3px">
+            <button class="btn bs bsm" onclick="stagingZoom('${a.id}',-0.2)">−</button>
+            <span id="stzm-${a.id}" style="font-size:var(--fs-sm);color:var(--text3);padding:3px 5px">${Math.round(st.zoom*100)}%</span>
+            <button class="btn bs bsm" onclick="stagingZoom('${a.id}',0.2)">+</button>
+          </div>
+          <button class="btn bs bsm" onclick="window.open('${a.url_publica}','_blank')" title="Abrir em nova aba">⤢</button>
+        </div>
+        <div style="flex:1;overflow:auto;background:#666;padding:8px;display:flex;justify-content:center">
+          <canvas id="stcv-${a.id}" style="display:block;max-width:100%;box-shadow:0 2px 8px rgba(0,0,0,.4)"></canvas>
+          <img id="stimg-${a.id}" style="display:none;max-width:100%">
+        </div>
+        ` : `
+        <div style="flex:1;overflow:auto;background:#666;padding:8px;display:flex;align-items:center;justify-content:center">
+          <img src="${a.url_publica}" style="max-width:100%;max-height:500px;object-fit:contain;box-shadow:0 2px 8px rgba(0,0,0,.4)">
+        </div>
+        `}
+      </div>
+      <!-- Formulário de cadastro à direita -->
+      <div class="pq-staging-form">
+        <div style="font-size:var(--fs-sm);font-weight:500;color:var(--navy);margin-bottom:12px">Dados do documento questionado</div>
+        <div style="margin-bottom:10px">
+          <label class="lbl">Tipo do documento <span style="color:#991b1b">*</span></label>
+          <select onchange="stagingField('${a.id}','tipo',this.value)">
+            <option value="">Selecione…</option>
+            ${TIPOS_DOC.map(t=>`<option ${st.formData.tipo===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div style="margin-bottom:10px">
+          <label class="lbl">Número do contrato / documento</label>
+          <input value="${st.formData.numero||''}" placeholder="ex: 582434573" oninput="stagingField('${a.id}','numero',this.value)">
+        </div>
+        <div style="margin-bottom:10px">
+          <label class="lbl">Data do documento</label>
+          <input data-mask="data" value="${st.formData.data_doc||''}" placeholder="DD/MM/AAAA" oninput="stagingField('${a.id}','data_doc',this.value)">
+        </div>
+        <div style="margin-bottom:10px">
+          <label class="lbl">Folhas (fls.)</label>
+          <input value="${st.formData.fls||''}" placeholder="ex: 1 e 2" oninput="stagingField('${a.id}','fls',this.value)">
+        </div>
+        <div style="margin-bottom:16px">
+          <label class="lbl">ID processual</label>
+          <input value="${st.formData.id_proc||''}" placeholder="ex: 23926099" oninput="stagingField('${a.id}','id_proc',this.value)">
+        </div>
+        <div class="obox" style="margin-bottom:12px;font-size:var(--fs-sm)">
+          O PDF ficará automaticamente vinculado a este PQ e disponível na Mesa Gráfica.
+        </div>
+        <button class="btn bp" style="width:100%" onclick="criarPQDoStaging('${a.id}')">
+          ✓ Criar PQ e vincular PDF
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 carregarTudo();
