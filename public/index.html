@@ -2071,79 +2071,86 @@ function descartarStaging(arqId){
 
 function stagingCardHtml(st){
   const a = st.arq;
-  const isPdf = a.tipo_mime && a.tipo_mime.includes('pdf');
-  return `
-  <div class="pq-staging-card" id="staging-${a.id}">
-    <div class="pq-staging-hd">
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:18px">📄</span>
-        <div>
-          <div style="font-size:var(--fs);font-weight:500">${a.nome}</div>
-          <div style="font-size:var(--fs-sm);color:var(--text3)">Classifique como PQ e preencha os dados do contrato ao lado</div>
-        </div>
-      </div>
-      <button class="btn bd bsm" onclick="descartarStaging('${a.id}')">Descartar</button>
-    </div>
-    <div class="pq-staging-body">
-      <!-- PDF / imagem à esquerda -->
-      <div class="pq-staging-pdf">
-        ${isPdf ? `
-        <div class="inline-viewer-nav">
-          <button class="btn bs bsm" onclick="stagingNav('${a.id}',-1)">‹</button>
-          <span id="stpg-${a.id}" style="font-size:var(--fs-sm);color:var(--text3)">${st.page}/${st.total}</span>
-          <button class="btn bs bsm" onclick="stagingNav('${a.id}',1)">›</button>
-          <div style="margin-left:auto;display:flex;gap:3px">
-            <button class="btn bs bsm" onclick="stagingZoom('${a.id}',-0.2)">−</button>
-            <span id="stzm-${a.id}" style="font-size:var(--fs-sm);color:var(--text3);padding:3px 5px">${Math.round(st.zoom*100)}%</span>
-            <button class="btn bs bsm" onclick="stagingZoom('${a.id}',0.2)">+</button>
-          </div>
-          <button class="btn bs bsm" onclick="window.open('${a.url_publica}','_blank')" title="Abrir em nova aba">⤢</button>
-        </div>
-        <div style="flex:1;overflow:auto;background:#666;padding:8px;display:flex;justify-content:center">
-          <canvas id="stcv-${a.id}" style="display:block;max-width:100%;box-shadow:0 2px 8px rgba(0,0,0,.4)"></canvas>
-          <img id="stimg-${a.id}" style="display:none;max-width:100%">
-        </div>
-        ` : `
-        <div style="flex:1;overflow:auto;background:#666;padding:8px;display:flex;align-items:center;justify-content:center">
-          <img src="${a.url_publica}" style="max-width:100%;max-height:500px;object-fit:contain;box-shadow:0 2px 8px rgba(0,0,0,.4)">
-        </div>
-        `}
-      </div>
-      <!-- Formulário de cadastro à direita -->
-      <div class="pq-staging-form">
-        <div style="font-size:var(--fs-sm);font-weight:500;color:var(--navy);margin-bottom:12px">Dados do documento questionado</div>
-        <div style="margin-bottom:10px">
-          <label class="lbl">Tipo do documento <span style="color:#991b1b">*</span></label>
-          <select onchange="stagingField('${a.id}','tipo',this.value)">
-            <option value="">Selecione…</option>
-            ${TIPOS_DOC.map(t=>`<option ${st.formData.tipo===t?'selected':''}>${t}</option>`).join('')}
-          </select>
-        </div>
-        <div style="margin-bottom:10px">
-          <label class="lbl">Número do contrato / documento</label>
-          <input value="${st.formData.numero||''}" placeholder="ex: 582434573" oninput="stagingField('${a.id}','numero',this.value)">
-        </div>
-        <div style="margin-bottom:10px">
-          <label class="lbl">Data do documento</label>
-          <input data-mask="data" value="${st.formData.data_doc||''}" placeholder="DD/MM/AAAA" oninput="stagingField('${a.id}','data_doc',this.value)">
-        </div>
-        <div style="margin-bottom:10px">
-          <label class="lbl">Folhas (fls.)</label>
-          <input value="${st.formData.fls||''}" placeholder="ex: 1 e 2" oninput="stagingField('${a.id}','fls',this.value)">
-        </div>
-        <div style="margin-bottom:16px">
-          <label class="lbl">ID processual</label>
-          <input value="${st.formData.id_proc||''}" placeholder="ex: 23926099" oninput="stagingField('${a.id}','id_proc',this.value)">
-        </div>
-        <div class="obox" style="margin-bottom:12px;font-size:var(--fs-sm)">
-          O PDF ficará automaticamente vinculado a este PQ e disponível na Mesa Gráfica.
-        </div>
-        <button class="btn bp" style="width:100%" onclick="criarPQDoStaging('${a.id}')">
-          ✓ Criar PQ e vincular PDF
-        </button>
-      </div>
-    </div>
-  </div>`;
+  const isPdf = !!(a.tipo_mime && a.tipo_mime.includes('pdf'));
+  const nome = (a.nome||'').replace(/</g,'&lt;');
+  const url  = a.url_publica||'';
+  const aid  = a.id;
+
+  // Barra de navegação PDF
+  const pdfNav = isPdf
+    ? '<div class="inline-viewer-nav">'
+        + '<button class="btn bs bsm" onclick="stagingNav(\''+aid+'\',-1)">‹</button>'
+        + '<span id="stpg-'+aid+'" style="font-size:var(--fs-sm);color:var(--text3)">'+st.page+'/'+st.total+'</span>'
+        + '<button class="btn bs bsm" onclick="stagingNav(\''+aid+'\',1)">›</button>'
+        + '<div style="margin-left:auto;display:flex;gap:3px">'
+          + '<button class="btn bs bsm" onclick="stagingZoom(\''+aid+'\',-0.2)">-</button>'
+          + '<span id="stzm-'+aid+'" style="font-size:var(--fs-sm);color:var(--text3);padding:3px 5px">'+Math.round(st.zoom*100)+'%</span>'
+          + '<button class="btn bs bsm" onclick="stagingZoom(\''+aid+'\',0.2)">+</button>'
+        + '</div>'
+        + '<button class="btn bs bsm" onclick="window.open(\''+url+'\',\'_blank\')" title="Abrir em nova aba">⤢</button>'
+      + '</div>'
+    : '';
+
+  // Área do documento
+  const docArea = isPdf
+    ? '<div style="flex:1;overflow:auto;background:#555;padding:8px;display:flex;justify-content:center;align-items:flex-start">'
+        + '<canvas id="stcv-'+aid+'" style="display:block;max-width:100%;box-shadow:0 2px 8px rgba(0,0,0,.4)"></canvas>'
+      + '</div>'
+    : '<div style="flex:1;overflow:auto;background:#555;padding:8px;display:flex;align-items:center;justify-content:center">'
+        + '<img src="'+url+'" style="max-width:100%;max-height:500px;object-fit:contain;box-shadow:0 2px 8px rgba(0,0,0,.4)">'
+      + '</div>';
+
+  // Opções do tipo de documento
+  const tipoOpts = TIPOS_DOC.map(function(t){
+    return '<option value="'+t+'" '+(st.formData.tipo===t?'selected':'')+'>'+t+'</option>';
+  }).join('');
+
+  return ''
+    + '<div class="pq-staging-card" id="staging-'+aid+'">'
+      + '<div class="pq-staging-hd">'
+        + '<div style="display:flex;align-items:center;gap:8px">'
+          + '<span style="font-size:18px">📄</span>'
+          + '<div>'
+            + '<div style="font-size:var(--fs);font-weight:500">'+nome+'</div>'
+            + '<div style="font-size:var(--fs-sm);color:var(--text3)">Preencha os dados à direita e clique em Criar PQ</div>'
+          + '</div>'
+        + '</div>'
+        + '<button class="btn bd bsm" onclick="descartarStaging(\''+aid+'\')">Descartar</button>'
+      + '</div>'
+      + '<div class="pq-staging-body">'
+        // PDF à esquerda
+        + '<div class="pq-staging-pdf">'
+          + pdfNav
+          + docArea
+        + '</div>'
+        // Formulário à direita
+        + '<div class="pq-staging-form">'
+          + '<div style="font-size:var(--fs-sm);font-weight:500;color:var(--navy);margin-bottom:12px">Dados do documento questionado (PQ)</div>'
+          + '<div style="margin-bottom:10px"><label class="lbl">Tipo do documento <span style="color:#991b1b">*</span></label>'
+            + '<select onchange="stagingField(\''+aid+'\',\'tipo\',this.value)">'
+              + '<option value="">Selecione…</option>'
+              + tipoOpts
+            + '</select>'
+          + '</div>'
+          + '<div style="margin-bottom:10px"><label class="lbl">Número do contrato / documento</label>'
+            + '<input value="'+st.formData.numero+'" placeholder="ex: 582434573" oninput="stagingField(\''+aid+'\',\'numero\',this.value)">'
+          + '</div>'
+          + '<div style="margin-bottom:10px"><label class="lbl">Data do documento</label>'
+            + '<input data-mask="data" value="'+st.formData.data_doc+'" placeholder="DD/MM/AAAA" oninput="stagingField(\''+aid+'\',\'data_doc\',this.value)">'
+          + '</div>'
+          + '<div style="margin-bottom:10px"><label class="lbl">Folhas (fls.)</label>'
+            + '<input value="'+st.formData.fls+'" placeholder="ex: 1 e 2" oninput="stagingField(\''+aid+'\',\'fls\',this.value)">'
+          + '</div>'
+          + '<div style="margin-bottom:16px"><label class="lbl">ID processual</label>'
+            + '<input value="'+st.formData.id_proc+'" placeholder="ex: 23926099" oninput="stagingField(\''+aid+'\',\'id_proc\',this.value)">'
+          + '</div>'
+          + '<div class="obox" style="margin-bottom:12px;font-size:var(--fs-sm)">O PDF ficará vinculado a este PQ e disponível na Mesa Gráfica.</div>'
+          + '<button class="btn bp" style="width:100%;padding:10px" onclick="criarPQDoStaging(\''+aid+'\')">'
+            + '✓ Criar PQ e vincular PDF'
+          + '</button>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
 }
 
 
