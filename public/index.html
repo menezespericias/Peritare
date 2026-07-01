@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light" data-font="md">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#1a2744">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Peritare">
@@ -13,111 +13,240 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+/* ── TEMA & FONTE ─────────────────────────────────────────── */
 :root{
-  --navy:#1a2744;--navy2:#243358;--gold:#c8a84b;--gold2:#e8c96e;
-  --surface:#f8f7f4;--card:#fff;--border:#e2ddd5;
+  --navy:#1a2744;--navy2:#243358;--gold:#c8a84b;
+  --bg:#f8f7f4;--card:#fff;--border:#e2ddd5;
   --text:#1a1a18;--text2:#5a5854;--text3:#9a9690;
   --r:8px;--success:#14532d;--danger:#991b1b;
+  --fs:13px;--fs-sm:11px;--fs-lg:15px;
 }
+[data-theme="dark"]{
+  --bg:#111318;--card:#1c1f26;--border:#2d3142;
+  --text:#e8e6e0;--text2:#a0a8b8;--text3:#606880;
+  --navy:#2e3f6e;--navy2:#364a7f;
+}
+[data-font="sm"]{ --fs:11px;--fs-sm:9px;--fs-lg:13px; }
+[data-font="md"]{ --fs:13px;--fs-sm:11px;--fs-lg:15px; }
+[data-font="lg"]{ --fs:15px;--fs-sm:12px;--fs-lg:18px; }
+
+/* ── BASE ─────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--surface);color:var(--text);font-size:13px;display:flex;flex-direction:column}
-/* HEADER */
-#hdr{background:var(--navy);padding:0 1.2rem;display:flex;align-items:center;justify-content:space-between;height:48px;flex-shrink:0;z-index:100}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-ico{width:26px;height:26px;background:var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:var(--fs);display:flex;flex-direction:column;transition:background .2s,color .2s}
+
+/* ── HEADER ───────────────────────────────────────────────── */
+#hdr{background:var(--navy);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;height:46px;flex-shrink:0;z-index:200}
+.logo{display:flex;align-items:center;gap:9px}
+.logo-ico{width:24px;height:24px;background:var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo span{color:#fff;font-size:14px;font-weight:500}
-.logo em{color:var(--gold);font-size:10px;font-style:normal;margin-left:-4px;opacity:.8}
-#nav{display:flex;gap:3px}
-.nbtn{background:transparent;color:rgba(255,255,255,.6);border:none;padding:5px 12px;border-radius:5px;font-size:12px;cursor:pointer;transition:.15s}
+.logo em{color:var(--gold);font-size:10px;font-style:normal;margin-left:-3px;opacity:.8}
+#nav{display:flex;gap:2px}
+.nbtn{background:transparent;color:rgba(255,255,255,.6);border:none;padding:5px 11px;border-radius:5px;font-size:var(--fs-sm);cursor:pointer;transition:.15s;white-space:nowrap}
 .nbtn.on,.nbtn:hover{background:rgba(200,168,75,.18);color:var(--gold)}
-/* MAIN SCROLL AREA */
-#main{flex:1;overflow-y:auto;padding:1.2rem;max-width:1100px;width:100%;margin:0 auto}
-/* CARDS */
-.card{background:var(--card);border:.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:.9rem}
-.chd{padding:10px 14px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafaf8}
-.chd h3{font-size:12px;font-weight:500;color:var(--navy)}
-.cbd{padding:14px}
-/* FORMS */
-.lbl{font-size:11px;color:var(--text2);font-weight:500;display:block;margin-bottom:3px}
-input,select,textarea{width:100%;padding:6px 9px;border:.5px solid var(--border);border-radius:var(--r);font-size:13px;background:var(--surface);color:var(--text);font-family:inherit}
+.hdr-tools{display:flex;gap:4px;align-items:center}
+.ico-btn{background:transparent;border:none;color:rgba(255,255,255,.6);cursor:pointer;padding:5px 7px;border-radius:5px;font-size:14px;transition:.15s}
+.ico-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.ico-btn.on{color:var(--gold)}
+
+/* ── LAYOUT ───────────────────────────────────────────────── */
+#main{flex:1;overflow-y:auto;padding:1rem;max-width:1140px;width:100%;margin:0 auto}
+/* ── CARDS ─────────────────────────────────────────────────── */
+.card{background:var(--card);border:.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:.8rem;transition:background .2s,border-color .2s}
+.chd{padding:9px 13px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg)}
+.chd h3{font-size:var(--fs-sm);font-weight:500;color:var(--navy)}
+[data-theme="dark"] .chd h3{color:var(--gold)}
+.cbd{padding:13px}
+
+/* ── FORMS ─────────────────────────────────────────────────── */
+.lbl{font-size:var(--fs-sm);color:var(--text2);font-weight:500;display:block;margin-bottom:3px}
+input,select,textarea{width:100%;padding:6px 9px;border:.5px solid var(--border);border-radius:var(--r);font-size:var(--fs);background:var(--bg);color:var(--text);font-family:inherit;transition:background .2s}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-color:transparent}
 textarea{resize:vertical}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
-/* BUTTONS */
-.btn{padding:6px 14px;border-radius:var(--r);font-size:12px;cursor:pointer;font-weight:500;border:none;transition:.15s;display:inline-flex;align-items:center;gap:5px}
-.bp{background:var(--navy);color:#fff}.bp:hover{background:var(--navy2)}
-.bs{background:var(--surface);color:var(--text2);border:.5px solid var(--border)}.bs:hover{background:var(--border)}
-.bg{background:var(--gold);color:var(--navy)}
+
+/* ── BUTTONS ───────────────────────────────────────────────── */
+.btn{padding:6px 13px;border-radius:var(--r);font-size:var(--fs-sm);cursor:pointer;font-weight:500;border:none;transition:.15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.bp{background:var(--navy);color:#fff}.bp:hover{opacity:.9}
+.bs{background:var(--bg);color:var(--text2);border:.5px solid var(--border)}.bs:hover{background:var(--border)}
+.bg{background:var(--gold);color:var(--navy)}.bg:hover{opacity:.9}
 .bd{background:#fee2e2;color:var(--danger);border:.5px solid #fca5a5}
-.bsm{padding:3px 9px;font-size:11px}
-/* BADGES */
-.b{display:inline-flex;align-items:center;font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
+.bsm{padding:3px 8px;font-size:calc(var(--fs-sm) - 1px)}
+.btn:disabled{opacity:.4;cursor:default}
+
+/* ── BADGES ────────────────────────────────────────────────── */
+.b{display:inline-flex;align-items:center;font-size:calc(var(--fs-sm) - 1px);font-weight:500;padding:2px 7px;border-radius:20px}
 .bk{background:#dcfce7;color:#14532d}.bw{background:#fef3cd;color:#7c5c00}
-.bb{background:#dbeafe;color:#1e40af}.bgr{background:#f3f4f6;color:#4b5563}
+.bb{background:#dbeafe;color:#1e40af}.bgr{background:var(--bg);color:var(--text3);border:.5px solid var(--border)}
 .br{background:#fee2e2;color:var(--danger)}
-/* TABS */
-.tbar{display:flex;gap:2px;border-bottom:.5px solid var(--border);margin-bottom:1rem;padding:0 14px;background:#fafaf8;overflow-x:auto;flex-shrink:0}
-.tab{padding:7px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text3);font-weight:500;white-space:nowrap;transition:.15s}
-.tab.on{border-bottom-color:var(--navy);color:var(--navy)}
-/* INFO BOXES */
-.ibox{background:#eff6ff;border:.5px solid #bfdbfe;border-radius:var(--r);padding:9px 12px;font-size:11px;color:#1e40af;margin-bottom:10px}
-.wbox{background:#fffbeb;border:.5px solid #fde68a;border-radius:var(--r);padding:9px 12px;font-size:11px;color:#92400e;margin-bottom:10px}
-.obox{background:#f0fdf4;border:.5px solid #86efac;border-radius:var(--r);padding:9px 12px;font-size:11px;color:#14532d;margin-bottom:10px}
-.dvd{height:.5px;background:var(--border);margin:12px 0}
+
+/* ── TABS ──────────────────────────────────────────────────── */
+.tbar{display:flex;gap:2px;border-bottom:.5px solid var(--border);margin-bottom:.9rem;padding:0 13px;background:var(--bg);overflow-x:auto;flex-shrink:0}
+.tab{padding:7px 11px;font-size:var(--fs-sm);cursor:pointer;border-bottom:2px solid transparent;color:var(--text3);font-weight:500;white-space:nowrap;transition:.15s}
+.tab.on{border-bottom-color:var(--gold);color:var(--text)}
+
+/* ── INFO BOXES ────────────────────────────────────────────── */
+.ibox{background:#eff6ff;border:.5px solid #bfdbfe;border-radius:var(--r);padding:8px 12px;font-size:var(--fs-sm);color:#1e40af;margin-bottom:10px}
+.wbox{background:#fffbeb;border:.5px solid #fde68a;border-radius:var(--r);padding:8px 12px;font-size:var(--fs-sm);color:#92400e;margin-bottom:10px}
+.obox{background:#f0fdf4;border:.5px solid #86efac;border-radius:var(--r);padding:8px 12px;font-size:var(--fs-sm);color:#14532d;margin-bottom:10px}
+[data-theme="dark"] .ibox{background:#1e3a5f;border-color:#2563eb;color:#93c5fd}
+[data-theme="dark"] .wbox{background:#3b2100;border-color:#d97706;color:#fcd34d}
+[data-theme="dark"] .obox{background:#052e16;border-color:#16a34a;color:#86efac}
+
+.dvd{height:.5px;background:var(--border);margin:11px 0}
 .nb{width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .prog{height:3px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:5px}
 .prog-f{height:100%;background:var(--gold);border-radius:3px;transition:.3s}
-.upz{border:1.5px dashed var(--border);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;color:var(--text3);transition:.15s}
-.upz:hover{border-color:var(--gold);background:#fffbeb;color:var(--text2)}
+.upz{border:1.5px dashed var(--border);border-radius:var(--r);padding:13px;text-align:center;cursor:pointer;color:var(--text3);transition:.15s}
+.upz:hover{border-color:var(--gold);color:var(--text2)}
 .upz input{display:none}
 .chk{display:flex;align-items:flex-start;gap:7px;padding:4px 0}
 .chk input[type=checkbox]{width:14px;height:14px;flex-shrink:0;margin-top:1px;accent-color:var(--navy)}
-.chk label{font-weight:400;color:var(--text);cursor:pointer;margin:0;font-size:12px}
-/* MESA GRÁFICA */
-#mesa-wrap{display:flex;gap:10px;height:calc(100vh - 200px);min-height:420px}
-#mesa-left{width:150px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
-#mesa-center{flex:1;display:flex;flex-direction:column;gap:0;background:var(--card);border:.5px solid var(--border);border-radius:10px;overflow:hidden}
-#mesa-right{width:160px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
-#mesa-toolbar{padding:8px 10px;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fafaf8}
-#mesa-canvas-wrap{flex:1;position:relative;overflow:hidden;background:#e0e0e0}
+.chk label{font-weight:400;cursor:pointer;margin:0;font-size:var(--fs-sm)}
+
+/* ── KANBAN ────────────────────────────────────────────────── */
+#kanban-wrap{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;min-height:200px;align-items:flex-start}
+.kan-col{background:var(--card);border:.5px solid var(--border);border-radius:10px;min-width:190px;max-width:220px;flex-shrink:0;display:flex;flex-direction:column}
+.kan-col-hd{padding:9px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--border);border-radius:10px 10px 0 0}
+.kan-col-hd span{font-size:var(--fs-sm);font-weight:500;color:var(--text)}
+.kan-col-body{padding:8px;flex:1;min-height:60px}
+.kan-card{background:var(--bg);border:.5px solid var(--border);border-radius:7px;padding:9px 10px;margin-bottom:7px;cursor:grab;transition:.15s;user-select:none}
+.kan-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.kan-card.dragging{opacity:.5;cursor:grabbing}
+.kan-drop-target{background:rgba(200,168,75,.08);border:1.5px dashed var(--gold);border-radius:7px;height:50px;margin-bottom:7px;display:none}
+.kan-drop-target.active{display:block}
+.kan-add-col{min-width:150px;flex-shrink:0;display:flex;align-items:flex-start;padding-top:8px}
+
+/* ── TIMELINE ──────────────────────────────────────────────── */
+.tl-item{display:flex;gap:10px;padding:10px 0;border-bottom:.5px solid var(--border)}
+.tl-item:last-child{border-bottom:none}
+.tl-dot{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:1px}
+.tl-auto{background:#eff6ff}
+.tl-nota{background:#fef3cd}
+.tl-content{flex:1;min-width:0}
+.tl-title{font-size:var(--fs);font-weight:500;color:var(--text)}
+.tl-desc{font-size:var(--fs-sm);color:var(--text3);margin-top:1px}
+.tl-time{font-size:calc(var(--fs-sm) - 1px);color:var(--text3)}
+
+/* ── EDITOR DE MODELO ──────────────────────────────────────── */
+.var-chip{display:inline-flex;align-items:center;background:#dbeafe;color:#1e40af;border-radius:4px;padding:1px 7px;font-size:var(--fs-sm);font-family:monospace;cursor:pointer;margin:2px;transition:.15s}
+.var-chip:hover{background:#bfdbfe}
+[data-theme="dark"] .var-chip{background:#1e3a5f;color:#93c5fd}
+
+/* ── MESA GRÁFICA ──────────────────────────────────────────── */
+#mesa-wrap{display:flex;gap:10px;height:calc(100vh - 180px);min-height:400px}
+#mesa-left{width:148px;flex-shrink:0;display:flex;flex-direction:column;gap:7px;overflow-y:auto}
+#mesa-center{flex:1;display:flex;flex-direction:column;background:var(--card);border:.5px solid var(--border);border-radius:10px;overflow:hidden}
+#mesa-right{width:155px;flex-shrink:0;display:flex;flex-direction:column;gap:7px;overflow-y:auto}
+#mesa-toolbar{padding:7px 10px;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:var(--bg)}
+#mesa-canvas-wrap{flex:1;position:relative;overflow:hidden;background:#c8c8c8}
+[data-theme="dark"] #mesa-canvas-wrap{background:#1a1a1a}
 #mesa-canvas{display:block;cursor:crosshair}
 #mesa-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);pointer-events:none}
-#mesa-ruler-info{display:none;position:absolute;top:8px;right:8px;background:rgba(26,39,68,.88);color:#fff;font-size:11px;padding:5px 9px;border-radius:5px}
-.tool-btn{width:32px;height:32px;border-radius:5px;border:1.5px solid transparent;background:transparent;color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+#mesa-ri{display:none;position:absolute;top:7px;right:7px;background:rgba(26,39,68,.9);color:#fff;font-size:11px;padding:4px 9px;border-radius:5px;pointer-events:none}
+.tool-btn{width:30px;height:30px;border-radius:5px;border:1.5px solid transparent;background:transparent;color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
 .tool-btn.on{border-color:var(--navy);background:#e8eeff;color:var(--navy)}
-.tool-btn:hover{background:var(--surface)}
-.color-dot{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:.15s}
-.color-dot.on{border-color:var(--navy);transform:scale(1.15)}
-/* TOAST */
-#toast{position:fixed;bottom:16px;right:16px;background:var(--navy);color:#fff;padding:9px 16px;border-radius:var(--r);font-size:12px;z-index:999;display:none;animation:fadeIn .2s}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-/* PWA install banner */
-#pwa-banner{display:none;background:var(--gold);color:var(--navy);padding:8px 16px;font-size:12px;font-weight:500;align-items:center;justify-content:space-between;flex-shrink:0}
-/* scrollbar */
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+[data-theme="dark"] .tool-btn.on{border-color:var(--gold);background:rgba(200,168,75,.15);color:var(--gold)}
+.cdot{width:19px;height:19px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:.15s}
+.cdot.on{border-color:var(--navy);transform:scale(1.18)}
+[data-theme="dark"] .cdot.on{border-color:var(--gold)}
+
+/* ── MODAL ─────────────────────────────────────────────────── */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--card);border-radius:12px;padding:1.5rem;width:640px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal h3{font-size:15px;font-weight:500;color:var(--navy);margin-bottom:1rem}
+[data-theme="dark"] .modal h3{color:var(--gold)}
+
+/* ── DESFAZER TOAST ────────────────────────────────────────── */
+#undo-bar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:8px 16px;border-radius:20px;font-size:var(--fs-sm);z-index:999;display:none;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+#undo-bar button{background:var(--gold);color:var(--navy);border:none;padding:3px 10px;border-radius:20px;font-size:var(--fs-sm);cursor:pointer;font-weight:500}
+
+/* ── TOAST ─────────────────────────────────────────────────── */
+#toast{position:fixed;bottom:16px;right:16px;background:var(--navy);color:#fff;padding:8px 14px;border-radius:var(--r);font-size:var(--fs-sm);z-index:998;display:none}
+
+/* ── PWA BANNER ────────────────────────────────────────────── */
+#pwa-banner{display:none;background:var(--gold);color:var(--navy);padding:7px 14px;font-size:var(--fs-sm);font-weight:500;align-items:center;justify-content:space-between;flex-shrink:0}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ── VIEWER LATERAL ─────────────────────────────────────────── */
+#viewer-panel.open{width:420px!important}
+.file-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:.5px solid var(--border)}
+.file-item:last-child{border-bottom:none}
+.file-item:hover{background:rgba(200,168,75,.04)}
+.file-ico{width:30px;height:30px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.file-ico.pdf{background:#fee2e2}.file-ico.img{background:#dbeafe}.file-ico.doc{background:#dbeafe}.file-ico.xls{background:#dcfce7}.file-ico.other{background:var(--bg)}
+.file-class{font-size:var(--fs-sm);padding:3px 6px;border-radius:5px;border:.5px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;min-width:155px}
+.file-view-btn{padding:3px 8px;border-radius:5px;border:.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:11px;white-space:nowrap}
+.file-view-btn:hover,.file-view-btn.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.drop-zone{border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;position:relative;transition:.2s}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--gold);background:rgba(200,168,75,.05)}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+html,body{height:100%;overflow:hidden}
+#app{display:flex;flex:1;overflow:hidden}
+
 </style>
 </head>
 <body>
 <div id="pwa-banner">
-  <span>📲 Instale o Peritare na sua área de trabalho para acesso rápido</span>
-  <div style="display:flex;gap:8px">
-    <button class="btn bp bsm" id="pwa-install-btn">Instalar</button>
-    <button class="btn bs bsm" onclick="document.getElementById('pwa-banner').style.display='none'">Agora não</button>
+  <span>📲 Instale o Peritare na área de trabalho</span>
+  <div style="display:flex;gap:6px">
+    <button class="btn bp bsm" id="pwa-btn">Instalar</button>
+    <button class="btn bs bsm" onclick="document.getElementById('pwa-banner').style.display='none'">Depois</button>
   </div>
 </div>
 <div id="hdr">
   <div class="logo">
-    <div class="logo-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a2744" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+    <div class="logo-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1a2744" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
     <span>Peritare</span><em>Grafotécnica</em>
   </div>
   <div id="nav"></div>
+  <div class="hdr-tools">
+    <button class="ico-btn" title="Desfazer (Ctrl+Z)" onclick="desfazer()" id="undo-btn" disabled>↩</button>
+    <div style="display:flex;gap:1px;background:rgba(255,255,255,.12);border-radius:5px;overflow:hidden;margin:0 2px">
+      <button onclick="setFont('sm')" style="background:transparent;border:none;color:rgba(255,255,255,.85);cursor:pointer;padding:4px 7px;font-size:10px;font-weight:700" title="Fonte menor">A−</button>
+      <button onclick="setFont('md')" style="background:transparent;border:none;color:rgba(255,255,255,.85);cursor:pointer;padding:4px 7px;font-size:13px;font-weight:700;border-left:1px solid rgba(255,255,255,.15);border-right:1px solid rgba(255,255,255,.15)" title="Fonte padrão">A</button>
+      <button onclick="setFont('lg')" style="background:transparent;border:none;color:rgba(255,255,255,.85);cursor:pointer;padding:4px 7px;font-size:16px;font-weight:700" title="Fonte maior">A+</button>
+    </div>
+    <button class="ico-btn" id="theme-btn" title="Alternar tema" onclick="toggleTheme()">🌙</button>
+  </div>
 </div>
-<div id="main"></div>
+<div id="app" style="display:flex;flex:1;overflow:hidden">
+  <div id="main" style="flex:1;overflow-y:auto;padding:1rem;max-width:1160px;width:100%;margin:0 auto"></div>
+  <div id="viewer-panel" style="width:0;flex-shrink:0;background:var(--card);border-left:.5px solid var(--border);display:flex;flex-direction:column;transition:width .25s;overflow:hidden">
+    <div id="viewer-hd" style="padding:9px 12px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg)">
+      <h4 id="viewer-title" style="font-size:var(--fs-sm);font-weight:500;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px">Visualizador</h4>
+      <div style="display:flex;gap:5px;align-items:center">
+        <button class="btn bs bsm" id="viewer-dl-btn" onclick="downloadViewer()" style="display:none">⬇</button>
+        <button class="ico-btn" style="color:var(--text2)" onclick="fecharViewer()">✕</button>
+      </div>
+    </div>
+    <div id="viewer-pdf-nav" style="display:none;padding:7px 12px;border-bottom:.5px solid var(--border);display:none;align-items:center;gap:8px;flex-shrink:0;background:var(--bg)">
+      <button class="btn bs bsm" onclick="viewerPdfNav(-1)">‹</button>
+      <span id="viewer-pdf-pg" style="font-size:var(--fs-sm);color:var(--text3)">1/1</span>
+      <button class="btn bs bsm" onclick="viewerPdfNav(1)">›</button>
+      <div style="margin-left:auto;display:flex;gap:4px">
+        <button class="btn bs bsm" onclick="viewerZoomF(-0.2)">−</button>
+        <span id="viewer-zoom-lbl" style="font-size:var(--fs-sm);color:var(--text3);padding:3px 5px">100%</span>
+        <button class="btn bs bsm" onclick="viewerZoomF(0.2)">+</button>
+      </div>
+    </div>
+    <div id="viewer-body" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+      <div id="viewer-canvas-wrap" style="display:none;flex:1;overflow:auto;background:#888;padding:10px"><canvas id="viewer-canvas" style="display:block;max-width:100%;box-shadow:0 2px 12px rgba(0,0,0,.3)"></canvas></div>
+      <img id="viewer-img" style="display:none;max-width:100%;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,.2);margin:10px">
+      <div id="viewer-other" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;color:var(--text3)">
+        <div style="font-size:32px;margin-bottom:10px">📄</div>
+        <div id="viewer-other-name" style="font-weight:500;margin-bottom:8px;color:var(--text)"></div>
+        <p style="font-size:var(--fs-sm);margin-bottom:12px">Este tipo de arquivo não pode ser visualizado.<br>Clique para baixar.</p>
+        <button class="btn bp" onclick="downloadViewer()">⬇ Baixar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="undo-bar"><span id="undo-msg">Ação desfeita</span><button onclick="confirmarDesfazer()">Desfazer</button><button onclick="fecharUndo()" style="background:transparent;color:rgba(255,255,255,.6);border:none;cursor:pointer;font-size:16px">×</button></div>
 <div id="toast"></div>
 
 <script>
@@ -125,401 +254,479 @@ textarea{resize:vertical}
 const SUPABASE_URL = document.querySelector('meta[name="sb-url"]')?.content || '';
 const SUPABASE_KEY = document.querySelector('meta[name="sb-key"]')?.content || '';
 const NETLIFY_BASE = '';
-
-// PDF.js worker
-if (typeof pdfjsLib !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-}
+if (typeof pdfjsLib !== 'undefined') pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 // ── PWA ───────────────────────────────────────────────────────────────────
 let pwaPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault(); pwaPrompt = e;
-  document.getElementById('pwa-banner').style.display = 'flex';
-});
-document.getElementById('pwa-install-btn').onclick = async () => {
-  if (!pwaPrompt) return;
-  pwaPrompt.prompt();
-  const { outcome } = await pwaPrompt.userChoice;
-  if (outcome === 'accepted') document.getElementById('pwa-banner').style.display = 'none';
-};
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
-}
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pwaPrompt = e; document.getElementById('pwa-banner').style.display='flex'; });
+document.getElementById('pwa-btn').onclick = async () => { if(!pwaPrompt) return; pwaPrompt.prompt(); const {outcome} = await pwaPrompt.userChoice; if(outcome==='accepted') document.getElementById('pwa-banner').style.display='none'; };
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
-// ── SUPABASE CLIENT ───────────────────────────────────────────────────────
+// ── TEMA & FONTE ──────────────────────────────────────────────────────────
+function toggleTheme() {
+  const d = document.documentElement;
+  const isDark = d.getAttribute('data-theme') === 'dark';
+  d.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+}
+function setFont(s) {
+  document.documentElement.setAttribute('data-font', s);
+  localStorage.setItem('font', s);
+}
+// restaurar preferências
+(function(){ const t=localStorage.getItem('theme'), f=localStorage.getItem('font');
+  if(t){ document.documentElement.setAttribute('data-theme',t); document.getElementById('theme-btn').textContent=t==='dark'?'☀️':'🌙'; }
+  if(f) document.documentElement.setAttribute('data-font',f);
+})();
+
+// ── SUPABASE ──────────────────────────────────────────────────────────────
 const sb = {
   async req(method, path, body) {
-    if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Supabase não configurado');
+    if (!SUPABASE_URL||!SUPABASE_KEY) throw new Error('Supabase não configurado');
     const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
       method,
-      headers: {
-        'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal',
-      },
+      headers: {'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':'return=minimal'},
       body: body ? JSON.stringify(body) : undefined,
     });
     if (!r.ok) throw new Error(await r.text());
-    return r.status === 204 ? null : r.json();
+    return r.status===204 ? null : r.json();
   },
-  get: p => sb.req('GET', p),
-  post: (p, b) => sb.req('POST', p, b),
-  patch: (p, b) => sb.req('PATCH', p, b),
-  del: p => sb.req('DELETE', p),
-  async upload(bucket, path, file) {
-    const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
-      method: 'POST',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type },
-      body: file,
-    });
-    if (!r.ok) throw new Error(await r.text());
+  get: p => sb.req('GET',p),
+  post: (p,b) => sb.req('POST',p,b),
+  patch: (p,b) => sb.req('PATCH',p,b),
+  del: p => sb.req('DELETE',p),
+  async upload(bucket,path,file) {
+    const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`,{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':file.type},body:file});
+    if(!r.ok) throw new Error(await r.text());
     return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
   },
 };
 
 // ── CONSTANTES ────────────────────────────────────────────────────────────
-const MET = [
-  'a) Minuciosos exames dos documentos questionados (item 5.1)',
-  'b) Minuciosos exames dos padrões de confronto (itens 5.2-A e 5.2-B)',
-  'c) Cotejos e transcotejos entre documentos questionados e respectivos paradigmas',
-  'd) Utilização de aparelhamento especializado e softwares adequados (Adendo 5)',
-  'e) Determinação de convergências e divergências (Item 6)',
-  'f) Coordenação dos dados técnicos apurados',
-  'g) Preparação das ilustrações necessárias',
-  'h) Elaboração do laudo pericial grafotécnico',
-  'i) Revisão do laudo',
-  'j) Apresentação do laudo ao juizado competente',
-];
-
-const EOG_N = ['Ritmo','Dinamismo','Velocidade','Habilidade','Espontaneidade','Ataques','Remates','Pressão e Progressão','Hábitos Gráficos','Momentos Gráficos','Comportamento de Base','Comportamento de Pauta','Inclinação Axial','Espaçamentos Gráficos','Tendência de Punho','Trajetórias','Calibres','Gladiolagem','Gramas','Proporcionalidade','Sobreposição de Peças','Microscopia','Separação','Cronologia','Vídeos','Imagem do Grafismo','Escavalamento','Cultura Gráfica','Maneirismos Gráficos','Afinamento','Grafogeometria','Traçados das Letras','Polimorfismo Gráfico','Caligrafia','Diversos'];
-const EOG_G = [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
-const EOG_DICAS = ['Regularidade e cadência dos movimentos. Punhos treinados têm ritmo constante; falsificações tendem a ser irregulares.','Vigor e energia imprimidos no traçado. Escritas espontâneas são dinâmicas; cópias costumam ser lentas.','Rapidez de execução. Velocidade afeta ataques, remates e curvas — difícil de simular.','Grau de coordenação psicomotora: canhestro, pouco habilidoso, médio, habilidoso ou muito habilidoso.','Naturalidade e fluidez. Traçados espontâneos não têm hesitações ou tremores artificiais.','Modo como o instrumento toca a superfície no início de cada traço.','Finalização dos traços. Remates em arpão, gancho, cortados ou afuselados são hábitos pessoais.','Força sobre o papel e continuidade do movimento. Analisado pelo sulco; prejudicado em cópias.','Particularidades individuais e repetitivas: laçadas, pontos de apoio, formas incomuns.','Quantidade e posição das levantadas da caneta. Padrão próprio de cada escritor.','Relação dos grafismos com a linha de base: regular, irregular, ascendente ou descendente.','Como a escrita se relaciona com a pauta do papel.','Ângulo de inclinação dos eixos das letras: dextrogira, sinistrogira ou vertical.','Distâncias entre letras e palavras. Hábito automatizado que persiste mesmo em disfarces.','Direção predominante dos movimentos: para a direita, esquerda ou mista.','Caminho percorrido na construção de cada letra, incluindo sentido horário/anti-horário.','Dimensão vertical dos grafismos. Medido nas não-passantes para maior precisão.','Variação de altura e calibre ao longo da linha: constante, crescente ou decrescente.','Unidades gráficas que compõem a assinatura. Número, forma e disposição são personalíssimos.','Relação entre dimensões: maiúsculas vs. minúsculas, passantes vs. não-passantes.','Sobreposição das peças PQ e PC para verificar coincidência de traçados.','Análise com instrumentos de ampliação. Revela detalhes de pressão invisíveis a olho nu.','Ligação ou não entre letras. Escritores têm padrão estável de letras unidas ou separadas.','Análise temporal: assinaturas de épocas diferentes devem apresentar evolução natural.','Registro em vídeo da coleta confirma naturalidade da escrita.','Aspecto visual geral: elegância, complexidade e imagem característica da assinatura.','Sobreposição de traços em pontos específicos. Padrão idiossincrático do punho.','Nível de desenvolvimento gráfico: infantil, canhestro, emancipado ou senil.','Peculiaridades únicas e repetitivas: pontuação, estilo de certas letras, ornamentos pessoais.','Redução gradual da espessura do traço. Relacionado à pressão e velocidade.','Análise geométrica: ângulos, proporções e construções que caracterizam o punho.','Forma específica de construção de cada letra. Variações em a, d, g são identificadoras.','Existência de múltiplas formas para uma mesma letra. Ausência pode indicar cópia.','Legibilidade e cuidado com a forma dos caracteres.','Outros elementos gráficos relevantes não classificados nos critérios anteriores.'];
-const TIPOS_DOC = ['Cédula de Crédito Bancário','Proposta de Abertura de Limite de Crédito','Contrato de Empréstimo Consignado','Contrato de Cartão de Crédito','Procuração','Declaração','Escritura Pública','Cheque','Outro'];
+const MET=['a) Minuciosos exames dos documentos questionados (item 5.1)','b) Minuciosos exames dos padrões de confronto (itens 5.2-A e 5.2-B)','c) Cotejos e transcotejos entre documentos questionados e respectivos paradigmas','d) Utilização de aparelhamento especializado e softwares adequados (Adendo 5)','e) Determinação de convergências e divergências (Item 6)','f) Coordenação dos dados técnicos apurados','g) Preparação das ilustrações necessárias','h) Elaboração do laudo pericial grafotécnico','i) Revisão do laudo','j) Apresentação do laudo ao juizado competente'];
+const EOG_N=['Ritmo','Dinamismo','Velocidade','Habilidade','Espontaneidade','Ataques','Remates','Pressão e Progressão','Hábitos Gráficos','Momentos Gráficos','Comportamento de Base','Comportamento de Pauta','Inclinação Axial','Espaçamentos Gráficos','Tendência de Punho','Trajetórias','Calibres','Gladiolagem','Gramas','Proporcionalidade','Sobreposição de Peças','Microscopia','Separação','Cronologia','Vídeos','Imagem do Grafismo','Escavalamento','Cultura Gráfica','Maneirismos Gráficos','Afinamento','Grafogeometria','Traçados das Letras','Polimorfismo Gráfico','Caligrafia','Diversos'];
+const EOG_G=[0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+const EOG_DICAS=['Regularidade e cadência dos movimentos.','Vigor e energia no traçado.','Rapidez de execução.','Coordenação psicomotora.','Naturalidade e fluidez.','Modo de início do traço.','Finalização dos traços.','Força sobre o papel.','Particularidades individuais.','Levantadas da caneta.','Relação com a linha de base.','Relação com a pauta.','Ângulo de inclinação dos eixos.','Distâncias entre letras e palavras.','Direção predominante dos movimentos.','Percurso de construção das letras.','Dimensão vertical dos grafismos.','Variação de altura ao longo da linha.','Unidades gráficas da assinatura.','Relação entre dimensões dos elementos.','Sobreposição de PQ e PC.','Análise com ampliação.','Ligação ou não entre letras.','Análise temporal das peças.','Registro em vídeo da coleta.','Aspecto visual geral da assinatura.','Sobreposição de traços em pontos específicos.','Nível de desenvolvimento gráfico.','Peculiaridades únicas e repetitivas.','Redução gradual da espessura.','Análise geométrica dos grafismos.','Forma de construção de cada letra.','Múltiplas formas para uma mesma letra.','Legibilidade e cuidado.','Outros elementos gráficos relevantes.'];
+const TIPOS_DOC=['Cédula de Crédito Bancário','Proposta de Abertura de Limite de Crédito','Contrato de Empréstimo Consignado','Contrato de Cartão de Crédito','Procuração','Declaração','Escritura Pública','Cheque','Outro'];
+const CORES_MESA=['#e74c3c','#2980b9','#27ae60','#f39c12','#8e44ad','#000000','#ffffff'];
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 const S = {
-  view: 'lista', sub: 'info',
-  processos: [], proc: null,
-  pqId: null,      // PQ em análise
-  mesaTool: 'seta', mesaCor: '#e74c3c', mesaEsp: 2,
-  mesaZoom: 1, mesaOX: 0, mesaOY: 0,
-  mesaAnots: [],   // anotações do PQ ativo
-  mesaImg: null,   // ImageBitmap atual
-  mesaImgNome: '',
-  mesaImgStack: [], // histórico de recortes
-  mesaCropRect: null, mesaCropDrawing: false, mesaCropStart: null, mesaCropCurrent: null,
-  mesaCriterioAtivo: null,
-  mesaPanning: false, mesaPanStart: null,
-  drawing: false, dSt: null, dCur: null,
-  pdfDoc: null, pdfPage: 1, pdfTotal: 0,
-  novoPQ: {}, novoPG: {},
+  view:'dashboard', sub:'info',
+  processos:[], proc:null, pqId:null,
+  kanbanCols:[], modelos:[], categorias:[],
+  feed:[], feedNovaMsg:'',
+  undoStack:[],
+  // mesa
+  mesaTool:'seta', mesaCor:'#e74c3c', mesaEsp:2,
+  mesaZoom:1, mesaOX:0, mesaOY:0,
+  mesaAnots:[], mesaImg:null, mesaImgNome:'',
+  mesaImgStack:[], mesaCropRect:null, mesaCropDrawing:false,
+  mesaCropStart:null, mesaCropCurrent:null,
+  mesaCriterioAtivo:null, mesaPanning:false, mesaPanStart:null,
+  drawing:false, dSt:null, dCur:null,
+  pdfDoc:null, pdfPage:1, pdfTotal:0,
+  // kanban drag
+  dragProcId:null, dragOverCol:null,
+  // modal
+  modalType:null, modeloEdit:null,
 };
 
 // ── UTILS ─────────────────────────────────────────────────────────────────
-function novoEOG() { return EOG_N.map((_,i) => ({criterio_id:i+1,resultado:'SA',consideracoes:''})); }
-function toast(msg, dur=2500) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.style.display = 'block';
-  clearTimeout(t._t); t._t = setTimeout(()=>t.style.display='none', dur);
-}
-function sv(v) { S.view=v; render(); }
-function stab(t) { S.sub=t; S.pqId=null; render(); }
+function novoEOG(){ return EOG_N.map((_,i)=>({criterio_id:i+1,resultado:'SA',consideracoes:''})); }
+function toast(msg,dur=2400){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',dur); }
+function sv(v){ S.view=v; render(); }
+function stab(t){ S.sub=t; S.pqId=null; render(); }
+function fmtDate(iso){ if(!iso)return''; try{ return new Date(iso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){return iso;} }
 
-// ── RENDER PRINCIPAL ──────────────────────────────────────────────────────
+// ── HISTÓRICO / DESFAZER ─────────────────────────────────────────────────
+function pushUndo(acao, dados, label) {
+  S.undoStack.push({acao, dados, label});
+  if (S.undoStack.length > 30) S.undoStack.shift();
+  document.getElementById('undo-btn').disabled = false;
+}
+function desfazer() {
+  const u = S.undoStack[S.undoStack.length-1];
+  if (!u) return;
+  document.getElementById('undo-msg').textContent = `Desfazer: ${u.label}`;
+  document.getElementById('undo-bar').style.display = 'flex';
+}
+function confirmarDesfazer() {
+  const u = S.undoStack.pop();
+  if (!u) return;
+  fecharUndo();
+  if (u.acao === 'delete_pq') {
+    S.proc.pqs = [u.dados, ...(S.proc.pqs||[])];
+    try { sb.post('bee3d_peritare_pqs', u.dados); } catch(e){}
+    registrarFeed(u.dados.processo_id,'↩','Ação desfeita',`PQ restaurado: ${u.dados.tipo} nº ${u.dados.numero}`);
+  } else if (u.acao === 'delete_pg') {
+    S.proc.paradigmas = [u.dados, ...(S.proc.paradigmas||[])];
+    try { sb.post('bee3d_peritare_paradigmas', u.dados); } catch(e){}
+  } else if (u.acao === 'status_proc') {
+    if (S.proc && S.proc.id === u.dados.id) S.proc.status = u.dados.status;
+    try { sb.patch(`bee3d_peritare_processos?id=eq.${u.dados.id}`,{status:u.dados.status}); } catch(e){}
+  }
+  if (S.undoStack.length === 0) document.getElementById('undo-btn').disabled = true;
+  render();
+  toast('Ação desfeita ✓');
+}
+function fecharUndo(){ document.getElementById('undo-bar').style.display='none'; }
+document.addEventListener('keydown', e => { if((e.ctrlKey||e.metaKey)&&e.key==='z'){ e.preventDefault(); if(S.undoStack.length) desfazer(); } });
+
+// ── FEED ──────────────────────────────────────────────────────────────────
+async function registrarFeed(procId, icone, titulo, descricao='', tipo='auto') {
+  const entry = { processo_id:procId, tipo, icone, titulo, descricao };
+  try { await sb.post('bee3d_peritare_feed', entry); } catch(e){}
+  if (S.proc?.id === procId) {
+    S.feed.unshift({...entry, created_at: new Date().toISOString()});
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
 function render() {
   document.getElementById('nav').innerHTML = buildNav();
   const m = document.getElementById('main');
-  if (S.view === 'lista') m.innerHTML = rLista();
-  else if (S.view === 'proc') { m.innerHTML = rProc(); if (S.sub === 'mesa') setTimeout(initMesa, 50); }
+  if (S.view==='dashboard') m.innerHTML = rDash();
+  else if (S.view==='proc') { m.innerHTML = rProc(); if(S.sub==='mesa') setTimeout(initMesa,50); }
+  else if (S.view==='modelos') m.innerHTML = rModelos();
 }
 function buildNav() {
-  const vs = [{v:'lista',l:'Processos'}];
-  if (S.proc) vs.push({v:'proc',l:S.proc.numero ? S.proc.numero.substring(0,15)+'…' : 'Processo'});
-  return vs.map(({v,l}) => `<button class="nbtn ${S.view===v?'on':''}" onclick="sv('${v}')">${l}</button>`).join('');
+  const vs=[{v:'dashboard',l:'Dashboard'},{v:'modelos',l:'Petições & E-mails'}];
+  if(S.proc) vs.push({v:'proc',l:(S.proc.numero||'Processo').substring(0,18)+'…'});
+  return vs.map(({v,l})=>`<button class="nbtn ${S.view===v?'on':''}" onclick="sv('${v}')">${l}</button>`).join('');
 }
 
-// ── LISTA ─────────────────────────────────────────────────────────────────
-function rLista() {
+// ── DASHBOARD ─────────────────────────────────────────────────────────────
+function rDash() {
   const ps = S.processos;
+  const total=ps.length, concluidos=ps.filter(p=>p.status==='concluido').length, analise=ps.filter(p=>p.status==='analise').length;
   return `
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
     <div>
-      <div style="font-size:15px;font-weight:500;color:var(--navy)">Processos periciais</div>
-      <div style="font-size:11px;color:var(--text3)">Carlos Eduardo Soares Menezes · CRA-RJ 20-60660</div>
+      <div style="font-size:16px;font-weight:500;color:var(--navy)">Dashboard</div>
+      <div style="font-size:var(--fs-sm);color:var(--text3)">Carlos Eduardo Soares Menezes · CRA-RJ 20-60660</div>
     </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn bs bsm" onclick="carregarProcessos()">↻</button>
+    <div style="display:flex;gap:7px">
+      <button class="btn bs bsm" onclick="carregarTudo()">↻</button>
       <button class="btn bp" onclick="novoProcesso()">+ Novo processo</button>
     </div>
   </div>
-  ${ps.length===0?`<div class="card"><div class="cbd" style="text-align:center;padding:2.5rem;color:var(--text3)">Nenhum processo. Clique em "+ Novo processo" para começar.</div></div>`:''}
-  ${ps.map(p => {
-    const total=(p.pqs||[]).length, done=(p.pqs||[]).filter(q=>q.status==='done').length;
-    const pct=total?Math.round(done/total*100):0;
-    const stC={pendente:'bw',analise:'bb',concluido:'bk'};
-    return `<div class="card"><div class="cbd">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px">
-            <span style="font-family:monospace;font-size:11px;color:var(--navy);font-weight:500">${p.numero}</span>
-            <span class="b ${stC[p.status]||'bgr'}">${p.status==='analise'?'Em análise':p.status==='concluido'?'Concluído':'Aguardando'}</span>
+
+  <!-- métricas -->
+  <div class="g4" style="margin-bottom:1rem">
+    ${[['Total',total,'var(--navy)'],['Em análise',analise,'#1e40af'],['Concluídos',concluidos,'#14532d'],['Aguardando',ps.filter(p=>p.status==='pendente').length,'#7c5c00']].map(([l,v,c])=>`
+    <div class="card"><div class="cbd" style="padding:11px 13px">
+      <div style="font-size:var(--fs-sm);color:var(--text3)">${l}</div>
+      <div style="font-size:24px;font-weight:500;color:${c}">${v}</div>
+    </div></div>`).join('')}
+  </div>
+
+  <!-- kanban -->
+  <div class="card" style="overflow:visible">
+    <div class="chd">
+      <h3>🗂 Kanban de processos</h3>
+      <button class="btn bs bsm" onclick="addKanbanCol()">+ Coluna</button>
+    </div>
+    <div class="cbd" style="padding:10px;overflow:visible">
+      <div id="kanban-wrap">
+        ${S.kanbanCols.map(col => `
+        <div class="kan-col" id="kcol-${col.id}" ondragover="kanDragOver(event,'${col.id}')" ondrop="kanDrop(event,'${col.id}')" ondragleave="kanDragLeave('${col.id}')">
+          <div class="kan-col-hd" style="background:${col.cor}22;border-top:3px solid ${col.cor}">
+            <span>${col.titulo}</span>
+            <div style="display:flex;gap:3px">
+              <button class="ico-btn" style="font-size:11px;padding:2px 5px" onclick="editKanbanCol('${col.id}','${col.titulo}','${col.cor}')" title="Editar">✏️</button>
+              <button class="ico-btn" style="font-size:11px;padding:2px 5px" onclick="delKanbanCol('${col.id}')" title="Remover">×</button>
+            </div>
           </div>
-          <div style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.autor} <span style="color:var(--text3)">vs</span> ${p.reu}</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:1px">${p.comarca||'—'} · ${p.vara||'—'}</div>
-          <div class="prog"><div class="prog-f" style="width:${pct}%"></div></div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">${done}/${total} PQs analisados</div>
+          <div class="kan-col-body" id="kbody-${col.id}">
+            <div class="kan-drop-target" id="kdt-${col.id}"></div>
+            ${ps.filter(p=>p.status===col.id||p.kanban_col===col.id).map(p=>`
+            <div class="kan-card" draggable="true" ondragstart="kanDragStart(event,'${p.id}')" onclick="abrirProcesso('${p.id}')">
+              <div style="font-size:var(--fs-sm);font-weight:500;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.numero||'Sem número'}</div>
+              <div style="font-size:calc(var(--fs-sm) - 1px);color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.autor||'—'}</div>
+              <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap">
+                ${((p.pqs||[]).length)?`<span class="b bgr">${(p.pqs||[]).filter(q=>q.status==='done').length}/${(p.pqs||[]).length} PQs</span>`:''}
+              </div>
+            </div>`).join('')}
+          </div>
+        </div>`).join('')}
+        <div class="kan-add-col">
+          <button class="btn bs" style="white-space:nowrap" onclick="addKanbanCol()">+ Nova coluna</button>
         </div>
-        <button class="btn bp" onclick="abrirProcesso('${p.id}')">Abrir →</button>
       </div>
-    </div></div>`;
-  }).join('')}`;
+    </div>
+  </div>
+
+  <!-- lista de processos -->
+  <div class="card">
+    <div class="chd"><h3>Todos os processos</h3><span style="font-size:var(--fs-sm);color:var(--text3)">${total} processo${total!==1?'s':''}</span></div>
+    <div>
+      ${ps.length===0?`<div style="text-align:center;padding:2rem;color:var(--text3);font-size:var(--fs-sm)">Nenhum processo. Clique em "+ Novo processo".</div>`:''}
+      ${ps.map((p,i)=>{
+        const done=(p.pqs||[]).filter(q=>q.status==='done').length, tot=(p.pqs||[]).length;
+        const pct=tot?Math.round(done/tot*100):0;
+        const stC={cadastramento:'bgr',pendente:'bw',analise:'bb',concluido:'bk'};
+        return `<div style="padding:11px 13px;${i<ps.length-1?'border-bottom:.5px solid var(--border)':''};display:flex;align-items:center;gap:10px">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px">
+              <span style="font-family:monospace;font-size:var(--fs-sm);color:var(--navy);font-weight:500">${p.numero}</span>
+              <span class="b ${stC[p.status]||'bgr'}">${p.status==='cadastramento'?'Em cadastramento':p.status==='analise'?'Em análise':p.status==='concluido'?'Concluído':'Aguardando'}</span>
+            </div>
+            <div style="font-size:var(--fs);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.autor} <span style="color:var(--text3)">vs</span> ${p.reu}</div>
+            <div style="font-size:var(--fs-sm);color:var(--text3);margin-top:1px">${p.comarca||'—'} · ${p.vara||'—'}</div>
+            <div class="prog"><div class="prog-f" style="width:${pct}%"></div></div>
+            <div style="font-size:calc(var(--fs-sm) - 1px);color:var(--text3);margin-top:2px">${done}/${tot} PQs analisados</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <button class="btn bp bsm" onclick="abrirProcesso('${p.id}')">Abrir →</button>
+          </div>
+        </div>`;}).join('')}
+    </div>
+  </div>`;
 }
 
 // ── PROCESSO ──────────────────────────────────────────────────────────────
 function rProc() {
-  const p = S.proc; if (!p) return '';
-  const TABS = [
-    {id:'info',l:'1 · Dados'},{id:'pqs',l:'2 · Documentos PQ'},
-    {id:'met',l:'3 · Metodologia'},{id:'par',l:'5.2 · Paradigmas'},
-    {id:'anal',l:'6 · Análise'},{id:'mesa',l:'🖊 Mesa gráfica'},
-    {id:'laudo',l:'Laudo'},
-  ];
-  const done=(p.pqs||[]).filter(q=>q.status==='done').length, total=(p.pqs||[]).length;
+  const p=S.proc; if(!p) return '';
+  const TABS=[{id:'info',l:'1 · Dados'},{id:'pqs',l:'2 · Docs PQ'},{id:'met',l:'3 · Metodologia'},{id:'par',l:'5.2 · Paradigmas'},{id:'anal',l:'6 · EOG'},{id:'mesa',l:'🖊 Mesa'},{id:'laudo',l:'Laudo'},{id:'feed',l:'📋 Timeline'}];
+  const done=(p.pqs||[]).filter(q=>q.status==='done').length, tot=(p.pqs||[]).length;
   return `
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem">
     <div>
       <div style="font-size:14px;font-weight:500;color:var(--navy)">${p.numero||'Novo processo'}</div>
-      <div style="font-size:11px;color:var(--text3)">${p.autor||'—'} vs ${p.reu||'—'} · ${done}/${total} PQs analisados</div>
+      <div style="font-size:var(--fs-sm);color:var(--text3)">${p.autor||'—'} vs ${p.reu||'—'} · ${done}/${tot} PQs analisados</div>
     </div>
-    <div style="display:flex;gap:7px">
-      <button class="btn bg bsm" onclick="sv('lista')">← Processos</button>
-      <button class="btn bp bsm" onclick="exportarLaudo()">⬇ Exportar laudo</button>
+    <div style="display:flex;gap:6px">
+      <button class="btn bg bsm" onclick="sv('dashboard')">← Dashboard</button>
+      <button class="btn bp bsm" onclick="exportarLaudo()">⬇ Laudo</button>
     </div>
   </div>
   <div class="tbar">${TABS.map(t=>`<div class="tab ${S.sub===t.id?'on':''}" onclick="stab('${t.id}')">${t.l}</div>`).join('')}</div>
   <div id="tc">${rTab()}</div>`;
 }
 
-function rTab() {
-  const t = S.sub;
-  if (t==='info') return rInfo();
-  if (t==='pqs') return rPQs();
-  if (t==='met') return rMet();
-  if (t==='par') return rPar();
-  if (t==='anal') return rAnal();
-  if (t==='mesa') return rMesa();
-  if (t==='laudo') return rLaudoTab();
+function rTab(){
+  const t=S.sub;
+  if(t==='info') return rInfo();
+  if(t==='pqs') return rPQs();
+  if(t==='met') return rMet();
+  if(t==='par') return rPar();
+  if(t==='anal') return rAnal();
+  if(t==='mesa') return rMesa();
+  if(t==='laudo') return rLaudoTab();
+  if(t==='feed') return rFeed();
   return '';
 }
 
 // ── TAB INFO ──────────────────────────────────────────────────────────────
-function rInfo() {
-  const p = S.proc;
-  return `
-  <div class="ibox">Estes campos alimentam a Seção 1 (Apresentação) e o cabeçalho do laudo.</div>
-  <div class="card"><div class="chd"><h3>Processo judicial</h3><button class="btn bp bsm" onclick="salvarInfo()">Salvar</button></div><div class="cbd">
-    <div class="g2" style="margin-bottom:9px">
-      <div><label class="lbl">Número CNJ</label><input id="f-num" value="${p.numero||''}" placeholder="0000000-00.0000.0.00.0000"></div>
-      <div><label class="lbl">Status</label><select id="f-st">
-        <option ${p.status==='pendente'?'selected':''} value="pendente">Aguardando</option>
-        <option ${p.status==='analise'?'selected':''} value="analise">Em análise</option>
-        <option ${p.status==='concluido'?'selected':''} value="concluido">Concluído</option>
-      </select></div>
+function rInfo(){
+  const p=S.proc;
+  const arqs=S.arquivos||[];
+  const pqArqs=arqs.filter(a=>a.classificacao==='pq');
+  const pgArqs=arqs.filter(a=>a.classificacao==='paradigma_pce'||a.classificacao==='paradigma_pca');
+  const outArqs=arqs.filter(a=>!['pq','paradigma_pce','paradigma_pca'].includes(a.classificacao));
+  return`
+  <div class="g2" style="margin-bottom:1rem;align-items:start">
+    <div>
+      <div class="card"><div class="chd"><h3>Dados do processo</h3><button class="btn bp bsm" onclick="salvarInfo()">Salvar</button></div><div class="cbd">
+        <div class="g2" style="margin-bottom:9px"><div><label class="lbl">Número CNJ</label><input id="f-num" data-mask="cnj" value="${p.numero||''}" placeholder="0000000-00.0000.0.00.0000"></div><div><label class="lbl">Status</label><select id="f-st"><option ${p.status==='cadastramento'?'selected':''} value="cadastramento">Em cadastramento</option><option ${p.status==='pendente'?'selected':''} value="pendente">Aguardando</option><option ${p.status==='analise'?'selected':''} value="analise">Em análise</option><option ${p.status==='concluido'?'selected':''} value="concluido">Concluído</option></select></div></div>
+        <div class="g2" style="margin-bottom:9px"><div><label class="lbl">Autor(a)</label><input id="f-aut" value="${p.autor||''}"></div><div><label class="lbl">Réu</label><input id="f-reu" value="${p.reu||''}"></div></div>
+        <div class="g2" style="margin-bottom:9px"><div><label class="lbl">Vara</label><input id="f-vara" value="${p.vara||''}" placeholder="1ª Vara Cível"></div><div><label class="lbl">Comarca</label><input id="f-com" value="${p.comarca||''}" placeholder="Duque de Caxias - RJ"></div></div>
+        <div class="g2"><div><label class="lbl">ID doc. nomeação</label><input id="f-nid" value="${p.nomeacao_id||''}" placeholder="ex: 215046780"></div><div><label class="lbl">Data nomeação</label><input id="f-ndt" data-mask="data" value="${p.nomeacao_data||''}" placeholder="DD/MM/AAAA"></div></div>
+      </div></div>
     </div>
-    <div class="g2" style="margin-bottom:9px">
-      <div><label class="lbl">Autor(a)</label><input id="f-aut" value="${p.autor||''}"></div>
-      <div><label class="lbl">Réu</label><input id="f-reu" value="${p.reu||''}"></div>
-    </div>
-    <div class="g2">
-      <div><label class="lbl">Vara</label><input id="f-vara" value="${p.vara||''}" placeholder="1ª Vara Cível"></div>
-      <div><label class="lbl">Comarca</label><input id="f-com" value="${p.comarca||''}" placeholder="Duque de Caxias - RJ"></div>
-    </div>
-  </div></div>
-  <div class="card"><div class="chd"><h3>Nomeação pericial</h3></div><div class="cbd">
-    <div class="ibox">Alimenta "nomeado por este Juízo através do documento id. XXXX, de YY/YY/YYYY" na Seção 1.</div>
-    <div class="g2">
-      <div><label class="lbl">ID do documento de nomeação</label><input id="f-nid" value="${p.nomeacao_id||''}" placeholder="ex: 215046780"></div>
-      <div><label class="lbl">Data da nomeação</label><input id="f-ndt" value="${p.nomeacao_data||''}" placeholder="DD/MM/AAAA"></div>
-    </div>
-  </div></div>`;
-}
-
-// ── TAB PQs ───────────────────────────────────────────────────────────────
-function rPQs() {
-  const p = S.proc;
-  return `
-  <div class="ibox">Cada documento = um PQ numerado no laudo. O PDF enviado fica disponível para recorte de assinatura na Mesa Gráfica.</div>
-  ${(p.pqs||[]).map((pq,i) => `
-  <div class="card" style="${pq.status==='done'?'border-color:#86efac':''};${pq.id===S.pqId?'border-color:var(--gold)':''}">
-    <div class="cbd">
-      <div style="display:flex;align-items:flex-start;gap:9px">
-        <div class="nb">${i+1}</div>
-        <div style="flex:1">
-          <div style="font-weight:500;color:var(--navy);font-size:12px">${pq.tipo||'Documento'} nº ${pq.numero||'—'}</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:1px">${pq.data_doc||'—'} · fls. ${pq.fls||'—'} · ID proc. ${pq.id_proc||'—'}</div>
-          <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap">
-            <span class="b ${pq.status==='done'?'bk':'bgr'}">${pq.status==='done'?'✓ Analisado':'Pendente'}</span>
-            <span class="b ${pq.sig_path?'bb':'bgr'}">${pq.sig_path?'✓ Assinatura':'Sem recorte'}</span>
-            <span class="b ${pq.pdf_path?'bk':'bgr'}">${pq.pdf_path?'✓ PDF':'Sem PDF'}</span>
-          </div>
+    <div>
+      <div class="card"><div class="chd"><h3>📁 Upload de arquivos</h3></div><div class="cbd">
+        <div class="ibox">Envie todos os arquivos do processo aqui (PDFs, contratos, imagens, planilhas). Classifique cada um e a plataforma os vincula às abas corretas.</div>
+        <div class="drop-zone" id="drop-zone">
+          <div style="font-size:26px;margin-bottom:5px">📂</div>
+          <div style="font-size:var(--fs);font-weight:500;margin-bottom:2px">Arraste ou clique para selecionar</div>
+          <div style="font-size:var(--fs-sm);color:var(--text3)">PDF, imagens, DOCX, XLSX — múltiplos de uma vez</div>
+          <input type="file" multiple accept="*/*" onchange="uploadArquivos(event)">
         </div>
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <button class="btn bs bsm" onclick="abrirAnalise('${pq.id}')">Analisar</button>
-          <button class="btn bs bsm" onclick="abrirMesaPQ('${pq.id}')">🖊 Mesa</button>
-          <button class="btn bd bsm" onclick="remPQ('${pq.id}')">×</button>
-        </div>
-      </div>
+      </div></div>
     </div>
-  </div>`).join('')}
-  <div class="card" style="border:1.5px dashed var(--gold)">
-    <div class="chd"><h3>+ Adicionar documento questionado</h3></div>
-    <div class="cbd">
-      <div class="g2" style="margin-bottom:8px">
-        <div><label class="lbl">Tipo do documento</label>
-          <select id="npq-tipo"><option value="">Selecione…</option>${TIPOS_DOC.map(t=>`<option>${t}</option>`).join('')}</select>
-        </div>
-        <div><label class="lbl">Número do contrato</label><input id="npq-num" placeholder="ex: 582434573"></div>
-      </div>
-      <div class="g3" style="margin-bottom:8px">
-        <div><label class="lbl">Data</label><input id="npq-data" placeholder="DD/MM/AAAA"></div>
-        <div><label class="lbl">Fls.</label><input id="npq-fls" placeholder="ex: 1 e 2"></div>
-        <div><label class="lbl">ID processual</label><input id="npq-idp" placeholder="ex: 23926099"></div>
-      </div>
-      <label class="upz">
-        <div style="font-size:20px;margin-bottom:3px">📄</div>
-        <div style="font-size:12px;font-weight:500">Clique para selecionar o PDF</div>
-        <div style="font-size:10px;margin-top:1px">Disponível para visualização e recorte de assinatura na Mesa Gráfica</div>
-        <input type="file" accept=".pdf,image/*" id="npq-file" onchange="document.getElementById('npq-file-st').textContent='✓ '+this.files[0]?.name">
-      </label>
-      <div id="npq-file-st" style="font-size:10px;color:var(--text3);margin-top:4px"></div>
-      <div style="text-align:right;margin-top:8px"><button class="btn bp" onclick="adicionarPQ()">Adicionar documento</button></div>
-    </div>
+  </div>
+  <div class="card">
+    <div class="chd"><h3>📂 Arquivos do processo (${arqs.length})</h3><span style="font-size:var(--fs-sm);color:var(--text3)">👁 Ver · Classifique para vincular às abas</span></div>
+    ${arqs.length===0?'<div style="text-align:center;padding:2rem;color:var(--text3);font-size:var(--fs-sm)">Nenhum arquivo enviado. Use o upload acima.</div>':'<div>'+
+      (pqArqs.length?'<div style="padding:6px 13px;background:var(--bg);border-bottom:.5px solid var(--border);font-size:var(--fs-sm);font-weight:500;color:var(--text2)">Documentos Questionados (PQ) — '+pqArqs.length+'</div>'+pqArqs.map(fileItemHtml).join(''):'')+
+      (pgArqs.length?'<div style="padding:6px 13px;background:var(--bg);border-bottom:.5px solid var(--border);font-size:var(--fs-sm);font-weight:500;color:var(--text2)">Paradigmas (PCE/PCA) — '+pgArqs.length+'</div>'+pgArqs.map(fileItemHtml).join(''):'')+
+      (outArqs.length?'<div style="padding:6px 13px;background:var(--bg);border-bottom:.5px solid var(--border);font-size:var(--fs-sm);font-weight:500;color:var(--text2)">Adendos & outros — '+outArqs.length+'</div>'+outArqs.map(fileItemHtml).join(''):'')+
+    '</div>'}
   </div>`;
 }
 
-// ── TAB METODOLOGIA ───────────────────────────────────────────────────────
-function rMet() {
-  const p = S.proc;
-  const sel = p.metodologia_items || [0,1,2,3,4,5,6,7,8,9];
-  return `
-  <div class="obox">Itens marcados aparecem na Seção 3 (Metodologia) do laudo na ordem listada.</div>
-  <div class="card"><div class="chd"><h3>Itens metodológicos</h3><button class="btn bp bsm" onclick="salvarMet()">Salvar</button></div><div class="cbd">
-    ${MET.map((it,i)=>`<div class="chk"><input type="checkbox" id="m${i}" ${sel.includes(i)?'checked':''}><label for="m${i}">${it}</label></div>`).join('')}
-    <div class="dvd"></div>
-    <label class="lbl">Outros itens (cada linha = um item)</label>
-    <textarea id="met-outros" rows="2" placeholder="Metodologias adicionais…">${p.metodologia_outros||''}</textarea>
+// ── TAB PQs ───────────────────────────────────────────────────────────────
+function rPQs(){
+  const p=S.proc;
+  const pqArqs=(S.arquivos||[]).filter(a=>a.classificacao==='pq');
+  const editId=S._editingPQId||null;
+  const formEditar = editId ? (()=>{
+    const pq=(p.pqs||[]).find(q=>q.id===editId);if(!pq)return'';
+    return`<div id="form-editar-pq" class="card" style="border:2px solid var(--gold);margin-bottom:1rem"><div class="chd" style="background:#fffbeb"><h3>✏️ Editar PQ – ${pq.tipo||''} nº ${pq.numero||'—'}</h3><button class="btn bs bsm" onclick="cancelarEditarPQ()">Cancelar</button></div><div class="cbd">
+      <div class="g2" style="margin-bottom:8px"><div><label class="lbl">Tipo</label><select id="epq-tipo">${TIPOS_DOC.map(t=>`<option ${pq.tipo===t?'selected':''}>${t}</option>`).join('')}</select></div><div><label class="lbl">Número</label><input id="epq-num" value="${pq.numero||''}"></div></div>
+      <div class="g3" style="margin-bottom:8px"><div><label class="lbl">Data</label><input id="epq-data" data-mask="data" value="${pq.data_doc||''}" placeholder="DD/MM/AAAA"></div><div><label class="lbl">Fls.</label><input id="epq-fls" value="${pq.fls||''}"></div><div><label class="lbl">ID processual</label><input id="epq-idp" value="${pq.id_proc||''}"></div></div>
+      <label class="upz" style="padding:10px"><div style="font-size:16px">${pq.pdf_path?'🔄':'📄'}</div><div style="font-size:var(--fs-sm);font-weight:500;margin-top:2px">${pq.pdf_path?'Substituir PDF':'Vincular PDF'}</div><input type="file" accept=".pdf,image/*" id="epq-file" onchange="document.getElementById('epq-fst').textContent='✓ '+this.files[0]?.name"></label>
+      <div id="epq-fst" style="font-size:var(--fs-sm);color:var(--text3);margin-top:3px"></div>
+      ${pq.pdf_path?`<div style="margin-top:6px;display:flex;gap:8px;align-items:center"><span class="b bk">✓ PDF vinculado</span><button class="file-view-btn" data-vurl="${pq.pdf_path}" data-nome="${pq.tipo||''} ${pq.numero||''}" data-mime="application/pdf" onclick="abrirViewerBtn(this)">👁 Ver PDF</button></div>`:''}
+      <div style="text-align:right;margin-top:10px"><button class="btn bp" onclick="salvarEditarPQ()">💾 Salvar alterações</button></div>
+    </div></div>`;
+  })() : '';
+  return`
+  <div class="ibox">Cada documento PQ = uma análise no laudo. Clique em <strong>✏️ Editar</strong> para alterar dados ou vincular o PDF de um PQ já cadastrado.</div>
+  ${formEditar}
+  ${pqArqs.length?`<div class="card"><div class="chd"><h3>📂 Arquivos PQ da central</h3></div><div>
+    ${pqArqs.map(a=>{const{ic}=mimeIco(a.tipo_mime);return`<div class="file-item"><div style="font-size:18px">${ic}</div><div style="flex:1;min-width:0"><div style="font-size:var(--fs);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.nome}</div></div><button class="file-view-btn" data-vurl="${a.url_publica}" data-nome="${a.nome}" data-mime="${a.tipo_mime}" onclick="abrirViewerBtn(this)">👁 Ver</button></div>`;}).join('')}
+  </div></div>`:''}
+  ${(p.pqs||[]).map((pq,i)=>`
+  <div class="card" style="${pq.status==='done'?'border-color:#86efac;':''}${editId===pq.id?'border:2px solid var(--gold);':''}">
+    <div class="chd">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="nb">${i+1}</div>
+        <div><div style="font-size:var(--fs);font-weight:500">${pq.tipo||'Documento'} nº ${pq.numero||'—'}</div>
+          <div style="font-size:var(--fs-sm);color:var(--text2)">${pq.data_doc||'—'} · fls. ${pq.fls||'—'} · ID proc. ${pq.id_proc||'—'}</div></div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${pq.pdf_path?`<button class="file-view-btn" data-vurl="${pq.pdf_path}" data-nome="${pq.tipo||''} ${pq.numero||''}" data-mime="application/pdf" onclick="abrirViewerBtn(this)">👁 PDF</button>`:''}
+        <button class="btn bs bsm" onclick="S.pqId='${pq.id}';stab('anal')">EOG</button>
+        <button class="btn bs bsm" onclick="abrirMesaDoPQ('${pq.id}')">🖊 Mesa</button>
+        <button class="btn bs bsm" onclick="abrirEditarPQ('${pq.id}')">✏️ Editar</button>
+        <button class="btn bd bsm" onclick="remPQ('${pq.id}')">×</button>
+      </div>
+    </div>
+    <div class="cbd" style="padding:9px 13px">
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <span class="b ${pq.status==='done'?'bk':'bgr'}">${pq.status==='done'?'✓ Analisado':'Pendente'}</span>
+        <span class="b ${pq.sig_path?'bb':'bgr'}">${pq.sig_path?'✓ Assinatura':'Sem recorte'}</span>
+        <span class="b ${pq.pdf_path?'bk':'br'}">${pq.pdf_path?'✓ PDF':'⚠ Sem PDF'}</span>
+      </div>
+    </div>
+  </div>`).join('')}
+  <div class="card" style="border:1.5px dashed var(--gold)"><div class="chd"><h3>+ Adicionar documento questionado</h3></div><div class="cbd">
+    <div class="g2" style="margin-bottom:8px">
+      <div><label class="lbl">Tipo</label><select id="npq-tipo"><option value="">Selecione…</option>${TIPOS_DOC.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      <div><label class="lbl">Número do contrato</label><input id="npq-num" placeholder="ex: 582434573"></div>
+    </div>
+    <div class="g3" style="margin-bottom:8px">
+      <div><label class="lbl">Data</label><input id="npq-data" data-mask="data" placeholder="DD/MM/AAAA"></div>
+      <div><label class="lbl">Fls.</label><input id="npq-fls" placeholder="ex: 1 e 2"></div>
+      <div><label class="lbl">ID processual</label><input id="npq-idp" placeholder="ex: 23926099"></div>
+    </div>
+    <label class="upz"><div style="font-size:18px">📄</div><div style="font-size:var(--fs-sm);font-weight:500;margin-top:2px">Selecionar PDF do documento</div><div style="font-size:calc(var(--fs-sm) - 1px);color:var(--text3);margin-top:1px">Disponível para visualização e recorte na Mesa Gráfica</div><input type="file" accept=".pdf,image/*" id="npq-file" onchange="document.getElementById('npq-fst').textContent='✓ '+this.files[0]?.name"></label>
+    <div id="npq-fst" style="font-size:var(--fs-sm);color:var(--text3);margin-top:3px"></div>
+    <div style="text-align:right;margin-top:8px"><button class="btn bp" onclick="adicionarPQ()">Adicionar documento</button></div>
   </div></div>`;
 }
 
-// ── TAB PARADIGMAS ────────────────────────────────────────────────────────
-function rPar() {
-  const p = S.proc;
+
+function rMet(){
+  const p=S.proc, sel=p.metodologia_items||[0,1,2,3,4,5,6,7,8,9];
   return `
-  <div class="ibox">PCE = encontrados nos autos. PCA = colhidos presencialmente. PDFs de PCA vão automaticamente para os Adendos do laudo.</div>
+  <div class="obox">Itens marcados aparecem na Seção 3 do laudo na ordem listada.</div>
+  <div class="card"><div class="chd"><h3>Itens metodológicos</h3><button class="btn bp bsm" onclick="salvarMet()">Salvar</button></div><div class="cbd">
+    ${MET.map((it,i)=>`<div class="chk"><input type="checkbox" id="m${i}" ${sel.includes(i)?'checked':''}><label for="m${i}">${it}</label></div>`).join('')}
+    <div class="dvd"></div>
+    <label class="lbl">Outros itens</label>
+    <textarea id="met-outros" rows="2" placeholder="Cada linha = um item adicional">${p.metodologia_outros||''}</textarea>
+  </div></div>`;
+}
+
+// ── TAB PAR ───────────────────────────────────────────────────────────────
+function rPar(){
+  const p=S.proc;
+  return `
+  <div class="ibox">PCE = encontrados nos autos. PCA = colhidos presencialmente. PDFs de PCA vão para os Adendos do laudo.</div>
   <div class="card"><div class="chd"><h3>Paradigmas cadastrados</h3></div><div class="cbd">
-    ${(p.paradigmas||[]).length===0?'<div style="color:var(--text3);text-align:center;padding:1rem;font-size:12px">Nenhum paradigma cadastrado</div>':''}
+    ${(p.paradigmas||[]).length===0?'<div style="color:var(--text3);text-align:center;padding:1rem;font-size:var(--fs-sm)">Nenhum paradigma</div>':''}
     ${(p.paradigmas||[]).map((pg,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;${i<(p.paradigmas||[]).length-1?'border-bottom:.5px solid var(--border)':''}">
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 0;${i<(p.paradigmas||[]).length-1?'border-bottom:.5px solid var(--border)':''}">
       <span class="b ${pg.tipo==='PCA'?'bb':'bk'}">${pg.tipo}</span>
-      <div style="flex:1"><div style="font-size:12px;font-weight:500">${pg.descricao||'—'}</div><div style="font-size:10px;color:var(--text3)">${pg.data_assinatura||'—'} · ${pg.referencia||'—'}</div></div>
-      <span class="b ${pg.arquivo_path?'bk':'bgr'}">${pg.arquivo_path?'✓':'Sem arquivo'}</span>
+      <div style="flex:1"><div style="font-size:var(--fs);font-weight:500">${pg.descricao||'—'}</div><div style="font-size:var(--fs-sm);color:var(--text3)">${pg.data_assinatura||'—'} · ${pg.referencia||'—'}</div></div>
+      ${pg.arquivo_path?`<button class="file-view-btn" data-vurl="${pg.arquivo_path}" onclick="abrirViewer('${pg.arquivo_path}','${pg.descricao||'Paradigma'}','')">👁 Ver</button>`:''}
       <button class="btn bd bsm" onclick="remPG('${pg.id}')">×</button>
     </div>`).join('')}
   </div></div>
   <div class="card" style="border:1.5px dashed #bfdbfe"><div class="chd"><h3>+ Adicionar paradigma</h3></div><div class="cbd">
     <div class="g2" style="margin-bottom:8px">
-      <div><label class="lbl">Tipo</label><select id="npg-tipo">
-        <option value="PCE">PCE – Encontrado nos autos</option>
-        <option value="PCA">PCA – Colhido presencialmente</option>
-      </select></div>
+      <div><label class="lbl">Tipo</label><select id="npg-tipo"><option value="PCE">PCE – Encontrado nos autos</option><option value="PCA">PCA – Colhido presencialmente</option></select></div>
       <div><label class="lbl">Descrição</label><input id="npg-desc" placeholder="ex: RG da Autora"></div>
     </div>
     <div class="g2" style="margin-bottom:8px">
-      <div><label class="lbl">Data da assinatura</label><input id="npg-data" placeholder="DD/MM/AAAA"></div>
+      <div><label class="lbl">Data</label><input id="npg-data" data-mask="data" placeholder="DD/MM/AAAA"></div>
       <div><label class="lbl">Referência</label><input id="npg-ref" placeholder="ex: id. 20552230"></div>
     </div>
-    <label class="upz">
-      <div style="font-size:20px;margin-bottom:3px">📎</div>
-      <div style="font-size:12px;font-weight:500">Imagem ou PDF do paradigma</div>
-      <input type="file" accept=".pdf,image/*" id="npg-file">
-    </label>
+    <label class="upz"><div style="font-size:18px">📎</div><div style="font-size:var(--fs-sm);font-weight:500;margin-top:2px">Imagem ou PDF</div><input type="file" accept=".pdf,image/*" id="npg-file"></label>
     <div style="text-align:right;margin-top:8px"><button class="btn bp" onclick="adicionarPG()">Adicionar</button></div>
   </div></div>`;
 }
 
-// ── TAB ANÁLISE (seletor de PQ) ───────────────────────────────────────────
-function rAnal() {
-  const p = S.proc;
-  const pqAtivo = S.pqId ? (p.pqs||[]).find(q=>q.id===S.pqId) : null;
-
-  if (!pqAtivo) {
+// ── TAB ANÁLISE (EOG) ─────────────────────────────────────────────────────
+function rAnal(){
+  const p=S.proc;
+  const pqAtivo=S.pqId?(p.pqs||[]).find(q=>q.id===S.pqId):null;
+  if(!pqAtivo){
     return `
-    <div class="ibox">Selecione um PQ para preencher o Quadro EOG e as considerações periciais daquele documento específico.</div>
+    <div class="ibox">Selecione um PQ para preencher o Quadro EOG.</div>
     ${(p.pqs||[]).map((pq,i)=>`
     <div class="card" style="${pq.status==='done'?'border-color:#86efac':''}">
       <div class="cbd"><div style="display:flex;align-items:center;gap:9px">
         <div class="nb">${i+1}</div>
         <div style="flex:1">
-          <div style="font-size:12px;font-weight:500">PQ${i+1} – ${pq.tipo||'Documento'} nº ${pq.numero||'—'}</div>
-          <div style="font-size:10px;color:var(--text2)">${pq.data_doc||'—'} · fls. ${pq.fls||'—'} · ID ${pq.id_proc||'—'}</div>
+          <div style="font-size:var(--fs);font-weight:500">PQ${i+1} – ${pq.tipo||'Documento'} nº ${pq.numero||'—'}</div>
+          <div style="font-size:var(--fs-sm);color:var(--text2)">${pq.data_doc||'—'} · ID ${pq.id_proc||'—'}</div>
           <div style="display:flex;gap:4px;margin-top:4px">
             <span class="b ${pq.sig_path?'bk':'bgr'}">${pq.sig_path?'✓ Assinatura':'Sem assinatura'}</span>
             <span class="b ${(pq.eog||[]).some(e=>e.resultado!=='SA')?'bk':'bgr'}">EOG ${(pq.eog||[]).some(e=>e.resultado!=='SA')?'iniciado':'pendente'}</span>
-            <span class="b ${pq.status==='done'?'bk':'bw'}">${pq.status==='done'?'✓ Concluído':'Em andamento'}</span>
+            <span class="b ${pq.status==='done'?'bk':'bw'}">${pq.status==='done'?'✓ Concluído':'Pendente'}</span>
           </div>
         </div>
         <button class="btn bp" onclick="S.pqId='${pq.id}';render()">Abrir EOG →</button>
       </div></div>
     </div>`).join('')}`;
   }
-
-  const idx = (p.pqs||[]).findIndex(q=>q.id===pqAtivo.id);
-  if (!pqAtivo.eog||pqAtivo.eog.length===0) pqAtivo.eog = novoEOG();
-  const eog = pqAtivo.eog;
-  const cnt = {C:0,D:0,SD:0,SA:0};
+  const idx=(p.pqs||[]).findIndex(q=>q.id===pqAtivo.id);
+  if(!pqAtivo.eog||pqAtivo.eog.length===0) pqAtivo.eog=novoEOG();
+  const eog=pqAtivo.eog;
+  const cnt={C:0,D:0,SD:0,SA:0};
   eog.forEach(e=>{const r=e.resultado||'SA';cnt[r]=(cnt[r]||0)+1;});
-  const conc = cnt.D>cnt.C?'DIVERGÊNCIA':cnt.C>cnt.D?'CONVERGÊNCIA':'INCONCLUSIVO';
-  const cCor = conc==='DIVERGÊNCIA'?'#991b1b':conc==='CONVERGÊNCIA'?'#14532d':'#7c5c00';
-
+  const conc=cnt.D>cnt.C?'DIVERGÊNCIA':cnt.C>cnt.D?'CONVERGÊNCIA':'INCONCLUSIVO';
+  const cCor=conc==='DIVERGÊNCIA'?'#991b1b':conc==='CONVERGÊNCIA'?'#14532d':'#7c5c00';
   let grp=-1;
-  const linhas = eog.map((e,i)=>{
+  const linhas=eog.map((e,i)=>{
     let hdr='';const g=EOG_G[i];
-    if(g!==grp){grp=g;hdr=`<tr><td colspan="3" style="background:#f0f0ec;padding:5px 10px;font-size:10px;font-weight:500;color:var(--text2)">${g===0?'SUBJETIVOS':'OBJETIVOS'}</td></tr>`;}
+    if(g!==grp){grp=g;hdr=`<tr><td colspan="3" style="background:var(--bg);padding:5px 10px;font-size:var(--fs-sm);font-weight:500;color:var(--text2)">${g===0?'SUBJETIVOS':'OBJETIVOS'}</td></tr>`;}
     const r=e.resultado||'SA';
     const opts=[{k:'C',l:'C',co:'#14532d',bg:'#dcfce7'},{k:'D',l:'D',co:'#991b1b',bg:'#fee2e2'},{k:'SD',l:'SD',co:'#7c5c00',bg:'#fef3cd'},{k:'SA',l:'—',co:'#4b5563',bg:'#f3f4f6'}];
     const btns=opts.map(o=>`<button title="${o.k}" onclick="setRes('${pqAtivo.id}',${e.criterio_id},'${o.k}')" style="width:28px;height:22px;border-radius:3px;font-size:10px;cursor:pointer;font-weight:600;border:1.5px solid ${r===o.k?o.co:'transparent'};background:${r===o.k?o.bg:'transparent'};color:${r===o.k?o.co:'var(--text3)'}">${o.l}</button>`).join('');
     return `${hdr}<tr style="border-bottom:.5px solid var(--border)" title="${EOG_DICAS[i]}">
-      <td style="padding:5px 8px;font-size:10px;color:var(--text3);width:22px">${e.criterio_id}</td>
-      <td style="padding:5px 8px;font-size:12px;cursor:help">${EOG_N[i]}</td>
+      <td style="padding:5px 8px;font-size:var(--fs-sm);color:var(--text3);width:22px">${e.criterio_id}</td>
+      <td style="padding:5px 8px;font-size:var(--fs);cursor:help">${EOG_N[i]}</td>
       <td style="padding:5px 5px;white-space:nowrap">${btns}</td>
     </tr>`;
   }).join('');
-
   return `
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:.8rem">
     <button class="btn bs bsm" onclick="S.pqId=null;render()">← Voltar</button>
-    <div style="flex:1">
-      <div style="font-size:12px;font-weight:500;color:var(--navy)">PQ${idx+1} – ${pqAtivo.tipo||'Documento'} nº ${pqAtivo.numero||'—'}</div>
-      <div style="font-size:10px;color:var(--text3)">${pqAtivo.data_doc||'—'} · ID ${pqAtivo.id_proc||'—'}</div>
-    </div>
-    <button class="btn bs bsm" onclick="abrirMesaPQ('${pqAtivo.id}')">🖊 Mesa gráfica</button>
+    <div style="flex:1"><div style="font-size:var(--fs);font-weight:500;color:var(--navy)">PQ${idx+1} – ${pqAtivo.tipo||''} nº ${pqAtivo.numero||'—'}</div></div>
+    <button class="btn bs bsm" onclick="S.pqId='${pqAtivo.id}';stab('mesa')">🖊 Mesa</button>
     <button class="btn bp bsm" onclick="salvarAnalise('${pqAtivo.id}')">Salvar</button>
     <button class="btn bg bsm" onclick="concluirPQ('${pqAtivo.id}')">✓ Concluir</button>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
     <div>
-      <div class="card"><div class="chd"><h3>Assinatura recortada – PQ${idx+1}</h3>
+      <div class="card"><div class="chd"><h3>Assinatura – PQ${idx+1}</h3>
         <label class="btn bs bsm" style="cursor:pointer">Carregar<input type="file" accept="image/*" style="display:none" onchange="uploadSig('${pqAtivo.id}',event)"></label>
       </div><div class="cbd" style="padding:10px">
-        ${pqAtivo.sig_path?`<img src="${pqAtivo.sig_path}" style="max-width:100%;max-height:120px;object-fit:contain;border-radius:5px;border:.5px solid var(--border)">`:`<div style="border:.5px solid var(--border);border-radius:5px;min-height:70px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:11px">Sem assinatura · use a Mesa Gráfica para recortar</div>`}
+        ${pqAtivo.sig_path?`<img src="${pqAtivo.sig_path}" style="max-width:100%;max-height:110px;object-fit:contain;border-radius:5px;border:.5px solid var(--border)">`:`<div style="border:.5px solid var(--border);border-radius:5px;min-height:60px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:var(--fs-sm)">Sem assinatura</div>`}
       </div></div>
       <div class="card"><div class="chd"><h3>Considerações do perito</h3></div><div class="cbd">
-        <textarea id="cons-${pqAtivo.id}" rows="7" placeholder="Descreva suas observações sobre este documento. Será incluído na Seção 6 do laudo antes do quadro EOG.">${pqAtivo.consideracoes||''}</textarea>
+        <textarea id="cons-${pqAtivo.id}" rows="7" placeholder="Observações sobre este documento. Incluído na Seção 6 do laudo antes do quadro EOG.">${pqAtivo.consideracoes||''}</textarea>
       </div></div>
     </div>
     <div class="card"><div class="chd"><h3>Quadro EOG – PQ${idx+1}</h3></div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:9px">
         <div style="background:#fee2e2;border-radius:5px;padding:7px"><div style="font-size:9px;color:#991b1b">Div.</div><div style="font-size:18px;font-weight:500;color:#991b1b">${cnt.D}</div></div>
         <div style="background:#dcfce7;border-radius:5px;padding:7px"><div style="font-size:9px;color:#14532d">Conv.</div><div style="font-size:18px;font-weight:500;color:#14532d">${cnt.C}</div></div>
         <div style="background:#fef3cd;border-radius:5px;padding:7px"><div style="font-size:9px;color:#7c5c00">S/def</div><div style="font-size:18px;font-weight:500;color:#7c5c00">${cnt.SD||0}</div></div>
@@ -527,10 +734,10 @@ function rAnal() {
       </div>
       <div style="max-height:380px;overflow-y:auto">
         <table style="width:100%;border-collapse:collapse">
-          <thead><tr style="background:#f5f4f0;position:sticky;top:0">
-            <th style="padding:5px 8px;text-align:left;font-size:9px;color:var(--text3);width:22px">#</th>
-            <th style="padding:5px 8px;text-align:left;font-size:9px;color:var(--text3)">Critério <span style="font-weight:400">(passe o mouse para ver a descrição)</span></th>
-            <th style="padding:5px 8px;font-size:9px;color:var(--text3)">C / D / SD / —</th>
+          <thead><tr style="background:var(--bg);position:sticky;top:0">
+            <th style="padding:5px 8px;text-align:left;font-size:9px;color:var(--text3)">#</th>
+            <th style="padding:5px 8px;text-align:left;font-size:9px;color:var(--text3)">Critério</th>
+            <th style="padding:5px 8px;font-size:9px;color:var(--text3)">C/D/SD/—</th>
           </tr></thead>
           <tbody>${linhas}</tbody>
         </table>
@@ -539,91 +746,72 @@ function rAnal() {
   </div>`;
 }
 
-// ── MESA GRÁFICA ──────────────────────────────────────────────────────────
-function rMesa() {
-  const p = S.proc;
-  const pqAtivo = S.pqId ? (p.pqs||[]).find(q=>q.id===S.pqId) : null;
-  const CORES = ['#e74c3c','#2980b9','#27ae60','#f39c12','#8e44ad','#000000','#ffffff'];
-  const TOOLS = [
-    {id:'seta',ic:'↖',tip:'Selecionar'},
-    {id:'linha',ic:'╱',tip:'Linha livre'},
-    {id:'reta',ic:'—',tip:'Linha reta'},
-    {id:'seta-mark',ic:'→',tip:'Seta'},
-    {id:'circulo',ic:'○',tip:'Círculo'},
-    {id:'rect',ic:'□',tip:'Retângulo'},
-    {id:'regua',ic:'⊢',tip:'Régua (distância e ângulo)'},
-    {id:'crop',ic:'⊡',tip:'Recortar área'},
-    {id:'pan',ic:'✥',tip:'Mover (ou segure Espaço)'},
-    {id:'lixo',ic:'⌫',tip:'Apagar última'},
-  ];
-  const cSel = EOG_N.map((n,i)=>`<option value="${i+1}" ${S.mesaCriterioAtivo==i+1?'selected':''}>${i+1}. ${n}</option>`).join('');
-  const pqOpts = (p.pqs||[]).map((pq,i)=>`<option value="${pq.id}" ${S.pqId===pq.id?'selected':''}>PQ${i+1} – ${pq.numero||'—'}</option>`).join('');
-  const isCrop = S.mesaTool === 'crop';
+// ── TAB MESA ──────────────────────────────────────────────────────────────
+function rMesa(){
+  const p=S.proc;
+  const pqAtivo=S.pqId?(p.pqs||[]).find(q=>q.id===S.pqId):null;
+  const TOOLS=[{id:'seta',ic:'↖',tip:'Selecionar'},{id:'linha',ic:'╱',tip:'Linha livre'},{id:'reta',ic:'—',tip:'Linha reta'},{id:'seta-mark',ic:'→',tip:'Seta'},{id:'circulo',ic:'○',tip:'Círculo'},{id:'rect',ic:'□',tip:'Retângulo'},{id:'regua',ic:'⊢',tip:'Régua'},{id:'crop',ic:'⊡',tip:'Recortar'},{id:'pan',ic:'✥',tip:'Mover'},{id:'lixo',ic:'⌫',tip:'Apagar última'}];
+  const cSel=EOG_N.map((n,i)=>`<option value="${i+1}" ${S.mesaCriterioAtivo==i+1?'selected':''}>${i+1}. ${n}</option>`).join('');
+  const pqOpts=(p.pqs||[]).map((pq,i)=>`<option value="${pq.id}" ${S.pqId===pq.id?'selected':''}>PQ${i+1} – ${pq.numero||'—'}</option>`).join('');
+  const isCrop=S.mesaTool==='crop';
   return `
-  <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
-    <div><label class="lbl" style="margin:0;margin-right:4px">PQ ativo:</label>
+  <div style="margin-bottom:7px;display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+    <div><label class="lbl" style="display:inline;margin-right:5px">PQ ativo:</label>
       <select style="width:auto;padding:4px 8px" onchange="S.pqId=this.value||null;render();setTimeout(initMesa,50)">
-        <option value="">— Selecione o PQ —</option>${pqOpts}
+        <option value="">— Selecione —</option>${pqOpts}
       </select>
     </div>
     ${isCrop&&S.mesaCropRect?`<button class="btn bp bsm" onclick="confirmarCrop()">✂ Confirmar recorte</button>`:''}
-    ${S.mesaImgStack.length>1?`<button class="btn bs bsm" onclick="desfazerCrop()">↩ Desfazer</button>`:''}
+    ${S.mesaImgStack.length>1?`<button class="btn bs bsm" onclick="desfazerCrop()">↩ Desfazer recorte</button>`:''}
     ${S.mesaAnots.length?`<button class="btn bd bsm" onclick="limparAnots()">Limpar anotações</button>`:''}
-    <div style="margin-left:auto;display:flex;gap:6px">
+    <div style="margin-left:auto">
       ${pqAtivo?`<button class="btn bp bsm" onclick="salvarRecortePQ('${pqAtivo.id}')">💾 Salvar como assinatura PQ</button>`:''}
     </div>
   </div>
   <div id="mesa-wrap">
-    <!-- barra esquerda -->
     <div id="mesa-left">
-      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Ferramentas</h3></div><div class="cbd" style="padding:8px">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px">
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Ferramentas</h3></div><div class="cbd" style="padding:7px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px">
           ${TOOLS.map(t=>`<button class="tool-btn ${S.mesaTool===t.id?'on':''}" title="${t.tip}" onclick="setMesaTool('${t.id}')">${t.ic}</button>`).join('')}
         </div>
-        ${isCrop?`<div style="margin-top:6px;font-size:10px;color:#92400e;background:#fef3c7;padding:4px 6px;border-radius:4px">Desenhe o recorte e clique "✂ Confirmar"</div>`:''}
+        ${isCrop?`<div style="margin-top:5px;font-size:10px;color:#92400e;background:#fef3c7;padding:4px 6px;border-radius:4px">Desenhe e confirme</div>`:''}
       </div></div>
-      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Cor</h3></div><div class="cbd" style="padding:8px">
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Cor</h3></div><div class="cbd" style="padding:7px">
         <div style="display:flex;flex-wrap:wrap;gap:5px">
-          ${CORES.map(c=>`<div class="color-dot ${S.mesaCor===c?'on':''}" style="background:${c};${c==='#ffffff'?'border:.5px solid var(--border)':''}" onclick="setMesaCor('${c}')"></div>`).join('')}
-          <input type="color" value="${S.mesaCor}" oninput="setMesaCor(this.value)" style="width:22px;height:22px;border:.5px solid var(--border);border-radius:50%;padding:0;cursor:pointer">
+          ${CORES_MESA.map(c=>`<div class="cdot ${S.mesaCor===c?'on':''}" style="background:${c};${c==='#ffffff'?'border:.5px solid var(--border)':''}" onclick="setMesaCor('${c}')"></div>`).join('')}
+          <input type="color" value="${S.mesaCor}" oninput="setMesaCor(this.value)" style="width:20px;height:20px;border:.5px solid var(--border);border-radius:50%;padding:0;cursor:pointer">
         </div>
       </div></div>
-      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Espessura: ${S.mesaEsp}px</h3></div><div class="cbd" style="padding:8px">
-        <input type="range" min="1" max="10" value="${S.mesaEsp}" oninput="S.mesaEsp=parseInt(this.value);document.querySelector('.chd h3:last-of-type')&&render()">
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Esp.: ${S.mesaEsp}px</h3></div><div class="cbd" style="padding:7px">
+        <input type="range" min="1" max="10" value="${S.mesaEsp}" oninput="S.mesaEsp=parseInt(this.value);render();setTimeout(initMesa,20)">
       </div></div>
-      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Zoom: ${Math.round(S.mesaZoom*100)}%</h3></div><div class="cbd" style="padding:8px">
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Zoom: ${Math.round(S.mesaZoom*100)}%</h3></div><div class="cbd" style="padding:7px">
         <div style="display:flex;gap:3px">
           <button class="btn bs bsm" style="flex:1" onclick="adjZ(-0.25)">−</button>
-          <button class="btn bs bsm" style="flex:1" onclick="adjZ(0);S.mesaOX=0;S.mesaOY=0;redraw()">1:1</button>
+          <button class="btn bs bsm" style="flex:1" onclick="S.mesaZoom=1;S.mesaOX=0;S.mesaOY=0;render();setTimeout(initMesa,20)">1:1</button>
           <button class="btn bp bsm" style="flex:1" onclick="adjZ(0.25)">+</button>
         </div>
         <div style="font-size:10px;color:var(--text3);margin-top:4px;text-align:center">Scroll do mouse</div>
       </div></div>
-      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Imagem</h3></div><div class="cbd" style="padding:8px">
-        <label class="upz" style="padding:10px">
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Imagem</h3></div><div class="cbd" style="padding:7px">
+        <label class="upz" style="padding:9px">
           <div style="font-size:16px">🖼</div>
-          <div style="font-size:11px;font-weight:500;margin-top:2px">Carregar imagem</div>
+          <div style="font-size:var(--fs-sm);font-weight:500;margin-top:2px">Carregar</div>
           <input type="file" accept="image/*,.pdf" onchange="loadMesaImg(event)">
         </label>
         ${S.mesaImgNome?`<div style="font-size:9px;color:var(--text3);margin-top:4px;word-break:break-all">${S.mesaImgNome}</div>`:''}
-        ${S.mesaImgStack.length>1?`<div style="font-size:9px;color:#0c4a8a;margin-top:3px">Recorte ${S.mesaImgStack.length-1} aplicado</div>`:''}
       </div></div>
-      <!-- PDF -->
-      ${S.pdfDoc?`<div class="card"><div class="chd" style="padding:7px 10px"><h3>PDF</h3></div><div class="cbd" style="padding:8px">
-        <div style="display:flex;align-items:center;gap:4px;margin-bottom:6px">
-          <button class="btn bs bsm" onclick="pdfNav(-1)">‹</button>
-          <span style="font-size:10px;flex:1;text-align:center">${S.pdfPage}/${S.pdfTotal}</span>
-          <button class="btn bs bsm" onclick="pdfNav(1)">›</button>
+      ${S.pdfDoc?`<div class="card"><div class="chd" style="padding:7px 10px"><h3>PDF ${S.pdfPage}/${S.pdfTotal}</h3></div><div class="cbd" style="padding:7px">
+        <div style="display:flex;gap:3px;margin-bottom:5px">
+          <button class="btn bs bsm" style="flex:1" onclick="pdfNav(-1)">‹</button>
+          <button class="btn bs bsm" style="flex:1" onclick="pdfNav(1)">›</button>
         </div>
-        <button class="btn bp bsm" style="width:100%" onclick="renderPdfPage(S.pdfPage)">Renderizar página</button>
       </div></div>`:''}
     </div>
-
-    <!-- canvas -->
     <div id="mesa-center">
       <div id="mesa-toolbar">
-        <span style="font-size:11px;color:var(--text2);font-weight:500">Critério EOG vinculado:</span>
-        <select style="width:160px;padding:3px 6px;font-size:11px" onchange="S.mesaCriterioAtivo=this.value?parseInt(this.value):null">
+        <span style="font-size:var(--fs-sm);color:var(--text2);font-weight:500">EOG vinculado:</span>
+        <select style="width:160px;padding:3px 6px;font-size:var(--fs-sm)" onchange="S.mesaCriterioAtivo=this.value?parseInt(this.value):null">
           <option value="">— Nenhum —</option>${cSel}
         </select>
         ${S.mesaCriterioAtivo?`<span style="font-size:10px;color:var(--text3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${EOG_DICAS[S.mesaCriterioAtivo-1]||''}</span>`:''}
@@ -631,29 +819,23 @@ function rMesa() {
       </div>
       <div id="mesa-canvas-wrap">
         <canvas id="mesa-canvas"></canvas>
-        <div id="mesa-empty">
-          <div style="font-size:32px;margin-bottom:6px">🖊</div>
-          <div style="font-size:13px;font-weight:500">Mesa gráfica</div>
-          <div style="font-size:11px;margin-top:3px">Carregue uma imagem ou PDF pela barra lateral</div>
-        </div>
-        <div id="mesa-ruler-info"></div>
+        <div id="mesa-empty"><div style="font-size:30px;margin-bottom:5px">🖊</div><div style="font-size:var(--fs);font-weight:500">Mesa gráfica</div><div style="font-size:var(--fs-sm);margin-top:2px">Carregue uma imagem ou PDF</div></div>
+        <div id="mesa-ri"></div>
       </div>
     </div>
-
-    <!-- painel de anotações -->
     <div id="mesa-right">
-      <div class="card" style="flex:1"><div class="chd" style="padding:7px 10px"><h3>Anotações (${S.mesaAnots.length})</h3></div>
-        <div style="padding:8px;overflow-y:auto;max-height:calc(100vh - 280px)">
-          ${S.mesaAnots.length===0?'<div style="font-size:11px;color:var(--text3);text-align:center;padding:1rem">Nenhuma ainda</div>':''}
+      <div class="card"><div class="chd" style="padding:7px 10px"><h3>Anotações (${S.mesaAnots.length})</h3></div>
+        <div style="padding:7px;overflow-y:auto">
+          ${S.mesaAnots.length===0?'<div style="font-size:var(--fs-sm);color:var(--text3);text-align:center;padding:.8rem">Nenhuma</div>':''}
           ${S.mesaAnots.map((a,i)=>`
-          <div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:7px;padding-bottom:7px;${i<S.mesaAnots.length-1?'border-bottom:.5px solid var(--border)':''}">
-            <div style="width:10px;height:10px;border-radius:50%;background:${a.cor};flex-shrink:0;margin-top:2px"></div>
+          <div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:6px;padding-bottom:6px;${i<S.mesaAnots.length-1?'border-bottom:.5px solid var(--border)':''}">
+            <div style="width:9px;height:9px;border-radius:50%;background:${a.cor};flex-shrink:0;margin-top:3px"></div>
             <div style="flex:1;min-width:0">
-              <div style="font-size:11px;font-weight:500">${a.tipo}</div>
+              <div style="font-size:var(--fs-sm);font-weight:500">${a.tipo}</div>
               ${a.criterio?`<div style="font-size:9px;color:var(--text3)">EOG ${a.criterio}: ${EOG_N[a.criterio-1]||''}</div>`:''}
               ${a.medida?`<div style="font-size:9px;color:#0c4a8a">${a.medida}</div>`:''}
             </div>
-            <button onclick="rmAnot(${i})" style="border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:13px;flex-shrink:0;padding:0;line-height:1">×</button>
+            <button onclick="rmAnot(${i})" style="border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:13px">×</button>
           </div>`).join('')}
         </div>
       </div>
@@ -662,295 +844,495 @@ function rMesa() {
 }
 
 // ── TAB LAUDO ─────────────────────────────────────────────────────────────
-function rLaudoTab() {
-  const p = S.proc;
-  const done=(p.pqs||[]).filter(q=>q.status==='done').length, total=(p.pqs||[]).length;
-  const checks = [
-    {n:'Seção 1 – Apresentação', ok:!!(p.vara&&p.comarca&&p.nomeacao_id), obs:!p.nomeacao_id?'ID de nomeação ausente':''},
-    {n:'Seção 2 – Documentos PQ', ok:total>0, obs:total===0?'Nenhum PQ cadastrado':''},
-    {n:'Seção 3 – Metodologia', ok:(p.metodologia_items||[]).length>0, obs:''},
-    {n:'Seção 4 – Introdução', ok:true, obs:'Texto fixo'},
-    {n:'Seção 5.1 – Documentos Questionados', ok:total>0, obs:''},
-    {n:'Seção 5.2 – Paradigmas', ok:(p.paradigmas||[]).length>0, obs:(p.paradigmas||[]).length===0?'Nenhum paradigma':''},
-    {n:'Seção 6 – Exames (EOG por PQ)', ok:done>0, obs:done===0?'Nenhum PQ analisado':''},
-    {n:'Seção 7 – Conclusão', ok:done>0, obs:''},
-    {n:'Adendos (PDFs de coleta PCA)', ok:(p.paradigmas||[]).some(pg=>pg.tipo==='PCA'), obs:''},
-    {n:'Anexos (documentos PQ)', ok:total>0, obs:''},
+function rLaudoTab(){
+  const p=S.proc;
+  const done=(p.pqs||[]).filter(q=>q.status==='done').length, tot=(p.pqs||[]).length;
+  const checks=[
+    {n:'Seção 1 – Apresentação',ok:!!(p.vara&&p.comarca&&p.nomeacao_id),obs:!p.nomeacao_id?'ID de nomeação ausente':''},
+    {n:'Seção 2 – Docs PQ',ok:tot>0,obs:tot===0?'Nenhum PQ':''},
+    {n:'Seção 3 – Metodologia',ok:(p.metodologia_items||[]).length>0,obs:''},
+    {n:'Seção 4 – Introdução',ok:true,obs:'Texto fixo'},
+    {n:'Seção 5.1 – Docs Questionados',ok:tot>0,obs:''},
+    {n:'Seção 5.2 – Paradigmas',ok:(p.paradigmas||[]).length>0,obs:(p.paradigmas||[]).length===0?'Nenhum':''}, 
+    {n:'Seção 6 – Exames EOG',ok:done>0,obs:done===0?'Nenhum PQ analisado':''},
+    {n:'Adendos (PCA)',ok:(p.paradigmas||[]).some(pg=>pg.tipo==='PCA'),obs:''},
+    {n:'Anexos (docs PQ)',ok:tot>0,obs:''},
   ];
-  const pronto = checks.filter(c=>!c.ok).length === 0;
   return `
-  <div class="${pronto?'obox':'wbox'}">${pronto?`Laudo completo e pronto para exportação.`:`${checks.filter(c=>!c.ok).length} item(ns) incompleto(s). O laudo parcial já pode ser exportado.`}</div>
-  <div class="card"><div class="chd"><h3>Checklist de integridade</h3></div><div class="cbd">
+  <div class="${done<tot?'wbox':'obox'}">${done<tot?`${done}/${tot} PQs analisados. Laudo parcial já pode ser exportado.`:`Todos os PQs analisados.`}</div>
+  <div class="card"><div class="chd"><h3>Checklist</h3></div><div class="cbd">
     ${checks.map(c=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:.5px solid var(--border)">
-      <span style="font-size:12px">${c.ok?'✅':'⚠️'}</span>
-      <span style="flex:1;font-size:12px;${c.ok?'':'color:var(--text3)'}">${c.n}</span>
-      ${c.obs?`<span style="font-size:10px;color:var(--text3)">${c.obs}</span>`:''}
+      <span>${c.ok?'✅':'⚠️'}</span>
+      <span style="flex:1;font-size:var(--fs);${c.ok?'':'color:var(--text3)'}">${c.n}</span>
+      ${c.obs?`<span style="font-size:var(--fs-sm);color:var(--text3)">${c.obs}</span>`:''}
     </div>`).join('')}
   </div></div>
-  <div style="text-align:right;margin-top:1rem">
-    <button class="btn bp" onclick="exportarLaudo()">⬇ Exportar laudo (.docx)</button>
+  <div style="text-align:right;margin-top:1rem"><button class="btn bp" onclick="exportarLaudo()">⬇ Exportar laudo (.docx)</button></div>`;
+}
+
+// ── TAB FEED / TIMELINE ───────────────────────────────────────────────────
+function rFeed(){
+  const p=S.proc;
+  return `
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:12px">
+    <div>
+      <div class="card"><div class="chd"><h3>📋 Timeline do processo</h3></div>
+        <div class="cbd">
+          ${S.feed.length===0?`<div style="text-align:center;padding:1.5rem;color:var(--text3);font-size:var(--fs-sm)">Nenhum evento registrado ainda.</div>`:''}
+          ${S.feed.map(e=>`
+          <div class="tl-item">
+            <div class="tl-dot ${e.tipo==='nota'?'tl-nota':'tl-auto'}">${e.icone||'📌'}</div>
+            <div class="tl-content">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                <div>
+                  <div class="tl-title">${e.titulo}</div>
+                  ${e.descricao?`<div class="tl-desc">${e.descricao}</div>`:''}
+                </div>
+                <div class="tl-time">${fmtDate(e.created_at)}</div>
+              </div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card"><div class="chd"><h3>+ Adicionar nota</h3></div><div class="cbd">
+        <textarea id="feed-nota" rows="4" placeholder="Escreva uma observação, anotação ou evento para registrar na timeline…"></textarea>
+        <div style="text-align:right;margin-top:8px"><button class="btn bp" onclick="addNotaFeed()">Registrar nota</button></div>
+      </div></div>
+      <div class="obox" style="margin-top:0">Eventos automáticos são registrados quando você: adiciona um PQ, conclui uma análise, exporta um laudo, adiciona paradigmas.</div>
+    </div>
   </div>`;
 }
 
-// ── CANVAS ENGINE ─────────────────────────────────────────────────────────
-let CV, CX;
-function initMesa() {
-  CV = document.getElementById('mesa-canvas'); if (!CV) return;
-  const wrap = document.getElementById('mesa-canvas-wrap'); if (!wrap) return;
-  CV.width = wrap.clientWidth || 700;
-  CV.height = wrap.clientHeight || 480;
-  CX = CV.getContext('2d');
-  redraw();
-  CV.onmousedown = mDown;
-  CV.onmousemove = mMove;
-  CV.onmouseup = mUp;
-  CV.onmouseleave = mUp;
-  CV.onwheel = mWheel;
-  CV.oncontextmenu = e => e.preventDefault();
-  const mv = document.getElementById('mesa-empty');
-  if (mv) mv.style.display = S.mesaImg ? 'none' : 'flex';
+async function addNotaFeed(){
+  const msg=document.getElementById('feed-nota')?.value?.trim();
+  if(!msg)return;
+  await registrarFeed(S.proc.id,'📝','Nota manual',msg,'nota');
+  document.getElementById('feed-nota').value='';
+  toast('Nota registrada ✓');
+  render();
 }
 
-function toImg(x,y) { return {x:(x-S.mesaOX)/S.mesaZoom, y:(y-S.mesaOY)/S.mesaZoom}; }
+async function carregarFeed(procId){
+  try{ S.feed=await sb.get(`bee3d_peritare_feed?processo_id=eq.${procId}&order=created_at.desc&limit=50`); }
+  catch(e){ S.feed=[]; }
+}
 
-function redraw() {
-  if (!CX||!CV) return;
+// ── KANBAN ────────────────────────────────────────────────────────────────
+async function carregarKanbanCols(){
+  try{ S.kanbanCols=await sb.get('bee3d_peritare_kanban_cols?order=ordem.asc'); }
+  catch(e){ S.kanbanCols=[{id:'pendente',titulo:'Aguardando',cor:'#e2ddd5'},{id:'analise',titulo:'Em análise',cor:'#bfdbfe'},{id:'concluido',titulo:'Concluído',cor:'#bbf7d0'}]; }
+}
+
+function kanDragStart(ev,procId){ S.dragProcId=procId; ev.dataTransfer.effectAllowed='move'; ev.currentTarget.classList.add('dragging'); }
+function kanDragOver(ev,colId){ ev.preventDefault(); S.dragOverCol=colId; const dt=document.getElementById(`kdt-${colId}`); if(dt) dt.classList.add('active'); }
+function kanDragLeave(colId){ const dt=document.getElementById(`kdt-${colId}`); if(dt) dt.classList.remove('active'); }
+async function kanDrop(ev,colId){
+  ev.preventDefault();
+  const dt=document.getElementById(`kdt-${colId}`); if(dt) dt.classList.remove('active');
+  const pId=S.dragProcId; if(!pId) return;
+  const p=S.processos.find(x=>x.id===pId); if(!p) return;
+  const col=S.kanbanCols.find(c=>c.id===colId);
+  const oldStatus=p.status;
+  // mapear col para status se possível
+  const statusMap={'pendente':'pendente','analise':'analise','concluido':'concluido'};
+  p.kanban_col=colId;
+  if(statusMap[colId]) p.status=statusMap[colId];
+  pushUndo('status_proc',{id:p.id,status:oldStatus},'Mover processo no Kanban');
+  try{ await sb.patch(`bee3d_peritare_processos?id=eq.${pId}`,{status:p.status,kanban_col:colId}); }catch(e){}
+  registrarFeed(pId,'🗂','Processo movido no Kanban',`Coluna: ${col?.titulo||colId}`);
+  S.dragProcId=null; render();
+}
+
+async function addKanbanCol(){
+  const titulo=prompt('Nome da nova coluna:'); if(!titulo)return;
+  const cor=prompt('Cor hex (ex: #bfdbfe):','#e2ddd5')||'#e2ddd5';
+  const col={titulo,cor,ordem:S.kanbanCols.length};
+  try{ const[c]=await sb.post('bee3d_peritare_kanban_cols',col); col.id=c.id; }
+  catch(e){ col.id=Date.now().toString(); }
+  S.kanbanCols.push(col); render();
+}
+async function editKanbanCol(id,tituloAtual,corAtual){
+  const titulo=prompt('Nome da coluna:',tituloAtual); if(!titulo)return;
+  const cor=prompt('Cor hex:',corAtual)||corAtual;
+  const col=S.kanbanCols.find(c=>c.id===id); if(col){col.titulo=titulo;col.cor=cor;}
+  try{ await sb.patch(`bee3d_peritare_kanban_cols?id=eq.${id}`,{titulo,cor}); }catch(e){}
+  render();
+}
+async function delKanbanCol(id){
+  if(!confirm('Remover esta coluna?'))return;
+  S.kanbanCols=S.kanbanCols.filter(c=>c.id!==id);
+  try{ await sb.del(`bee3d_peritare_kanban_cols?id=eq.${id}`); }catch(e){}
+  render();
+}
+
+// ── MÓDULO DE MODELOS / PETIÇÕES ──────────────────────────────────────────
+function rModelos(){
+  const cats=[...new Set(S.modelos.map(m=>m.categoria))];
+  const catFiltro=S._catFiltro||'';
+  const lista=catFiltro?S.modelos.filter(m=>m.categoria===catFiltro):S.modelos;
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+    <div><div style="font-size:16px;font-weight:500;color:var(--navy)">Petições & E-mails</div><div style="font-size:var(--fs-sm);color:var(--text3)">Modelos pré-formatados com variáveis dinâmicas</div></div>
+    <button class="btn bp" onclick="abrirModalModelo()">+ Novo modelo</button>
+  </div>
+
+  <!-- filtro por categoria -->
+  <div style="display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap">
+    <button class="btn ${!catFiltro?'bp':'bs'} bsm" onclick="S._catFiltro='';render()">Todos</button>
+    ${cats.map(c=>`<button class="btn ${catFiltro===c?'bp':'bs'} bsm" onclick="S._catFiltro='${c}';render()">${c}</button>`).join('')}
+  </div>
+
+  ${lista.length===0?`<div class="card"><div class="cbd" style="text-align:center;padding:2rem;color:var(--text3)">Nenhum modelo. Clique em "+ Novo modelo".</div></div>`:''}
+  ${lista.map(m=>`
+  <div class="card">
+    <div class="chd">
+      <div>
+        <h3 style="font-size:var(--fs)">${m.titulo}</h3>
+        <span class="b bgr" style="margin-top:3px">${m.categoria}</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn bs bsm" onclick="usarModelo('${m.id}')">Usar</button>
+        <button class="btn bs bsm" onclick="editarModelo('${m.id}')">Editar</button>
+        <button class="btn bd bsm" onclick="delModelo('${m.id}')">×</button>
+      </div>
+    </div>
+    <div class="cbd" style="padding:10px 13px">
+      ${m.assunto?`<div style="font-size:var(--fs-sm);color:var(--text2);margin-bottom:5px"><strong>Assunto:</strong> ${m.assunto}</div>`:''}
+      <div style="font-size:var(--fs-sm);color:var(--text3);white-space:pre-wrap;max-height:80px;overflow:hidden;mask-image:linear-gradient(to bottom,black 60%,transparent)">${m.corpo}</div>
+      ${(m.variaveis||[]).length?`<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">${(m.variaveis||[]).map(v=>`<span class="var-chip">{{${v}}}</span>`).join('')}</div>`:''}
+    </div>
+  </div>`).join('')}
+
+  ${S.modalType==='modelo'?renderModalModelo():''}
+  ${S.modalType==='usar-modelo'?renderModalUsarModelo():''}`;
+}
+
+function renderModalModelo(){
+  const m=S.modeloEdit||{};
+  const isEdit=!!m.id;
+  return `<div class="modal-ov" onclick="if(event.target===this)fecharModal()">
+  <div class="modal">
+    <h3>${isEdit?'Editar modelo':'Novo modelo'}</h3>
+    <div class="g2" style="margin-bottom:9px">
+      <div><label class="lbl">Categoria</label>
+        <input id="mod-cat" list="cat-list" value="${m.categoria||''}" placeholder="E-mail ao juízo, Ofício…">
+        <datalist id="cat-list">${['E-mail ao juízo','E-mail à parte','Ofício','Petição inicial','Requerimento','Outro'].map(c=>`<option>${c}</option>`).join('')}</datalist>
+      </div>
+      <div><label class="lbl">Título do modelo</label><input id="mod-titulo" value="${m.titulo||''}" placeholder="Nome descritivo"></div>
+    </div>
+    <div style="margin-bottom:9px"><label class="lbl">Assunto (para e-mails)</label><input id="mod-assunto" value="${m.assunto||''}" placeholder="Assunto do e-mail com {{variáveis}}"></div>
+    <div style="margin-bottom:9px">
+      <label class="lbl">Corpo do texto</label>
+      <div style="font-size:var(--fs-sm);color:var(--text3);margin-bottom:5px">Use <code>{{nome_variavel}}</code> para campos dinâmicos. Clique nas chips para inserir:</div>
+      <div style="margin-bottom:6px;display:flex;gap:4px;flex-wrap:wrap">
+        ${['numero','autor','reu','vara','comarca','perito','registro','data','parte'].map(v=>`<span class="var-chip" onclick="inserirVar('${v}')">${'{{'+'${v}'+'}}'}&#8203;</span>`.replace('${v}',v).replace('&#8203;','')).join('')}
+      </div>
+      <textarea id="mod-corpo" rows="10" placeholder="Texto do modelo…">${(m.corpo||'').replace(/</g,'&lt;')}</textarea>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn bs" onclick="fecharModal()">Cancelar</button>
+      <button class="btn bp" onclick="salvarModelo(${isEdit?`'${m.id}'`:'null'})">${isEdit?'Salvar':'Criar modelo'}</button>
+    </div>
+  </div></div>`;
+}
+
+function renderModalUsarModelo(){
+  const m=S.modeloEdit; if(!m) return '';
+  const vars=m.variaveis||[];
+  const p=S.proc;
+  // preencher automaticamente com dados do processo ativo
+  const auto={numero:p?.numero||'',autor:p?.autor||'',reu:p?.reu||'',vara:p?.vara||'',comarca:p?.comarca||'',perito:'Carlos Eduardo Soares Menezes',registro:'Adm. Perito – CRA/RJ: 20-60660'};
+  return `<div class="modal-ov" onclick="if(event.target===this)fecharModal()">
+  <div class="modal">
+    <h3>Usar modelo: ${m.titulo}</h3>
+    ${p?`<div class="obox">Dados do processo "${p.numero||'ativo'}" preenchidos automaticamente.</div>`:'<div class="wbox">Nenhum processo ativo. Os campos não foram preenchidos automaticamente.</div>'}
+    <div style="margin-bottom:9px">
+      <label class="lbl">Vincular ao processo</label>
+      <select id="usar-proc">
+        <option value="">— Nenhum —</option>
+        ${S.processos.map(pr=>`<option value="${pr.id}" ${p?.id===pr.id?'selected':''}>${pr.numero||pr.id} – ${pr.autor||''}</option>`).join('')}
+      </select>
+    </div>
+    ${vars.map(v=>`<div style="margin-bottom:8px"><label class="lbl">{{${v}}}</label><input id="var-${v}" value="${auto[v]||''}"></div>`).join('')}
+    <div style="margin-bottom:9px">
+      <label class="lbl">Prévia</label>
+      <textarea id="usar-preview" rows="8" readonly style="background:var(--bg);font-size:var(--fs-sm)">${gerarPrevia(m,auto)}</textarea>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn bs bsm" onclick="atualizarPrevia('${m.id}')">Atualizar prévia</button>
+      <button class="btn bs" onclick="fecharModal()">Cancelar</button>
+      <button class="btn bp" onclick="gerarDocumento('${m.id}')">Gerar documento</button>
+    </div>
+  </div></div>`;
+}
+
+function gerarPrevia(modelo, vals){
+  let txt=modelo.corpo||'';
+  Object.entries(vals).forEach(([k,v])=>{ txt=txt.replaceAll(`{{${k}}}`,v||`[${k}]`); });
+  return txt;
+}
+
+function atualizarPrevia(mId){
+  const m=S.modelos.find(x=>x.id===mId); if(!m) return;
+  const vars=m.variaveis||[];
+  const vals={};
+  vars.forEach(v=>{ vals[v]=document.getElementById(`var-${v}`)?.value||''; });
+  const prev=document.getElementById('usar-preview');
+  if(prev) prev.value=gerarPrevia(m,vals);
+}
+
+async function gerarDocumento(mId){
+  const m=S.modelos.find(x=>x.id===mId); if(!m) return;
+  const vars=m.variaveis||[];
+  const vals={};
+  vars.forEach(v=>{ vals[v]=document.getElementById(`var-${v}`)?.value||''; });
+  const corpoFinal=gerarPrevia(m,vals);
+  const procId=document.getElementById('usar-proc')?.value||null;
+  // salvar no banco
+  const doc={modelo_id:mId,titulo:m.titulo,corpo_final:corpoFinal,tipo:m.categoria,processo_id:procId||undefined};
+  try{ await sb.post('bee3d_peritare_documentos_gerados',doc); }catch(e){}
+  if(procId){ registrarFeed(procId,'📄','Documento gerado',`${m.categoria}: ${m.titulo}`); }
+  // copiar para área de transferência
+  navigator.clipboard.writeText(corpoFinal).then(()=>toast('Documento copiado para a área de transferência ✓')).catch(()=>toast('Documento gerado ✓'));
+  fecharModal();
+}
+
+function inserirVar(v){
+  const ta=document.getElementById('mod-corpo'); if(!ta) return;
+  const pos=ta.selectionStart; const txt=ta.value;
+  ta.value=txt.slice(0,pos)+`{{${v}}}`+txt.slice(ta.selectionEnd);
+  ta.focus(); ta.setSelectionRange(pos+v.length+4,pos+v.length+4);
+}
+
+async function salvarModelo(id){
+  const cat=document.getElementById('mod-cat')?.value?.trim();
+  const titulo=document.getElementById('mod-titulo')?.value?.trim();
+  const corpo=document.getElementById('mod-corpo')?.value;
+  if(!cat||!titulo||!corpo){alert('Preencha categoria, título e corpo.');return;}
+  const vars=[...new Set([...corpo.matchAll(/\{\{(\w+)\}\}/g)].map(m=>m[1]))];
+  const assunto=document.getElementById('mod-assunto')?.value?.trim()||null;
+  const data={categoria:cat,titulo,corpo,variaveis:vars,assunto};
+  try{
+    if(id){ await sb.patch(`bee3d_peritare_modelos?id=eq.${id}`,data); const idx=S.modelos.findIndex(m=>m.id===id); if(idx>=0) S.modelos[idx]={...S.modelos[idx],...data}; }
+    else { const[c]=await sb.post('bee3d_peritare_modelos',data); S.modelos.push({...data,id:c.id}); }
+    toast('Modelo salvo ✓');
+  }catch(e){ toast('Erro: '+e.message,4000); }
+  fecharModal(); render();
+}
+
+async function delModelo(id){
+  if(!confirm('Remover este modelo?'))return;
+  try{ await sb.del(`bee3d_peritare_modelos?id=eq.${id}`); }catch(e){}
+  S.modelos=S.modelos.filter(m=>m.id!==id); render();
+}
+
+function abrirModalModelo(){ S.modalType='modelo'; S.modeloEdit=null; render(); }
+function editarModelo(id){ S.modalType='modelo'; S.modeloEdit=S.modelos.find(m=>m.id===id)||null; render(); }
+function usarModelo(id){ S.modalType='usar-modelo'; S.modeloEdit=S.modelos.find(m=>m.id===id)||null; render(); }
+function fecharModal(){ S.modalType=null; S.modeloEdit=null; render(); }
+
+async function carregarModelos(){
+  try{ S.modelos=await sb.get('bee3d_peritare_modelos?order=categoria.asc,titulo.asc'); }
+  catch(e){ S.modelos=[]; }
+}
+
+// ── CANVAS ENGINE ─────────────────────────────────────────────────────────
+let CV,CX;
+function initMesa(){
+  CV=document.getElementById('mesa-canvas'); if(!CV) return;
+  const wrap=document.getElementById('mesa-canvas-wrap'); if(!wrap) return;
+  CV.width=wrap.clientWidth||700; CV.height=wrap.clientHeight||480;
+  CX=CV.getContext('2d');
+  redraw();
+  CV.onmousedown=mDown; CV.onmousemove=mMove; CV.onmouseup=mUp;
+  CV.onmouseleave=mUp; CV.onwheel=mWheel;
+  const mv=document.getElementById('mesa-empty');
+  if(mv) mv.style.display=S.mesaImg?'none':'flex';
+}
+function toImg(x,y){ return{x:(x-S.mesaOX)/S.mesaZoom,y:(y-S.mesaOY)/S.mesaZoom}; }
+function redraw(){
+  if(!CX||!CV) return;
   CX.clearRect(0,0,CV.width,CV.height);
-  // xadrez
   const sz=16;
-  for(let x=0;x<CV.width;x+=sz) for(let y=0;y<CV.height;y+=sz) {
-    CX.fillStyle=(Math.floor(x/sz)+Math.floor(y/sz))%2===0?'#d8d8d8':'#efefef';
+  for(let x=0;x<CV.width;x+=sz) for(let y=0;y<CV.height;y+=sz){
+    CX.fillStyle=(Math.floor(x/sz)+Math.floor(y/sz))%2===0?'#cccccc':'#e8e8e8';
     CX.fillRect(x,y,sz,sz);
   }
-  // imagem
-  if (S.mesaImg) {
-    CX.save(); CX.translate(S.mesaOX,S.mesaOY); CX.scale(S.mesaZoom,S.mesaZoom);
-    CX.drawImage(S.mesaImg,0,0); CX.restore();
-  }
-  // anotações
-  S.mesaAnots.forEach(a => drawAnot(a));
-  // preview
-  if (S.drawing && S.dSt && S.dCur) drawPreview();
-  // crop overlay
-  if (S.mesaTool==='crop') {
-    if (S.mesaCropRect) {
-      const r=S.mesaCropRect;
-      const sx=S.mesaOX+r.x*S.mesaZoom, sy=S.mesaOY+r.y*S.mesaZoom, sw=r.w*S.mesaZoom, sh=r.h*S.mesaZoom;
-      CX.save(); CX.fillStyle='rgba(0,0,0,.35)'; CX.fillRect(0,0,CV.width,CV.height);
-      CX.clearRect(sx,sy,sw,sh);
-      CX.strokeStyle='#c8a84b'; CX.lineWidth=2; CX.setLineDash([6,3]);
-      CX.strokeRect(sx,sy,sw,sh); CX.setLineDash([]); CX.restore();
+  if(S.mesaImg){ CX.save();CX.translate(S.mesaOX,S.mesaOY);CX.scale(S.mesaZoom,S.mesaZoom);CX.drawImage(S.mesaImg,0,0);CX.restore(); }
+  S.mesaAnots.forEach(a=>drawAnot(a));
+  if(S.drawing&&S.dSt&&S.dCur) drawPreview();
+  if(S.mesaTool==='crop'){
+    if(S.mesaCropRect){
+      const r=S.mesaCropRect, sx=S.mesaOX+r.x*S.mesaZoom, sy=S.mesaOY+r.y*S.mesaZoom, sw=r.w*S.mesaZoom, sh=r.h*S.mesaZoom;
+      CX.save();CX.fillStyle='rgba(0,0,0,.35)';CX.fillRect(0,0,CV.width,CV.height);CX.clearRect(sx,sy,sw,sh);
+      CX.strokeStyle='#c8a84b';CX.lineWidth=2;CX.setLineDash([6,3]);CX.strokeRect(sx,sy,sw,sh);CX.setLineDash([]);CX.restore();
     }
-    if (S.mesaCropDrawing && S.mesaCropStart && S.mesaCropCurrent) {
-      const {cx:x1,cy:y1}=S.mesaCropStart, {cx:x2,cy:y2}=S.mesaCropCurrent;
-      CX.save(); CX.fillStyle='rgba(0,0,0,.35)'; CX.fillRect(0,0,CV.width,CV.height);
+    if(S.mesaCropDrawing&&S.mesaCropStart&&S.mesaCropCurrent){
+      const{cx:x1,cy:y1}=S.mesaCropStart,{cx:x2,cy:y2}=S.mesaCropCurrent;
+      CX.save();CX.fillStyle='rgba(0,0,0,.35)';CX.fillRect(0,0,CV.width,CV.height);
       CX.clearRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
-      CX.strokeStyle='#c8a84b'; CX.lineWidth=2; CX.setLineDash([6,3]);
+      CX.strokeStyle='#c8a84b';CX.lineWidth=2;CX.setLineDash([6,3]);
       CX.strokeRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
-      CX.setLineDash([]); CX.restore();
+      CX.setLineDash([]);CX.restore();
     }
   }
 }
-
-function drawAnot(a) {
-  CX.save(); CX.translate(S.mesaOX,S.mesaOY); CX.scale(S.mesaZoom,S.mesaZoom);
-  CX.strokeStyle=a.cor; CX.lineWidth=a.esp/S.mesaZoom; CX.lineCap='round'; CX.lineJoin='round';
-  if (a.tipo==='Linha'||a.tipo==='Reta') { CX.beginPath(); CX.moveTo(a.x1,a.y1); CX.lineTo(a.x2,a.y2); CX.stroke(); }
-  else if (a.tipo==='Seta') { drawArrow(a.x1,a.y1,a.x2,a.y2,a.cor,a.esp/S.mesaZoom); }
-  else if (a.tipo==='Círculo') { const rx=Math.abs(a.x2-a.x1)/2,ry=Math.abs(a.y2-a.y1)/2; CX.beginPath(); CX.ellipse(a.x1+(a.x2-a.x1)/2,a.y1+(a.y2-a.y1)/2,Math.max(1,rx),Math.max(1,ry),0,0,Math.PI*2); CX.stroke(); }
-  else if (a.tipo==='Retângulo') { CX.strokeRect(Math.min(a.x1,a.x2),Math.min(a.y1,a.y2),Math.abs(a.x2-a.x1),Math.abs(a.y2-a.y1)); }
-  else if (a.tipo==='Régua') {
-    CX.setLineDash([5/S.mesaZoom,3/S.mesaZoom]); CX.beginPath(); CX.moveTo(a.x1,a.y1); CX.lineTo(a.x2,a.y2); CX.stroke(); CX.setLineDash([]);
-    CX.fillStyle=a.cor; CX.font=`bold ${12/S.mesaZoom}px Arial`;
-    CX.fillText(a.medida, a.x1+(a.x2-a.x1)/2+3, a.y1+(a.y2-a.y1)/2-3);
+function drawAnot(a){
+  CX.save();CX.translate(S.mesaOX,S.mesaOY);CX.scale(S.mesaZoom,S.mesaZoom);
+  CX.strokeStyle=a.cor;CX.lineWidth=a.esp/S.mesaZoom;CX.lineCap='round';CX.lineJoin='round';
+  if(a.tipo==='Linha'||a.tipo==='Reta'){CX.beginPath();CX.moveTo(a.x1,a.y1);CX.lineTo(a.x2,a.y2);CX.stroke();}
+  else if(a.tipo==='Seta'){dArr(a.x1,a.y1,a.x2,a.y2,a.cor,a.esp/S.mesaZoom);}
+  else if(a.tipo==='Círculo'){const rx=Math.abs(a.x2-a.x1)/2,ry=Math.abs(a.y2-a.y1)/2;CX.beginPath();CX.ellipse(a.x1+(a.x2-a.x1)/2,a.y1+(a.y2-a.y1)/2,Math.max(1,rx),Math.max(1,ry),0,0,Math.PI*2);CX.stroke();}
+  else if(a.tipo==='Retângulo'){CX.strokeRect(Math.min(a.x1,a.x2),Math.min(a.y1,a.y2),Math.abs(a.x2-a.x1),Math.abs(a.y2-a.y1));}
+  else if(a.tipo==='Régua'){
+    CX.setLineDash([5/S.mesaZoom,3/S.mesaZoom]);CX.beginPath();CX.moveTo(a.x1,a.y1);CX.lineTo(a.x2,a.y2);CX.stroke();CX.setLineDash([]);
+    CX.fillStyle=a.cor;CX.font=`bold ${12/S.mesaZoom}px Arial`;CX.fillText(a.medida,a.x1+(a.x2-a.x1)/2+3,a.y1+(a.y2-a.y1)/2-3);
   }
   CX.restore();
 }
-
-function drawArrow(x1,y1,x2,y2,cor,lw) {
-  const ang=Math.atan2(y2-y1,x2-x1), hs=14/S.mesaZoom;
-  CX.strokeStyle=cor; CX.fillStyle=cor; CX.lineWidth=lw;
-  CX.beginPath(); CX.moveTo(x1,y1); CX.lineTo(x2,y2); CX.stroke();
-  CX.beginPath(); CX.moveTo(x2,y2);
-  CX.lineTo(x2-hs*Math.cos(ang-0.4),y2-hs*Math.sin(ang-0.4));
-  CX.lineTo(x2-hs*Math.cos(ang+0.4),y2-hs*Math.sin(ang+0.4));
-  CX.closePath(); CX.fill();
+function dArr(x1,y1,x2,y2,cor,lw){
+  const ang=Math.atan2(y2-y1,x2-x1),hs=14/S.mesaZoom;
+  CX.strokeStyle=cor;CX.fillStyle=cor;CX.lineWidth=lw;
+  CX.beginPath();CX.moveTo(x1,y1);CX.lineTo(x2,y2);CX.stroke();
+  CX.beginPath();CX.moveTo(x2,y2);CX.lineTo(x2-hs*Math.cos(ang-0.4),y2-hs*Math.sin(ang-0.4));CX.lineTo(x2-hs*Math.cos(ang+0.4),y2-hs*Math.sin(ang+0.4));CX.closePath();CX.fill();
 }
-
-function drawPreview() {
-  const s=S.dSt, e=S.dCur;
-  CX.save(); CX.translate(S.mesaOX,S.mesaOY); CX.scale(S.mesaZoom,S.mesaZoom);
-  CX.strokeStyle=S.mesaCor; CX.lineWidth=S.mesaEsp/S.mesaZoom; CX.lineCap='round'; CX.globalAlpha=0.7;
-  const t=S.mesaTool;
+function drawPreview(){
+  const s=S.dSt,e=S.dCur,t=S.mesaTool;
+  CX.save();CX.translate(S.mesaOX,S.mesaOY);CX.scale(S.mesaZoom,S.mesaZoom);
+  CX.strokeStyle=S.mesaCor;CX.lineWidth=S.mesaEsp/S.mesaZoom;CX.lineCap='round';CX.globalAlpha=0.7;
   if(t==='linha'||t==='reta'){CX.beginPath();CX.moveTo(s.x,s.y);CX.lineTo(e.x,e.y);CX.stroke();}
-  else if(t==='seta-mark'){drawArrow(s.x,s.y,e.x,e.y,S.mesaCor,S.mesaEsp/S.mesaZoom);}
+  else if(t==='seta-mark'){dArr(s.x,s.y,e.x,e.y,S.mesaCor,S.mesaEsp/S.mesaZoom);}
   else if(t==='circulo'){const rx=Math.abs(e.x-s.x)/2,ry=Math.abs(e.y-s.y)/2;CX.beginPath();CX.ellipse(s.x+(e.x-s.x)/2,s.y+(e.y-s.y)/2,Math.max(1,rx),Math.max(1,ry),0,0,Math.PI*2);CX.stroke();}
   else if(t==='rect'){CX.strokeRect(Math.min(s.x,e.x),Math.min(s.y,e.y),Math.abs(e.x-s.x),Math.abs(e.y-s.y));}
   else if(t==='regua'){
     CX.setLineDash([5/S.mesaZoom,3/S.mesaZoom]);CX.beginPath();CX.moveTo(s.x,s.y);CX.lineTo(e.x,e.y);CX.stroke();CX.setLineDash([]);
-    const ang=Math.atan2(e.y-s.y,e.x-s.x)*180/Math.PI, dist=Math.round(Math.hypot(e.x-s.x,e.y-s.y));
-    const ri=document.getElementById('mesa-ruler-info');
-    if(ri){ri.style.display='block';ri.textContent=`${dist}px · ${ang.toFixed(1)}°`;}
+    const ang=Math.atan2(e.y-s.y,e.x-s.x)*180/Math.PI,dist=Math.round(Math.hypot(e.x-s.x,e.y-s.y));
+    const ri=document.getElementById('mesa-ri'); if(ri){ri.style.display='block';ri.textContent=`${dist}px · ${ang.toFixed(1)}°`;}
   }
   CX.restore();
 }
-
-function mDown(ev) {
-  const r=CV.getBoundingClientRect(), cx=ev.clientX-r.left, cy=ev.clientY-r.top;
-  const t=S.mesaTool;
+function mDown(ev){
+  const r=CV.getBoundingClientRect(),cx=ev.clientX-r.left,cy=ev.clientY-r.top,t=S.mesaTool;
   if(t==='pan'||ev.button===1||(ev.button===0&&ev.altKey)){S.mesaPanning=true;S.mesaPanStart={x:cx-S.mesaOX,y:cy-S.mesaOY};CV.style.cursor='grabbing';return;}
   if(t==='lixo'){rmAnot(S.mesaAnots.length-1);return;}
   if(t==='seta')return;
-  if(t==='crop'){
-    S.mesaCropDrawing=true; S.mesaCropRect=null;
-    const ic=toImg(cx,cy);
-    S.mesaCropStart={cx,cy,ix:ic.x,iy:ic.y}; S.mesaCropCurrent={cx,cy}; return;
-  }
-  S.drawing=true;
-  const ic=toImg(cx,cy); S.dSt={x:ic.x,y:ic.y}; S.dCur={x:ic.x,y:ic.y};
+  if(t==='crop'){S.mesaCropDrawing=true;S.mesaCropRect=null;const ic=toImg(cx,cy);S.mesaCropStart={cx,cy,ix:ic.x,iy:ic.y};S.mesaCropCurrent={cx,cy};return;}
+  S.drawing=true;const ic=toImg(cx,cy);S.dSt={x:ic.x,y:ic.y};S.dCur={x:ic.x,y:ic.y};
 }
-
-function mMove(ev) {
-  const r=CV.getBoundingClientRect(), cx=ev.clientX-r.left, cy=ev.clientY-r.top;
+function mMove(ev){
+  const r=CV.getBoundingClientRect(),cx=ev.clientX-r.left,cy=ev.clientY-r.top;
   if(S.mesaPanning&&S.mesaPanStart){S.mesaOX=cx-S.mesaPanStart.x;S.mesaOY=cy-S.mesaPanStart.y;redraw();return;}
   if(S.mesaCropDrawing&&S.mesaCropStart){S.mesaCropCurrent={cx,cy};redraw();return;}
   if(!S.drawing)return;
-  const ic=toImg(cx,cy); S.dCur={x:ic.x,y:ic.y}; redraw();
+  const ic=toImg(cx,cy);S.dCur={x:ic.x,y:ic.y};redraw();
 }
-
-function mUp(ev) {
+function mUp(ev){
   if(S.mesaPanning){S.mesaPanning=false;CV.style.cursor=S.mesaTool==='pan'?'grab':'crosshair';return;}
   if(S.mesaCropDrawing){
     S.mesaCropDrawing=false;
     if(!S.mesaCropStart||!S.mesaCropCurrent)return;
-    const {cx:x1,cy:y1,ix,iy}=S.mesaCropStart, {cx:x2,cy:y2}=S.mesaCropCurrent;
+    const{cx:x1,cy:y1,ix,iy}=S.mesaCropStart,{cx:x2,cy:y2}=S.mesaCropCurrent;
     if(Math.abs(x2-x1)<8||Math.abs(y2-y1)<8){S.mesaCropRect=null;redraw();return;}
     S.mesaCropRect={x:Math.min(ix,(x2-S.mesaOX)/S.mesaZoom),y:Math.min(iy,(y2-S.mesaOY)/S.mesaZoom),w:Math.abs((x2-S.mesaOX)/S.mesaZoom-ix),h:Math.abs((y2-S.mesaOY)/S.mesaZoom-iy)};
-    S.mesaCropStart=null; redraw(); render(); setTimeout(initMesa,30); return;
+    S.mesaCropStart=null;redraw();render();setTimeout(initMesa,30);return;
   }
-  if(!S.drawing)return; S.drawing=false;
-  const s=S.dSt, e=S.dCur; if(!s||!e)return;
-  const dist=Math.hypot(e.x-s.x,e.y-s.y); if(dist<3)return;
+  if(!S.drawing)return;S.drawing=false;
+  const s=S.dSt,e=S.dCur;if(!s||!e)return;
+  const dist=Math.hypot(e.x-s.x,e.y-s.y);if(dist<3)return;
   const ang=Math.atan2(e.y-s.y,e.x-s.x)*180/Math.PI;
   const tmap={linha:'Linha',reta:'Reta',circulo:'Círculo',rect:'Retângulo','seta-mark':'Seta',regua:'Régua'};
   const tipo=tmap[S.mesaTool]||S.mesaTool;
   const anot={tipo,x1:s.x,y1:s.y,x2:e.x,y2:e.y,cor:S.mesaCor,esp:S.mesaEsp,criterio:S.mesaCriterioAtivo};
   if(S.mesaTool==='regua') anot.medida=`${Math.round(dist)}px · ${ang.toFixed(1)}°`;
-  S.mesaAnots.push(anot);
-  S.dSt=null; S.dCur=null;
-  const ri=document.getElementById('mesa-ruler-info'); if(ri) ri.style.display='none';
-  render(); setTimeout(initMesa,30);
+  S.mesaAnots.push(anot);S.dSt=null;S.dCur=null;
+  const ri=document.getElementById('mesa-ri');if(ri)ri.style.display='none';
+  render();setTimeout(initMesa,30);
 }
+function mWheel(ev){ev.preventDefault();adjZ(ev.deltaY>0?-0.12:0.12);}
+function adjZ(d){S.mesaZoom=Math.max(0.05,Math.min(8,S.mesaZoom+d));redraw();}
+function setMesaTool(t){S.mesaTool=t;S.mesaCropRect=null;if(CV)CV.style.cursor=t==='pan'?'grab':'crosshair';render();setTimeout(initMesa,30);}
+function setMesaCor(c){S.mesaCor=c;render();setTimeout(initMesa,30);}
+function rmAnot(i){if(i>=0&&i<S.mesaAnots.length){S.mesaAnots.splice(i,1);render();setTimeout(initMesa,30);}}
+function limparAnots(){if(confirm('Limpar todas as anotações?')){S.mesaAnots=[];render();setTimeout(initMesa,30);}}
 
-function mWheel(ev) { ev.preventDefault(); adjZ(ev.deltaY>0?-0.12:0.12); }
-
-function adjZ(d) {
-  S.mesaZoom=Math.max(0.05,Math.min(8,S.mesaZoom+(d===0?-S.mesaZoom+1:d)));
-  redraw();
-  // atualiza label de zoom sem rerender tudo
-  document.querySelectorAll('.chd h3').forEach(h=>{if(h.textContent.startsWith('Zoom:')) h.textContent=`Zoom: ${Math.round(S.mesaZoom*100)}%`;});
-}
-
-function setMesaTool(t) { S.mesaTool=t; S.mesaCropRect=null; CV&&(CV.style.cursor=t==='pan'?'grab':'crosshair'); render(); setTimeout(initMesa,30); }
-function setMesaCor(c) { S.mesaCor=c; render(); setTimeout(initMesa,30); }
-function rmAnot(i) { if(i>=0&&i<S.mesaAnots.length){S.mesaAnots.splice(i,1);render();setTimeout(initMesa,30);} }
-function limparAnots() { if(confirm('Limpar todas as anotações?')){S.mesaAnots=[];render();setTimeout(initMesa,30);} }
-
-async function loadMesaImg(ev) {
-  const f=ev.target.files[0]; if(!f) return;
-  if(f.type==='application/pdf') { await loadPDF(f); return; }
+async function loadMesaImg(ev){
+  const f=ev.target.files[0];if(!f)return;
+  if(f.type==='application/pdf'){await loadPDF(f);return;}
   const reader=new FileReader();
   reader.onload=async e=>{
-    const img=new Image(); img.onload=()=>{
-      S.mesaImg=img; S.mesaImgNome=f.name; S.mesaImgStack=[]; S.mesaCropRect=null; S.mesaAnots=[];
-      S.mesaOX=0; S.mesaOY=0;
+    const img=new Image();img.onload=()=>{
+      S.mesaImg=img;S.mesaImgNome=f.name;S.mesaImgStack=[];S.mesaCropRect=null;S.mesaAnots=[];
+      S.mesaOX=0;S.mesaOY=0;
       if(CV){const sx=CV.width/img.width,sy=CV.height/img.height;S.mesaZoom=Math.min(sx,sy,1);}
       document.getElementById('mesa-empty')&&(document.getElementById('mesa-empty').style.display='none');
-      redraw(); render(); setTimeout(initMesa,30);
-    }; img.src=e.target.result;
-  }; reader.readAsDataURL(f);
+      redraw();render();setTimeout(initMesa,30);
+    };img.src=e.target.result;
+  };reader.readAsDataURL(f);
 }
-
-async function loadPDF(f) {
+async function loadPDF(f){
   if(typeof pdfjsLib==='undefined'){toast('PDF.js não carregado');return;}
   const ab=await f.arrayBuffer();
   S.pdfDoc=await pdfjsLib.getDocument({data:ab}).promise;
-  S.pdfTotal=S.pdfDoc.numPages; S.pdfPage=1; S.mesaImgNome=f.name;
-  toast(`PDF carregado: ${S.pdfTotal} página(s)`);
+  S.pdfTotal=S.pdfDoc.numPages;S.pdfPage=1;S.mesaImgNome=f.name;
+  toast(`PDF: ${S.pdfTotal} página(s)`);
   await renderPdfPage(1);
 }
-
-async function renderPdfPage(n) {
-  if(!S.pdfDoc)return;
-  S.pdfPage=n;
+async function renderPdfPage(n){
+  if(!S.pdfDoc)return;S.pdfPage=n;
   const page=await S.pdfDoc.getPage(n);
-  const scale=2; const vp=page.getViewport({scale});
-  const tmp=document.createElement('canvas'); tmp.width=vp.width; tmp.height=vp.height;
+  const scale=2,vp=page.getViewport({scale});
+  const tmp=document.createElement('canvas');tmp.width=vp.width;tmp.height=vp.height;
   await page.render({canvasContext:tmp.getContext('2d'),viewport:vp}).promise;
-  const img=new Image(); img.onload=()=>{
-    S.mesaImg=img; S.mesaImgStack=[]; S.mesaCropRect=null; S.mesaAnots=[];
-    S.mesaOX=0; S.mesaOY=0;
+  const img=new Image();img.onload=()=>{
+    S.mesaImg=img;S.mesaImgStack=[];S.mesaCropRect=null;S.mesaAnots=[];S.mesaOX=0;S.mesaOY=0;
     if(CV){const sx=CV.width/img.width,sy=CV.height/img.height;S.mesaZoom=Math.min(sx,sy,1);}
     document.getElementById('mesa-empty')&&(document.getElementById('mesa-empty').style.display='none');
-    redraw(); render(); setTimeout(initMesa,30);
-  }; img.src=tmp.toDataURL();
+    redraw();render();setTimeout(initMesa,30);
+  };img.src=tmp.toDataURL();
 }
+async function pdfNav(dir){const n=S.pdfPage+dir;if(n<1||n>S.pdfTotal)return;await renderPdfPage(n);}
 
-async function pdfNav(dir) {
-  const n=S.pdfPage+dir;
-  if(n<1||n>S.pdfTotal)return;
-  await renderPdfPage(n);
-}
-
-function confirmarCrop() {
+function confirmarCrop(){
   if(!S.mesaImg||!S.mesaCropRect)return;
   const r=S.mesaCropRect;
-  const tmp=document.createElement('canvas'); tmp.width=r.w; tmp.height=r.h;
-  const tc=tmp.getContext('2d'); tc.drawImage(S.mesaImg,r.x,r.y,r.w,r.h,0,0,r.w,r.h);
-  const nova=new Image(); nova.onload=()=>{
+  const tmp=document.createElement('canvas');tmp.width=r.w;tmp.height=r.h;
+  tmp.getContext('2d').drawImage(S.mesaImg,r.x,r.y,r.w,r.h,0,0,r.w,r.h);
+  const nova=new Image();nova.onload=()=>{
     S.mesaImgStack.push({img:S.mesaImg,ox:S.mesaOX,oy:S.mesaOY,zoom:S.mesaZoom});
-    S.mesaImg=nova; S.mesaOX=0; S.mesaOY=0;
+    S.mesaImg=nova;S.mesaOX=0;S.mesaOY=0;
     if(CV){const sx=CV.width/r.w,sy=CV.height/r.h;S.mesaZoom=Math.min(sx,sy,1);}
-    S.mesaCropRect=null; S.mesaTool='seta'; S.mesaAnots=[];
-    render(); setTimeout(initMesa,30);
-  }; nova.src=tmp.toDataURL();
+    S.mesaCropRect=null;S.mesaTool='seta';S.mesaAnots=[];
+    render();setTimeout(initMesa,30);
+  };nova.src=tmp.toDataURL();
 }
-
-function desfazerCrop() {
+function desfazerCrop(){
   if(!S.mesaImgStack.length)return;
   const prev=S.mesaImgStack.pop();
-  S.mesaImg=prev.img; S.mesaOX=prev.ox; S.mesaOY=prev.oy; S.mesaZoom=prev.zoom;
-  S.mesaCropRect=null; S.mesaAnots=[];
-  render(); setTimeout(initMesa,30);
+  S.mesaImg=prev.img;S.mesaOX=prev.ox;S.mesaOY=prev.oy;S.mesaZoom=prev.zoom;
+  S.mesaCropRect=null;S.mesaAnots=[];render();setTimeout(initMesa,30);
 }
-
-async function salvarRecortePQ(pqId) {
+async function salvarRecortePQ(pqId){
   if(!S.mesaImg||!CV)return;
-  // exporta o canvas atual como imagem
-  const tmp=document.createElement('canvas'); tmp.width=CV.width; tmp.height=CV.height;
-  const tc=tmp.getContext('2d');
-  tc.translate(S.mesaOX,S.mesaOY); tc.scale(S.mesaZoom,S.mesaZoom); tc.drawImage(S.mesaImg,0,0);
+  const tmp=document.createElement('canvas');tmp.width=CV.width;tmp.height=CV.height;
+  const tc=tmp.getContext('2d');tc.translate(S.mesaOX,S.mesaOY);tc.scale(S.mesaZoom,S.mesaZoom);tc.drawImage(S.mesaImg,0,0);
   const dataUrl=tmp.toDataURL('image/png');
-  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);
-  if(!pq)return;
-  pq.sig_path=dataUrl;
-  toast('Assinatura salva como PQ ✓');
-  // tenta persistir no Supabase
-  try {
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);if(!pq)return;
+  pq.sig_path=dataUrl;toast('Assinatura salva ✓');
+  try{
     const blob=await(await fetch(dataUrl)).blob();
     const f=new File([blob],'sig.png',{type:'image/png'});
     const url=await sb.upload('peritare-docs',`processos/${S.proc.id}/pqs/${pqId}/sig.png`,f);
-    pq.sig_path=url;
-    await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{sig_path:url});
-  } catch(e){}
-  render(); setTimeout(initMesa,50);
+    pq.sig_path=url;await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{sig_path:url});
+  }catch(e){}
+  render();setTimeout(initMesa,50);
 }
 
-function abrirMesaPQ(pqId) { S.pqId=pqId; stab('mesa'); }
-
 // ── AÇÕES ─────────────────────────────────────────────────────────────────
-async function carregarProcessos() {
-  try {
+async function carregarTudo(){
+  await carregarKanbanCols();
+  try{
     const ps=await sb.get('bee3d_peritare_processos?order=created_at.desc');
     for(const p of ps){
       p.pqs=await sb.get(`bee3d_peritare_pqs?processo_id=eq.${p.id}&order=ordem.asc`);
@@ -958,100 +1340,149 @@ async function carregarProcessos() {
       p.metodologia_items=p.metodologia_items||[0,1,2,3,4,5,6,7,8,9];
     }
     S.processos=ps;
-  } catch(e){ S.processos=[]; }
+  }catch(e){S.processos=[];}
+  await carregarModelos();
   render();
 }
 
-async function abrirProcesso(id) {
-  const p=S.processos.find(x=>x.id===id); if(!p)return;
+async function abrirProcesso(id){
+  const p=S.processos.find(x=>x.id===id);if(!p)return;
   for(const pq of(p.pqs||[])){
     try{pq.eog=await sb.get(`bee3d_peritare_eog?pq_id=eq.${pq.id}`);}
     catch(e){pq.eog=novoEOG();}
     if(!pq.eog||pq.eog.length===0)pq.eog=novoEOG();
   }
-  S.proc=p; S.view='proc'; S.sub='info'; render();
+  await carregarFeed(p.id);
+  S.proc=p;S.view='proc';S.sub='info';render();
 }
 
-async function novoProcesso() {
+async function novoProcesso(){
   const p={numero:'',autor:'',reu:'',comarca:'',vara:'',nomeacao_id:'',nomeacao_data:'',status:'pendente',metodologia_items:[0,1,2,3,4,5,6,7,8,9],metodologia_outros:'',pqs:[],paradigmas:[]};
   try{const[c]=await sb.post('bee3d_peritare_processos',p);p.id=c.id;}
   catch(e){p.id=Date.now().toString();}
-  S.processos.unshift(p); S.proc=p; S.view='proc'; S.sub='info'; render();
+  S.processos.unshift(p);S.proc=p;S.view='proc';S.sub='info';S.feed=[];S.arquivos=[];render();
 }
 
-async function salvarInfo() {
+async function salvarInfo(){
   const p=S.proc;
   const b={numero:document.getElementById('f-num')?.value||'',autor:document.getElementById('f-aut')?.value||'',reu:document.getElementById('f-reu')?.value||'',vara:document.getElementById('f-vara')?.value||'',comarca:document.getElementById('f-com')?.value||'',status:document.getElementById('f-st')?.value||'',nomeacao_id:document.getElementById('f-nid')?.value||'',nomeacao_data:document.getElementById('f-ndt')?.value||''};
+  const oldStatus=p.status;
+  if(b.status!==oldStatus) pushUndo('status_proc',{id:p.id,status:oldStatus},'Alterar status do processo');
   Object.assign(p,b);
   try{await sb.patch(`bee3d_peritare_processos?id=eq.${p.id}`,b);toast('Dados salvos ✓');}
   catch(e){toast('Salvo localmente');}
+  registrarFeed(p.id,'✏️','Dados do processo atualizados','');
   render();
 }
 
-async function adicionarPQ() {
-  const tipo=document.getElementById('npq-tipo')?.value, numero=document.getElementById('npq-num')?.value;
-  if(!tipo||!numero){alert('Informe o tipo e o número.');return;}
-  const pq={processo_id:S.proc.id,ordem:(S.proc.pqs||[]).length+1,tipo,numero,data_doc:document.getElementById('npq-data')?.value||'',fls:document.getElementById('npq-fls')?.value||'',id_proc:document.getElementById('npq-idp')?.value||'',status:'pending'};
+async function adicionarPQ(){
+  const tipo=document.getElementById('npq-tipo')?.value;
+  const numero=document.getElementById('npq-num')?.value;
+  if(!tipo||!numero){alert('Informe o tipo e o número do documento.');return;}
   const file=document.getElementById('npq-file')?.files?.[0];
-  try{const[c]=await sb.post('bee3d_peritare_pqs',pq);pq.id=c.id;
-    if(file){const path=`processos/${S.proc.id}/pqs/${c.id}/${file.name}`;pq.pdf_path=await sb.upload('peritare-docs',path,file);await sb.patch(`bee3d_peritare_pqs?id=eq.${c.id}`,{pdf_path:pq.pdf_path});}
-  }catch(e){pq.id=Date.now().toString();}
+  const pq={
+    processo_id:S.proc.id,
+    ordem:(S.proc.pqs||[]).length+1,
+    tipo,numero,
+    data_doc:document.getElementById('npq-data')?.value||'',
+    fls:document.getElementById('npq-fls')?.value||'',
+    id_proc:document.getElementById('npq-idp')?.value||'',
+    status:'pending',
+    pdf_path:'',
+  };
+  // 1. Criar registro no banco primeiro
+  try{
+    const[c]=await sb.post('bee3d_peritare_pqs',pq);
+    pq.id=c.id;
+  }catch(e){
+    pq.id='local_'+Date.now();
+    toast('Aviso: salvando localmente (banco indisponível)');
+  }
+  // 2. Upload do PDF se existir
+  if(file){
+    toast('Enviando PDF…',8000);
+    try{
+      const path=`processos/${S.proc.id}/pqs/${pq.id}/${file.name}`;
+      const url=await sb.upload('peritare-docs',path,file);
+      pq.pdf_path=url;
+      // Atualizar registro com o caminho do PDF
+      if(!pq.id.startsWith('local_')){
+        await sb.patch(`bee3d_peritare_pqs?id=eq.${pq.id}`,{pdf_path:url});
+      }
+    }catch(e){
+      // Fallback: manter como object URL local para a sessão
+      pq.pdf_path=URL.createObjectURL(file);
+      pq._pdfNome=file.name;
+      toast('PDF salvo localmente (Storage indisponível)');
+    }
+  }
   pq.eog=novoEOG();
-  S.proc.pqs=[...(S.proc.pqs||[]),pq]; toast('Documento adicionado ✓'); render();
+  S.proc.pqs=[...(S.proc.pqs||[]),pq];
+  // Limpar formulário
+  ['npq-tipo','npq-num','npq-data','npq-fls','npq-idp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const fst=document.getElementById('npq-fst');if(fst)fst.textContent='';
+  registrarFeed(S.proc.id,'📄','PQ adicionado',`${tipo} nº ${numero}`);
+  toast('Documento PQ adicionado ✓');
+  render();
 }
 
 async function remPQ(id){
   if(!confirm('Remover este documento?'))return;
+  const pq=(S.proc.pqs||[]).find(q=>q.id===id);
+  if(pq) pushUndo('delete_pq',{...pq},'Remover documento PQ');
   try{await sb.del(`bee3d_peritare_pqs?id=eq.${id}`);}catch(e){}
-  S.proc.pqs=(S.proc.pqs||[]).filter(q=>q.id!==id); render();
+  S.proc.pqs=(S.proc.pqs||[]).filter(q=>q.id!==id);
+  render();
 }
 
 async function salvarMet(){
   const items=MET.map((_,i)=>document.getElementById(`m${i}`)?.checked?i:-1).filter(x=>x>=0);
   const outros=document.getElementById('met-outros')?.value||'';
-  S.proc.metodologia_items=items; S.proc.metodologia_outros=outros;
+  S.proc.metodologia_items=items;S.proc.metodologia_outros=outros;
   try{await sb.patch(`bee3d_peritare_processos?id=eq.${S.proc.id}`,{metodologia_items:items,metodologia_outros:outros});toast('Metodologia salva ✓');}
   catch(e){toast('Salvo localmente');}
 }
 
 async function adicionarPG(){
-  const desc=document.getElementById('npg-desc')?.value; if(!desc){alert('Informe a descrição.');return;}
+  const desc=document.getElementById('npg-desc')?.value;if(!desc){alert('Informe a descrição.');return;}
   const pg={processo_id:S.proc.id,tipo:document.getElementById('npg-tipo')?.value||'PCE',descricao:desc,data_assinatura:document.getElementById('npg-data')?.value||'',referencia:document.getElementById('npg-ref')?.value||''};
   const file=document.getElementById('npg-file')?.files?.[0];
   try{const[c]=await sb.post('bee3d_peritare_paradigmas',pg);pg.id=c.id;
     if(file){const path=`processos/${S.proc.id}/paradigmas/${c.id}/${file.name}`;pg.arquivo_path=await sb.upload('peritare-docs',path,file);await sb.patch(`bee3d_peritare_paradigmas?id=eq.${c.id}`,{arquivo_path:pg.arquivo_path});}
   }catch(e){pg.id=Date.now().toString();}
-  S.proc.paradigmas=[...(S.proc.paradigmas||[]),pg]; toast('Paradigma adicionado ✓'); render();
+  S.proc.paradigmas=[...(S.proc.paradigmas||[]),pg];
+  registrarFeed(S.proc.id,'🗂','Paradigma adicionado',`${pg.tipo}: ${desc}`);
+  toast('Paradigma adicionado ✓');render();
 }
 
 async function remPG(id){
+  const pg=(S.proc.paradigmas||[]).find(x=>x.id===id);
+  if(pg) pushUndo('delete_pg',{...pg},'Remover paradigma');
   try{await sb.del(`bee3d_peritare_paradigmas?id=eq.${id}`);}catch(e){}
-  S.proc.paradigmas=(S.proc.paradigmas||[]).filter(pg=>pg.id!==id); render();
+  S.proc.paradigmas=(S.proc.paradigmas||[]).filter(pg=>pg.id!==id);render();
 }
 
 function setRes(pqId,cid,res){
-  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId); if(!pq)return;
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);if(!pq)return;
   if(!pq.eog||pq.eog.length===0)pq.eog=novoEOG();
-  const e=pq.eog.find(x=>x.criterio_id===cid); if(e){e.resultado=res;}
+  const e=pq.eog.find(x=>x.criterio_id===cid);if(e) e.resultado=res;
   render();
 }
 
 async function uploadSig(pqId,ev){
-  const f=ev.target.files[0]; if(!f)return;
-  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId); if(!pq)return;
+  const f=ev.target.files[0];if(!f)return;
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);if(!pq)return;
   const reader=new FileReader();
   reader.onload=async e=>{
     pq.sig_path=e.target.result;
     try{const path=`processos/${S.proc.id}/pqs/${pqId}/sig_${f.name}`;const url=await sb.upload('peritare-docs',path,f);pq.sig_path=url;await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{sig_path:url});}
     catch(err){}
-    toast('Assinatura carregada ✓'); render();
-  }; reader.readAsDataURL(f);
+    toast('Assinatura carregada ✓');render();
+  };reader.readAsDataURL(f);
 }
 
-async function abrirAnalise(pqId){ S.pqId=pqId; stab('anal'); }
-
 async function salvarAnalise(pqId){
-  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId); if(!pq)return;
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);if(!pq)return;
   const cons=document.getElementById(`cons-${pqId}`)?.value||'';
   pq.consideracoes=cons;
   try{
@@ -1066,17 +1497,18 @@ async function salvarAnalise(pqId){
 
 async function concluirPQ(pqId){
   await salvarAnalise(pqId);
-  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId); if(pq){pq.status='done';try{await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{status:'done'});}catch(e){}}
-  S.pqId=null; toast('PQ concluído ✓'); render();
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);
+  if(pq){pq.status='done';try{await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{status:'done'});}catch(e){}}
+  const idx=(S.proc.pqs||[]).findIndex(q=>q.id===pqId);
+  registrarFeed(S.proc.id,'✅',`PQ${idx+1} concluído`,`${pq?.tipo||''} nº ${pq?.numero||''} – EOG finalizado`);
+  S.pqId=null;toast('PQ concluído ✓');render();
 }
 
 async function exportarLaudo(){
-  const p=S.proc;
-  toast('Gerando laudo…',8000);
+  const p=S.proc;toast('Gerando laudo…',8000);
   const payload={
     perito:{nome:'CARLOS EDUARDO SOARES MENEZES',registro:'Adm. Perito – CRA/RJ: 20-60660',cpf:'086.311.227-77',titulo:'Perito Grafotécnico Judicial'},
-    processo:p,
-    pqs:(p.pqs||[]).map(pq=>({...pq,eog:pq.eog||[]})),
+    processo:p,pqs:(p.pqs||[]).map(pq=>({...pq,eog:pq.eog||[]})),
     paradigmas:p.paradigmas||[],
     metodologia:{items:p.metodologia_items||[],outros:p.metodologia_outros||''},
     data_laudo:new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'}),
@@ -1087,13 +1519,229 @@ async function exportarLaudo(){
     const{docx,filename}=await r.json();
     const bytes=Uint8Array.from(atob(docx),c=>c.charCodeAt(0));
     const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename||'laudo.docx'; a.click();
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename||'laudo.docx';a.click();
+    registrarFeed(p.id,'📋','Laudo exportado',`Exportação em ${new Date().toLocaleString('pt-BR')}`);
     toast('Laudo exportado ✓');
   }catch(e){toast('Erro: '+e.message,5000);}
 }
 
+
+// ── VIEWER LATERAL ────────────────────────────────────────────────────────
+const CLASS_OPTS=[{v:'pq',l:'Documento questionado (PQ)'},{v:'paradigma_pce',l:'Paradigma PCE (autos)'},{v:'paradigma_pca',l:'Paradigma PCA (coleta)'},{v:'adendo',l:'Adendo'},{v:'outro',l:'Outro'}];
+let viewerPdfDoc=null,viewerPdfPage=1,viewerPdfTotal=0,viewerZoomVal=1.4,viewerUrl='',viewerNome='',viewerMime='';
+
+async function abrirViewer(url,nome,mime){
+  viewerUrl=url;viewerNome=nome;viewerMime=mime||'';
+  document.getElementById('viewer-panel').classList.add('open');
+  document.getElementById('viewer-title').textContent=nome;
+  document.getElementById('viewer-canvas-wrap').style.display='none';
+  document.getElementById('viewer-img').style.display='none';
+  document.getElementById('viewer-other').style.display='none';
+  const pdfNav=document.getElementById('viewer-pdf-nav');
+  pdfNav.style.display='none';
+  document.getElementById('viewer-dl-btn').style.display='none';
+  document.querySelectorAll('.file-view-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.querySelector(`.file-view-btn[data-vurl="${url}"]`);
+  if(btn)btn.classList.add('active');
+  if(mime&&mime.includes('pdf')){
+    pdfNav.style.display='flex';
+    document.getElementById('viewer-canvas-wrap').style.display='block';
+    document.getElementById('viewer-dl-btn').style.display='inline-flex';
+    try{
+      viewerPdfDoc=await pdfjsLib.getDocument(url).promise;
+      viewerPdfPage=1;viewerPdfTotal=viewerPdfDoc.numPages;viewerZoomVal=1.2;
+      await renderViewerPage(1);
+    }catch(e){toast('Erro ao carregar PDF: '+e.message);}
+  } else if(mime&&mime.startsWith('image')){
+    const img=document.getElementById('viewer-img');img.src=url;img.style.display='block';
+    document.getElementById('viewer-dl-btn').style.display='inline-flex';
+  } else {
+    const od=document.getElementById('viewer-other');od.style.display='flex';
+    document.getElementById('viewer-other-name').textContent=nome;
+    document.getElementById('viewer-dl-btn').style.display='inline-flex';
+  }
+}
+
+async function renderViewerPage(n){
+  if(!viewerPdfDoc)return;viewerPdfPage=n;
+  const page=await viewerPdfDoc.getPage(n);
+  const vp=page.getViewport({scale:viewerZoomVal});
+  const cv=document.getElementById('viewer-canvas');cv.width=vp.width;cv.height=vp.height;
+  await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
+  document.getElementById('viewer-pdf-pg').textContent=n+'/'+viewerPdfTotal;
+  document.getElementById('viewer-zoom-lbl').textContent=Math.round(viewerZoomVal*100)+'%';
+}
+async function viewerPdfNav(d){const n=viewerPdfPage+d;if(n<1||n>viewerPdfTotal)return;await renderViewerPage(n);}
+async function viewerZoomF(d){viewerZoomVal=Math.max(0.4,Math.min(4,viewerZoomVal+d));await renderViewerPage(viewerPdfPage);}
+function fecharViewer(){document.getElementById('viewer-panel').classList.remove('open');document.querySelectorAll('.file-view-btn').forEach(b=>b.classList.remove('active'));viewerPdfDoc=null;}
+function downloadViewer(){if(viewerUrl){const a=document.createElement('a');a.href=viewerUrl;a.download=viewerNome;a.target='_blank';a.click();}}
+function fmtSize(b){if(!b)return'';if(b>1048576)return(b/1048576).toFixed(1)+'MB';if(b>1024)return(b/1024).toFixed(0)+'KB';return b+'B';}
+function mimeIco(mime){if(!mime)return{cls:'other',ic:'📄'};if(mime.includes('pdf'))return{cls:'pdf',ic:'📕'};if(mime.startsWith('image'))return{cls:'img',ic:'🖼'};if(mime.includes('word'))return{cls:'doc',ic:'📘'};if(mime.includes('excel')||mime.includes('spreadsheet'))return{cls:'xls',ic:'📗'};return{cls:'other',ic:'📄'};}
+
+// ── CENTRAL DE ARQUIVOS ───────────────────────────────────────────────────
+S.arquivos=[];
+
+async function uploadArquivos(ev){
+  const files=Array.from(ev.target?.files||ev);
+  if(!files.length||!S.proc)return;
+  toast('Enviando '+files.length+' arquivo(s)…',10000);
+  for(const file of files){
+    const path='processos/'+S.proc.id+'/arquivos/'+Date.now()+'_'+file.name;
+    let url='';
+    try{url=await sb.upload('peritare-docs',path,file);}catch(e){url=URL.createObjectURL(file);}
+    const arq={processo_id:S.proc.id,nome:file.name,tipo_mime:file.type,tamanho:file.size,storage_path:path,url_publica:url,classificacao:'outro',descricao:''};
+    try{const[c]=await sb.post('bee3d_peritare_arquivos',arq);arq.id=c.id;}catch(e){arq.id=Date.now().toString();}
+    S.arquivos.push(arq);
+  }
+  toast(files.length+' arquivo(s) enviado(s) ✓');render();
+}
+
+async function reclassificarArquivo(el){
+  const id=el.getAttribute('data-id'), novaClasse=el.value;
+  if(!id)return;
+  const arq=S.arquivos.find(a=>a.id===id);if(!arq)return;
+  arq.classificacao=novaClasse;
+  try{await sb.patch('bee3d_peritare_arquivos?id=eq.'+id,{classificacao:novaClasse});}catch(e){}
+  render();
+}
+
+async function remArquivo(id){
+  if(!confirm('Remover arquivo?'))return;
+  const arq=S.arquivos.find(a=>a.id===id);
+  if(arq)pushUndo('delete_arq',{...arq},'Remover arquivo');
+  try{await sb.del('bee3d_peritare_arquivos?id=eq.'+id);}catch(e){}
+  S.arquivos=S.arquivos.filter(a=>a.id!==id);render();
+}
+
+function fileItemHtml(a){
+  const{cls,ic}=mimeIco(a.tipo_mime);
+  const id=a.id, url=a.url_publica||'', mime=a.tipo_mime||'';
+  const nome=a.nome||'';
+  const nomeSafe=nome.replace(/"/g,'&quot;');
+  const opts=CLASS_OPTS.map(function(o){return '<option value="'+o.v+'" '+(a.classificacao===o.v?'selected':'')+'>'+ o.l+'</option>';}).join('');
+  return '<div class="file-item">'+
+    '<div class="file-ico '+cls+'">'+ic+'</div>'+
+    '<div style="flex:1;min-width:0"><div style="font-size:var(--fs);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+nomeSafe+'</div>'+
+    '<div style="font-size:calc(var(--fs-sm) - 1px);color:var(--text3)">'+fmtSize(a.tamanho)+'</div></div>'+
+    '<select class="file-class" onchange="reclassificarArquivo(this)" data-id="'+id+'">'+opts+'</select>'+
+    '<button class="file-view-btn" data-vurl="'+url+'" data-nome="'+nomeSafe+'" data-mime="'+mime+'" onclick="abrirViewerBtn(this)">👁 Ver</button>'+
+    '<button class="btn bd bsm" onclick="remArquivo('+JSON.stringify(id)+')">×</button>'+
+  '</div>';
+}
+
+
+// drag & drop global
+document.addEventListener('dragover',e=>{e.preventDefault();const dz=document.getElementById('drop-zone');if(dz)dz.classList.add('drag-over');});
+document.addEventListener('dragleave',e=>{if(!e.relatedTarget){const dz=document.getElementById('drop-zone');if(dz)dz.classList.remove('drag-over');}});
+document.addEventListener('drop',e=>{e.preventDefault();const dz=document.getElementById('drop-zone');if(dz)dz.classList.remove('drag-over');if(e.dataTransfer.files.length&&S.proc)uploadArquivos({files:e.dataTransfer.files});});
+
+
+
+async function carregarArqNaMesa(url,nome,mime){
+  if(!url)return;
+  if(mime&&mime.includes('pdf')){
+    try{
+      const resp=await fetch(url);const ab=await resp.arrayBuffer();
+      S.pdfDoc=await pdfjsLib.getDocument({data:ab}).promise;
+      S.pdfTotal=S.pdfDoc.numPages;S.pdfPage=1;S.mesaImgNome=nome;
+      await renderPdfPage(1);toast('PDF carregado na mesa ✓');
+    }catch(e){
+      // fallback: abrir como URL direta
+      const img=new Image();img.crossOrigin='anonymous';
+      img.onload=()=>{S.mesaImg=img;S.mesaImgNome=nome;S.mesaImgStack=[];S.mesaCropRect=null;S.mesaAnots=[];S.mesaOX=0;S.mesaOY=0;if(CV){const sx=CV.width/img.width,sy=CV.height/img.height;S.mesaZoom=Math.min(sx,sy,1);}document.getElementById('mesa-empty')&&(document.getElementById('mesa-empty').style.display='none');redraw();};
+      img.src=url;
+      toast('Imagem carregada na mesa ✓');
+    }
+  } else {
+    const img=new Image();img.crossOrigin='anonymous';
+    img.onload=()=>{S.mesaImg=img;S.mesaImgNome=nome;S.mesaImgStack=[];S.mesaCropRect=null;S.mesaAnots=[];S.mesaOX=0;S.mesaOY=0;if(CV){const sx=CV.width/img.width,sy=CV.height/img.height;S.mesaZoom=Math.min(sx,sy,1);}document.getElementById('mesa-empty')&&(document.getElementById('mesa-empty').style.display='none');redraw();render();};
+    img.src=url;toast('Imagem carregada ✓');
+  }
+}
+
+function abrirMesaDoPQ(pqId){
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);
+  S.pqId=pqId;stab('mesa');
+  if(pq&&pq.pdf_path){setTimeout(()=>carregarArqNaMesa(pq.pdf_path,pq.tipo+' '+pq.numero,'application/pdf'),150);}
+}
+
+function abrirViewerBtn(btn){const url=btn.getAttribute('data-vurl')||'';const nome=btn.getAttribute('data-nome')||'arquivo';const mime=btn.getAttribute('data-mime')||'';abrirViewer(url,nome,mime);}
+
+
+// ── MÁSCARAS DE INPUT ─────────────────────────────────────────────────────
+function mascaraData(el){
+  let v=el.value.replace(/\D/g,'');
+  if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2);
+  if(v.length>5)v=v.slice(0,5)+'/'+v.slice(5);
+  el.value=v.slice(0,10);
+}
+function mascaraCNJ(el){
+  let v=el.value.replace(/\D/g,'');
+  // formato: 7-2.4.1.2.4 = nnnnnnn-nn.nnnn.8.19.nnnn
+  let r='';
+  if(v.length>0) r=v.slice(0,7);
+  if(v.length>7) r+='-'+v.slice(7,9);
+  if(v.length>9) r+='.'+v.slice(9,13);
+  if(v.length>13) r+='.'+v.slice(13,14);
+  if(v.length>14) r+='.'+v.slice(14,16);
+  if(v.length>16) r+='.'+v.slice(16,20);
+  el.value=r;
+}
+function aplicarMascaras(){
+  document.querySelectorAll('input[data-mask="data"]').forEach(el=>{
+    if(!el._maskBound){el._maskBound=true;el.addEventListener('input',()=>mascaraData(el));}
+  });
+  document.querySelectorAll('input[data-mask="cnj"]').forEach(el=>{
+    if(!el._maskBound){el._maskBound=true;el.addEventListener('input',()=>mascaraCNJ(el));}
+  });
+}
+// Observar mudanças no DOM para aplicar máscaras em inputs dinâmicos
+const _maskObs=new MutationObserver(()=>aplicarMascaras());
+_maskObs.observe(document.getElementById('main')||document.body,{childList:true,subtree:true});
+
+
+// ── EDIÇÃO DE PQ ──────────────────────────────────────────────────────────
+S._editingPQId = null;
+
+function abrirEditarPQ(pqId){
+  S._editingPQId = pqId;
+  render();
+  // scroll até o form
+  setTimeout(()=>{const el=document.getElementById('form-editar-pq');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},100);
+}
+function cancelarEditarPQ(){S._editingPQId=null;render();}
+
+async function salvarEditarPQ(){
+  const pqId=S._editingPQId;
+  if(!pqId)return;
+  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);
+  if(!pq)return;
+  const tipo=document.getElementById('epq-tipo')?.value||pq.tipo;
+  const numero=document.getElementById('epq-num')?.value||pq.numero;
+  const data_doc=document.getElementById('epq-data')?.value||pq.data_doc;
+  const fls=document.getElementById('epq-fls')?.value||pq.fls;
+  const id_proc=document.getElementById('epq-idp')?.value||pq.id_proc;
+  Object.assign(pq,{tipo,numero,data_doc,fls,id_proc});
+  // Novo PDF?
+  const file=document.getElementById('epq-file')?.files?.[0];
+  if(file){
+    toast('Enviando PDF…',8000);
+    try{
+      const path=`processos/${S.proc.id}/pqs/${pqId}/${file.name}`;
+      const url=await sb.upload('peritare-docs',path,file);
+      pq.pdf_path=url;
+      await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{pdf_path:url});
+    }catch(e){pq.pdf_path=URL.createObjectURL(file);}
+  }
+  try{
+    await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{tipo,numero,data_doc,fls,id_proc});
+    toast('PQ atualizado ✓');
+  }catch(e){toast('Salvo localmente');}
+  S._editingPQId=null;render();
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────
-carregarProcessos();
+carregarTudo();
 </script>
 </body>
 </html>
