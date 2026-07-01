@@ -188,6 +188,28 @@ textarea{resize:vertical}
 html,body{height:100%;overflow:hidden}
 #app{display:flex;flex:1;overflow:hidden}
 
+
+/* ── VIEWER REDIMENSIONÁVEL ─────────────────────────────────── */
+#viewer-resize-handle{
+  width:5px;flex-shrink:0;cursor:col-resize;background:transparent;
+  position:relative;z-index:10;
+}
+#viewer-resize-handle:hover,#viewer-resize-handle.dragging{
+  background:var(--gold);
+}
+#viewer-resize-handle::after{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:1px;height:40px;background:var(--border);border-radius:2px;
+}
+/* modo maximizado */
+#viewer-panel.maximized{
+  position:fixed!important;inset:0!important;width:100%!important;
+  z-index:400;border-radius:0;
+}
+#viewer-panel.maximized #viewer-canvas-wrap{
+  flex:1;
+}
+
 </style>
 </head>
 <body>
@@ -216,12 +238,15 @@ html,body{height:100%;overflow:hidden}
 </div>
 <div id="app" style="display:flex;flex:1;overflow:hidden">
   <div id="main" style="flex:1;overflow-y:auto;padding:1rem;max-width:1160px;width:100%;margin:0 auto"></div>
+  <div id="viewer-resize-handle" onmousedown="initViewerResize(event)"></div>
   <div id="viewer-panel" style="width:0;flex-shrink:0;background:var(--card);border-left:.5px solid var(--border);display:flex;flex-direction:column;transition:width .25s;overflow:hidden">
     <div id="viewer-hd" style="padding:9px 12px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg)">
       <h4 id="viewer-title" style="font-size:var(--fs-sm);font-weight:500;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px">Visualizador</h4>
-      <div style="display:flex;gap:5px;align-items:center">
-        <button class="btn bs bsm" id="viewer-dl-btn" onclick="downloadViewer()" style="display:none">⬇</button>
-        <button class="ico-btn" style="color:var(--text2)" onclick="fecharViewer()">✕</button>
+      <div style="display:flex;gap:4px;align-items:center">
+        <button class="btn bs bsm" id="viewer-dl-btn" onclick="downloadViewer()" style="display:none" title="Baixar arquivo">⬇</button>
+        <button class="ico-btn" style="color:var(--text2)" id="viewer-ext-btn" onclick="abrirExterno()" style="display:none" title="Abrir em nova aba">⤢</button>
+        <button class="ico-btn" style="color:var(--text2)" id="viewer-max-btn" onclick="toggleMaxViewer()" title="Maximizar / restaurar">⛶</button>
+        <button class="ico-btn" style="color:var(--text2)" onclick="fecharViewer()" title="Fechar">✕</button>
       </div>
     </div>
     <div id="viewer-pdf-nav" style="display:none;padding:7px 12px;border-bottom:.5px solid var(--border);display:none;align-items:center;gap:8px;flex-shrink:0;background:var(--bg)">
@@ -1739,6 +1764,88 @@ async function salvarEditarPQ(){
   }catch(e){toast('Salvo localmente');}
   S._editingPQId=null;render();
 }
+
+
+// ── VIEWER: RESIZE, MAXIMIZE, ABRIR EXTERNO ──────────────────────────────
+let _vResizing=false, _vStartX=0, _vStartW=0;
+
+function initViewerResize(e){
+  const panel=document.getElementById('viewer-panel');
+  if(!panel.classList.contains('open'))return;
+  _vResizing=true;
+  _vStartX=e.clientX;
+  _vStartW=panel.offsetWidth;
+  const handle=document.getElementById('viewer-resize-handle');
+  handle.classList.add('dragging');
+  document.body.style.cursor='col-resize';
+  document.body.style.userSelect='none';
+  e.preventDefault();
+}
+document.addEventListener('mousemove',function(e){
+  if(!_vResizing)return;
+  const panel=document.getElementById('viewer-panel');
+  const delta=_vStartX-e.clientX;  // arrastar para esquerda = aumentar
+  const newW=Math.max(280,Math.min(window.innerWidth*0.85,_vStartW+delta));
+  panel.style.width=newW+'px';
+  panel.style.transition='none';
+});
+document.addEventListener('mouseup',function(){
+  if(!_vResizing)return;
+  _vResizing=false;
+  document.getElementById('viewer-resize-handle').classList.remove('dragging');
+  document.body.style.cursor='';
+  document.body.style.userSelect='';
+  const panel=document.getElementById('viewer-panel');
+  panel.style.transition='width .25s';
+});
+
+let _viewerMaximized=false;
+function toggleMaxViewer(){
+  const panel=document.getElementById('viewer-panel');
+  const btn=document.getElementById('viewer-max-btn');
+  _viewerMaximized=!_viewerMaximized;
+  if(_viewerMaximized){
+    panel.classList.add('maximized');
+    btn.textContent='⛶';
+    btn.title='Restaurar';
+    // re-renderizar PDF na nova dimensão
+    if(viewerPdfDoc) setTimeout(()=>renderViewerPage(viewerPdfPage),100);
+  } else {
+    panel.classList.remove('maximized');
+    btn.textContent='⛶';
+    btn.title='Maximizar';
+    panel.style.width='';  // volta ao tamanho anterior
+    if(viewerPdfDoc) setTimeout(()=>renderViewerPage(viewerPdfPage),300);
+  }
+}
+// Fechar maximizado com Esc
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&_viewerMaximized) toggleMaxViewer();
+});
+
+function abrirExterno(){
+  if(viewerUrl) window.open(viewerUrl,'_blank');
+}
+
+// Sobrescrever abrirViewer para mostrar botão externo
+const _origAbrirViewer=abrirViewer;
+abrirViewer=async function(url,nome,mime){
+  await _origAbrirViewer(url,nome,mime);
+  // mostrar botão abrir externo
+  const extBtn=document.getElementById('viewer-ext-btn');
+  if(extBtn) extBtn.style.display='inline-flex';
+};
+
+// Sobrescrever fecharViewer para reset
+const _origFecharViewer=fecharViewer;
+fecharViewer=function(){
+  _origFecharViewer();
+  if(_viewerMaximized) toggleMaxViewer();
+  const extBtn=document.getElementById('viewer-ext-btn');
+  if(extBtn) extBtn.style.display='none';
+  const panel=document.getElementById('viewer-panel');
+  panel.style.width='';
+};
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 carregarTudo();
