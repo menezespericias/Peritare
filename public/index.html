@@ -400,12 +400,11 @@ function fecharUndo(){ document.getElementById('undo-bar').style.display='none';
 document.addEventListener('keydown', e => { if((e.ctrlKey||e.metaKey)&&e.key==='z'){ e.preventDefault(); if(S.undoStack.length) desfazer(); } });
 
 // ── FEED ──────────────────────────────────────────────────────────────────
-async function registrarFeed(procId, icone, titulo, descricao='', tipo='auto') {
-  const entry = { processo_id:procId, tipo, icone, titulo, descricao };
-  try { await sb.post('bee3d_peritare_feed', entry); } catch(e){}
-  if (S.proc?.id === procId) {
-    S.feed.unshift({...entry, created_at: new Date().toISOString()});
-  }
+async function registrarFeed(procId,ic,tit,desc='',tipo='auto'){
+  if(!procId||procId.toString().startsWith('local_')||/^\d{10,}$/.test(procId.toString()))return;
+  const entry={processo_id:procId,tipo,icone:ic,titulo:tit,descricao:desc};
+  try{await sb.post('bee3d_peritare_feed',entry);}catch(e){}
+  if(S.proc?.id===procId)S.feed.unshift({...entry,created_at:new Date().toISOString()});
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────
@@ -1382,15 +1381,26 @@ async function abrirProcesso(id){
 }
 
 async function novoProcesso(){
-  const p={numero:'',autor:'',reu:'',comarca:'',vara:'',nomeacao_id:'',nomeacao_data:'',status:'pendente',metodologia_items:[0,1,2,3,4,5,6,7,8,9],metodologia_outros:'',pqs:[],paradigmas:[]};
-  try{const[c]=await sb.post('bee3d_peritare_processos',p);p.id=c.id;}
-  catch(e){p.id=Date.now().toString();}
+  const p={numero:'',autor:'',reu:'',comarca:'',vara:'',nomeacao_id:'',nomeacao_data:'',status:'cadastramento',metodologia_items:[0,1,2,3,4,5,6,7,8,9],metodologia_outros:'',pqs:[],paradigmas:[]};
+  try{
+    const[c]=await sb.post('bee3d_peritare_processos',{
+      numero:'', autor:'', reu:'', status:'cadastramento',
+      metodologia_items:[0,1,2,3,4,5,6,7,8,9]
+    });
+    p.id=c.id;
+    toast('Processo criado ✓');
+  }catch(e){
+    console.error('Erro criar processo:',e.message||e);
+    p.id='local_'+Date.now();
+    toast('Erro ao criar: '+( e.message||'verifique console'));
+  }
   S.processos.unshift(p);S.proc=p;S.view='proc';S.sub='info';S.feed=[];S.arquivos=[];render();
 }
 
+
 async function salvarInfo(){
   const p=S.proc;
-  const b={numero:document.getElementById('f-num')?.value||'',autor:document.getElementById('f-aut')?.value||'',reu:document.getElementById('f-reu')?.value||'',vara:document.getElementById('f-vara')?.value||'',comarca:document.getElementById('f-com')?.value||'',status:document.getElementById('f-st')?.value||'',nomeacao_id:document.getElementById('f-nid')?.value||'',nomeacao_data:document.getElementById('f-ndt')?.value||''};
+  const stVal=document.getElementById('f-st')?.value||'cadastramento'; const b={numero:document.getElementById('f-num')?.value||'',autor:document.getElementById('f-aut')?.value||'',reu:document.getElementById('f-reu')?.value||'',vara:document.getElementById('f-vara')?.value||'',comarca:document.getElementById('f-com')?.value||'',status:stVal,nomeacao_id:document.getElementById('f-nid')?.value||'',nomeacao_data:document.getElementById('f-ndt')?.value||''};
   const oldStatus=p.status;
   if(b.status!==oldStatus) pushUndo('status_proc',{id:p.id,status:oldStatus},'Alterar status do processo');
   Object.assign(p,b);
@@ -1614,7 +1624,7 @@ async function uploadArquivos(ev){
     const path='processos/'+S.proc.id+'/arquivos/'+Date.now()+'_'+file.name;
     let url='';
     try{url=await sb.upload('peritare-docs',path,file);}catch(e){url=URL.createObjectURL(file);}
-    const arq={processo_id:S.proc.id,nome:file.name,tipo_mime:file.type,tamanho:file.size,storage_path:path,url_publica:url,classificacao:'outro',descricao:''};
+    const arq={processo_id:S.proc.id,nome:file.name,tipo_mime:file.type||'application/octet-stream',tamanho:file.size,storage_path:path||'local/'+file.name,url_publica:url,classificacao:'outro',descricao:''};
     try{const[c]=await sb.post('bee3d_peritare_arquivos',arq);arq.id=c.id;}catch(e){arq.id=Date.now().toString();}
     S.arquivos.push(arq);
   }
