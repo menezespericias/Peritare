@@ -394,6 +394,7 @@ const S = {
   dragProcId:null, dragOverCol:null,
   // modal
   modalType:null, modeloEdit:null,
+  _stagingArquivos:[],
 };
 
 // ── UTILS ─────────────────────────────────────────────────────────────────
@@ -2147,9 +2148,17 @@ function stagingCardHtml(st){
 
 
 function onFileClassChange(el){
+  // data-origid tem o ID real do arquivo (data-id pode ter caracteres substituídos)
   const origid = el.getAttribute('data-origid') || el.getAttribute('data-id');
   const val = el.value;
-  classificarEAbrir(origid, val, el);
+  // Encontrar o arquivo pelo ID original primeiro, senão pelo safeid
+  let arq = S.arquivos.find(a=>a.id===origid);
+  if(!arq){
+    // Tentar encontrar pelo id sem underscores (safeid reverso não é possível, mas podemos buscar por similaridade)
+    arq = S.arquivos.find(a=>a.id.replace(/[^a-zA-Z0-9_-]/g,'_')===origid);
+  }
+  if(!arq){ console.error('Arquivo não encontrado para ID:', origid); toast('Erro: arquivo não encontrado'); return; }
+  classificarEAbrir(arq.id, val, el);
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────
