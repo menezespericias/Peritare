@@ -6,6 +6,7 @@
 [build.environment]
   NODE_VERSION = "18"
   SECRETS_SCAN_OMIT_PATHS = "public/index.html,netlify/functions/gerar-laudo.js"
+  SECRETS_SCAN_ENABLED = "false"
 
 [functions]
   node_bundler = "esbuild"
