@@ -558,7 +558,7 @@ function rDash() {
 // ── PROCESSO ──────────────────────────────────────────────────────────────
 function rProc() {
   const p=S.proc; if(!p) return '';
-  const TABS=[{id:'info',l:'1 · Dados'},{id:'pqs',l:'2 · Docs PQ'},{id:'met',l:'3 · Metodologia'},{id:'par',l:'5.2 · Paradigmas'},{id:'anal',l:'6 · EOG'},{id:'mesa',l:'🖊 Mesa'},{id:'laudo',l:'Laudo'},{id:'feed',l:'📋 Timeline'}];
+  const TABS=[{id:'info',l:'1 · Dados'},{id:'pqs',l:'2 · Docs PQ'},{id:'met',l:'3 · Metodologia'},{id:'par',l:'5.2 · Paradigmas'},{id:'anal',l:'6 · EOG'},{id:'mesa',l:'🖊 Mesa'},{id:'quesitos',l:'8 · Quesitos'},{id:'laudo',l:'Laudo'},{id:'feed',l:'📋 Timeline'}];
   const done=(p.pqs||[]).filter(q=>q.status==='done').length, tot=(p.pqs||[]).length;
   return `
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem">
@@ -583,6 +583,7 @@ function rTab(){
   if(t==='par') return rPar();
   if(t==='anal') return rAnal();
   if(t==='mesa') return rMesa();
+  if(t==='quesitos') return rQuesitos();
   if(t==='laudo') return rLaudoTab();
   if(t==='feed') return rFeed();
   return '';
@@ -886,7 +887,9 @@ function rMesa(){
           <option value="">— Nenhum —</option>${cSel}
         </select>
         ${S.mesaCriterioAtivo?`<span style="font-size:10px;color:var(--text3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${EOG_DICAS[S.mesaCriterioAtivo-1]||''}</span>`:''}
-        <span style="margin-left:auto;font-size:10px;color:var(--text3)">${S.mesaAnots.length} anotação${S.mesaAnots.length!==1?'s':''}</span>
+        <span style="margin-left:auto;display:flex;align-items:center;gap:8px">${S.pqId?`<button class="btn bp bsm" onclick="salvarAnotacoesMesa('${S.pqId}')">💾 Salvar anotações</button>`:''}
+          <span style="font-size:10px;color:var(--text3)">${S.mesaAnots.length} anotação${S.mesaAnots.length!==1?'s':''}</span>
+        </span>
       </div>
       <div id="mesa-canvas-wrap">
         <canvas id="mesa-canvas"></canvas>
@@ -938,7 +941,11 @@ function rLaudoTab(){
       ${c.obs?`<span style="font-size:var(--fs-sm);color:var(--text3)">${c.obs}</span>`:''}
     </div>`).join('')}
   </div></div>
-  <div style="text-align:right;margin-top:1rem"><button class="btn bp" onclick="exportarLaudo()">⬇ Exportar laudo (.docx)</button></div>`;
+  <div style="display:flex;gap:9px;justify-content:flex-end;margin-top:1rem">
+    <label class="btn bs" style="cursor:pointer">📂 Importar backup<input type="file" accept=".json" style="display:none" onchange="importarBackup(event)"></label>
+    <button class="btn bs" onclick="exportarBackup()">💾 Exportar backup</button>
+    <button class="btn bp" onclick="exportarLaudo()">⬇ Exportar laudo (.docx)</button>
+  </div>`;
 }
 
 // ── TAB FEED / TIMELINE ───────────────────────────────────────────────────
@@ -1428,6 +1435,7 @@ async function abrirProcesso(id){
   await carregarFeed(p.id);
   try{S.arquivos=await sb.get('bee3d_peritare_arquivos?processo_id=eq.'+p.id+'&order=created_at.asc');}
   catch(e){S.arquivos=[];}
+  restaurarQuesitos(p);
   S.proc=p;S.view='proc';S.sub='info';S._stagingArquivos=[];render();
 }
 
@@ -1611,595 +1619,152 @@ async function concluirPQ(pqId){
 }
 
 async function exportarLaudo(){
-  const p=S.proc;toast('Gerando laudo…',8000);
+  const p=S.proc;
+  toast('Gerando laudo…',8000);
   const payload={
     perito:{nome:'CARLOS EDUARDO SOARES MENEZES',registro:'Adm. Perito – CRA/RJ: 20-60660',cpf:'086.311.227-77',titulo:'Perito Grafotécnico Judicial'},
-    processo:p,pqs:(p.pqs||[]).map(pq=>({...pq,eog:pq.eog||[]})),
+    processo:p,
+    pqs:(p.pqs||[]).map(pq=>({...pq,eog:pq.eog||[]})),
     paradigmas:p.paradigmas||[],
     metodologia:{items:p.metodologia_items||[],outros:p.metodologia_outros||''},
+    quesitos:p._quesitos||{autor:[],re:[]},
+    conclusao_custom:p._conclusao_custom||'',
     data_laudo:new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'}),
   };
   try{
-    const r=await fetch(`${NETLIFY_BASE}/.netlify/functions/gerar-laudo`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const r=await fetch(NETLIFY_BASE+'/.netlify/functions/gerar-laudo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!r.ok)throw new Error(await r.text());
     const{docx,filename}=await r.json();
     const bytes=Uint8Array.from(atob(docx),c=>c.charCodeAt(0));
     const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename||'laudo.docx';a.click();
-    registrarFeed(p.id,'📋','Laudo exportado',`Exportação em ${new Date().toLocaleString('pt-BR')}`);
+    registrarFeed(p.id,'📋','Laudo exportado','');
     toast('Laudo exportado ✓');
   }catch(e){toast('Erro: '+e.message,5000);}
 }
 
-
-// ── VIEWER LATERAL ────────────────────────────────────────────────────────
-const CLASS_OPTS=[{v:'pq',l:'Documento questionado (PQ)'},{v:'paradigma_pce',l:'Paradigma PCE (autos)'},{v:'paradigma_pca',l:'Paradigma PCA (coleta)'},{v:'adendo',l:'Adendo'},{v:'outro',l:'Outro'}];
-let viewerPdfDoc=null,viewerPdfPage=1,viewerPdfTotal=0,viewerZoomVal=1.4,viewerUrl='',viewerNome='',viewerMime='';
-
-async function abrirViewer(url,nome,mime){
-  viewerUrl=url;viewerNome=nome;viewerMime=mime||'';
-  document.getElementById('viewer-panel').classList.add('open');
-  document.getElementById('viewer-title').textContent=nome;
-  document.getElementById('viewer-canvas-wrap').style.display='none';
-  document.getElementById('viewer-img').style.display='none';
-  document.getElementById('viewer-other').style.display='none';
-  const pdfNav=document.getElementById('viewer-pdf-nav');
-  pdfNav.style.display='none';
-  document.getElementById('viewer-dl-btn').style.display='none';
-  document.querySelectorAll('.file-view-btn').forEach(b=>b.classList.remove('active'));
-  const btn=document.querySelector(`.file-view-btn[data-vurl="${url}"]`);
-  if(btn)btn.classList.add('active');
-  if(mime&&mime.includes('pdf')){
-    pdfNav.style.display='flex';
-    document.getElementById('viewer-canvas-wrap').style.display='block';
-    document.getElementById('viewer-dl-btn').style.display='inline-flex';
-    try{
-      viewerPdfDoc=await pdfjsLib.getDocument(url).promise;
-      viewerPdfPage=1;viewerPdfTotal=viewerPdfDoc.numPages;viewerZoomVal=1.2;
-      await renderViewerPage(1);
-    }catch(e){toast('Erro ao carregar PDF: '+e.message);}
-  } else if(mime&&mime.startsWith('image')){
-    const img=document.getElementById('viewer-img');img.src=url;img.style.display='block';
-    document.getElementById('viewer-dl-btn').style.display='inline-flex';
-  } else {
-    const od=document.getElementById('viewer-other');od.style.display='flex';
-    document.getElementById('viewer-other-name').textContent=nome;
-    document.getElementById('viewer-dl-btn').style.display='inline-flex';
+// ── TAB QUESITOS & CONCLUSÃO ──────────────────────────────────────────────
+function rQuesitos(){
+  const p=S.proc;
+  if(!p._quesitos)p._quesitos={autor:[],re:[]};
+  const qa=p._quesitos.autor||[];
+  const qr=p._quesitos.re||[];
+  const done=(p.pqs||[]).filter(pq=>pq.status==='done');
+  const tD=done.reduce((a,pq)=>a+(pq.eog||[]).filter(e=>(e.resultado||e.res)==='D').length,0);
+  const tC=done.reduce((a,pq)=>a+(pq.eog||[]).filter(e=>(e.resultado||e.res)==='C').length,0);
+  const concAuto=tD>tC?'FALSAS (Falsidade Gráfica/Falsificação)':tC>tD?'AUTÊNTICAS':'INCONCLUSIVAS';
+  function e(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function linhaQ(tipo,q,i){
+    const tid=tipo+'-'+i;
+    return '<div style="border:.5px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:7px">'
+    +'<div style="display:flex;gap:8px;margin-bottom:6px"><span class="nb">'+(i+1)+'</span>'
+    +'<div style="flex:1"><label class="lbl">Quesito</label>'
+    +'<textarea id="qp-'+tid+'" rows="2" style="resize:vertical;width:100%">'+e(q.pergunta||'')+'</textarea></div>'
+    +'<button class="btn bd bsm" data-tipo="'+tipo+'" data-idx="'+i+'" onclick="remQuesito(this)">×</button></div>'
+    +'<label class="lbl">Resposta do perito</label>'
+    +'<textarea id="qr-'+tid+'" rows="3" style="resize:vertical;width:100%">'+e(q.resposta||'')+'</textarea></div>';
   }
-}
-
-async function renderViewerPage(n){
-  if(!viewerPdfDoc)return;viewerPdfPage=n;
-  const page=await viewerPdfDoc.getPage(n);
-  const vp=page.getViewport({scale:viewerZoomVal});
-  const cv=document.getElementById('viewer-canvas');cv.width=vp.width;cv.height=vp.height;
-  await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
-  document.getElementById('viewer-pdf-pg').textContent=n+'/'+viewerPdfTotal;
-  document.getElementById('viewer-zoom-lbl').textContent=Math.round(viewerZoomVal*100)+'%';
-}
-async function viewerPdfNav(d){const n=viewerPdfPage+d;if(n<1||n>viewerPdfTotal)return;await renderViewerPage(n);}
-async function viewerZoomF(d){viewerZoomVal=Math.max(0.4,Math.min(4,viewerZoomVal+d));await renderViewerPage(viewerPdfPage);}
-function fecharViewer(){document.getElementById('viewer-panel').classList.remove('open');document.querySelectorAll('.file-view-btn').forEach(b=>b.classList.remove('active'));viewerPdfDoc=null;}
-function downloadViewer(){if(viewerUrl){const a=document.createElement('a');a.href=viewerUrl;a.download=viewerNome;a.target='_blank';a.click();}}
-function fmtSize(b){if(!b)return'';if(b>1048576)return(b/1048576).toFixed(1)+'MB';if(b>1024)return(b/1024).toFixed(0)+'KB';return b+'B';}
-function mimeIco(mime){if(!mime)return{cls:'other',ic:'📄'};if(mime.includes('pdf'))return{cls:'pdf',ic:'📕'};if(mime.startsWith('image'))return{cls:'img',ic:'🖼'};if(mime.includes('word'))return{cls:'doc',ic:'📘'};if(mime.includes('excel')||mime.includes('spreadsheet'))return{cls:'xls',ic:'📗'};return{cls:'other',ic:'📄'};}
-
-// ── CENTRAL DE ARQUIVOS ───────────────────────────────────────────────────
-S.arquivos=[];
-
-async function uploadArquivos(ev){
-  const files=Array.from(ev.target?.files||ev.files||[]);
-  if(!files.length||!S.proc)return;
-  toast('Enviando '+files.length+' arquivo(s)…',10000);
-  const novos=[];
-  for(const file of files){
-    const path='processos/'+S.proc.id+'/arquivos/'+Date.now()+'_'+file.name;
-    let url='';
-    try{url=await sb.upload('peritare-docs',path,file);}
-    catch(e){url=URL.createObjectURL(file);}
-    const arq={
-      processo_id:S.proc.id,
-      nome:file.name,
-      tipo_mime:file.type||'application/octet-stream',
-      tamanho:file.size,
-      storage_path:path||'local/'+file.name,
-      url_publica:url,
-      classificacao:'outro',
-      descricao:''
-    };
-    try{const[c]=await sb.post('bee3d_peritare_arquivos',arq);arq.id=c.id;}
-    catch(e){arq.id='local_'+Date.now()+'_'+Math.random().toString(36).slice(2);}
-    S.arquivos.push(arq);
-    novos.push(arq);
-  }
-  toast(files.length+' arquivo(s) enviado(s). Classifique abaixo ✓');
-  render();
-  // Aguardar render e rolar para os novos arquivos
-  setTimeout(()=>{
-    const last=novos[novos.length-1];
-    if(last){
-      const safeid=last.id.replace(/[^a-zA-Z0-9_-]/g,'_');
-      const el=document.getElementById('fitem-'+safeid);
-      if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
-    }
-  },150);
+  return '<div class="ibox">Esta seção alimenta a Seção 8 do laudo pericial .docx.</div>'
+  +'<div class="card"><div class="chd"><h3>7. Conclusão</h3></div><div class="cbd">'
+    +'<div class="wbox">Conclusão calculada pelo EOG: <strong>'+concAuto+'</strong>. Edite abaixo para sobrescrever.</div>'
+    +'<label class="lbl">Texto da conclusão (vazio = usar automática)</label>'
+    +'<textarea id="conclusao-custom" rows="3" placeholder="Ex: FALSAS (Falsidade Gráfica/Falsificação)" oninput="S.proc._conclusao_custom=this.value">'+e(p._conclusao_custom||'')+'</textarea>'
+    +'<div style="text-align:right;margin-top:7px"><button class="btn bp bsm" onclick="salvarQuesitos()">Salvar</button></div>'
+  +'</div></div>'
+  +'<div class="card"><div class="chd"><h3>8.1. Quesitos da Parte Autora</h3>'
+    +'<button class="btn bp bsm" data-tipo="autor" onclick="adicionarQuesito(this)">+ Quesito</button></div><div class="cbd">'
+    +(qa.length===0?'<div style="color:var(--text3);font-size:var(--fs-sm);text-align:center;padding:1rem">Nenhum quesito.</div>':'')
+    +qa.map((q,i)=>linhaQ('autor',q,i)).join('')
+  +'</div></div>'
+  +'<div class="card"><div class="chd"><h3>8.2. Quesitos da Parte Ré</h3>'
+    +'<button class="btn bp bsm" data-tipo="re" onclick="adicionarQuesito(this)">+ Quesito</button></div><div class="cbd">'
+    +(qr.length===0?'<div style="color:var(--text3);font-size:var(--fs-sm);text-align:center;padding:1rem">Nenhum quesito.</div>':'')
+    +qr.map((q,i)=>linhaQ('re',q,i)).join('')
+    +'<div style="text-align:right;margin-top:10px"><button class="btn bp" onclick="salvarQuesitos()">💾 Salvar todos os quesitos</button></div>'
+  +'</div></div>';
 }
 
 
-async function reclassificarArquivo(el){
-  const id=el.getAttribute('data-id'), novaClasse=el.value;
-  if(!id)return;
-  const arq=S.arquivos.find(a=>a.id===id);if(!arq)return;
-  arq.classificacao=novaClasse;
-  try{await sb.patch('bee3d_peritare_arquivos?id=eq.'+id,{classificacao:novaClasse});}catch(e){}
+function addQuesito(tipo){
+  if(!S.proc._quesitos)S.proc._quesitos={autor:[],re:[]};
+  S.proc._quesitos[tipo].push({pergunta:'',resposta:''});
   render();
 }
-
-async function remArquivo(id){
-  if(!confirm('Remover arquivo?'))return;
-  const arq=S.arquivos.find(a=>a.id===id);
-  if(arq)pushUndo('delete_arq',{...arq},'Remover arquivo');
-  try{await sb.del('bee3d_peritare_arquivos?id=eq.'+id);}catch(e){}
-  S.arquivos=S.arquivos.filter(a=>a.id!==id);render();
+function remQuesito(btn){
+  const tipo=btn.getAttribute('data-tipo');
+  const idx=parseInt(btn.getAttribute('data-idx'));
+  if(!S.proc._quesitos)return;
+  // Salvar valores antes de remover (para não perder edições)
+  salvarValoresQuesitos();
+  S.proc._quesitos[tipo].splice(idx,1);
+  render();
 }
-
-function fileItemHtml(a){
-  const{cls,ic}=mimeIco(a.tipo_mime);
-  const safeid=a.id.replace(/[^a-zA-Z0-9_-]/g,'_');
-  const nome=a.nome||'';
-  const nomeSafe=nome.replace(/"/g,'&quot;');
-  const opts=CLASS_OPTS.map(function(o){
-    return '<option value="'+o.v+'" '+(a.classificacao===o.v?'selected':'')+'>'+o.l+'</option>';
-  }).join('');
-  return '<div class="file-item" id="fitem-'+safeid+'">'+
-    '<div class="file-ico '+cls+'">'+ic+'</div>'+
-    '<div style="flex:1;min-width:0">'+
-      '<div style="font-size:var(--fs);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+nomeSafe+'</div>'+
-      '<div style="font-size:calc(var(--fs-sm) - 1px);color:var(--text3)">'+fmtSize(a.tamanho)+'</div>'+
-    '</div>'+
-    '<select class="file-class" data-id="'+safeid+'" data-origid="'+a.id+'" onchange="onFileClassChange(this)">'+opts+'</select>'+
-    '<button class="file-view-btn" data-vurl="'+(a.url_publica||'')+'" data-nome="'+nomeSafe+'" data-mime="'+(a.tipo_mime||'')+'" onclick="abrirViewerBtn(this)">👁 Ver</button>'+
-    '<button class="btn bd bsm" onclick="remArquivo('+JSON.stringify(a.id)+')">×</button>'+
-  '</div>';
-}
-
-
-
-// drag & drop global
-document.addEventListener('dragover',e=>{e.preventDefault();const dz=document.getElementById('drop-zone');if(dz)dz.classList.add('drag-over');});
-document.addEventListener('dragleave',e=>{if(!e.relatedTarget){const dz=document.getElementById('drop-zone');if(dz)dz.classList.remove('drag-over');}});
-document.addEventListener('drop',e=>{e.preventDefault();const dz=document.getElementById('drop-zone');if(dz)dz.classList.remove('drag-over');if(e.dataTransfer.files.length&&S.proc)uploadArquivos({target:{files:e.dataTransfer.files}});});
-
-
-
-async function carregarArqNaMesa(url,nome,mime){
-  if(!url)return;
-  if(mime&&mime.includes('pdf')){
-    try{
-      const resp=await fetch(url);const ab=await resp.arrayBuffer();
-      S.pdfDoc=await pdfjsLib.getDocument({data:ab}).promise;
-      S.pdfTotal=S.pdfDoc.numPages;S.pdfPage=1;S.mesaImgNome=nome;
-      await renderPdfPage(1);toast('PDF carregado na mesa ✓');
-    }catch(e){
-      // fallback: abrir como URL direta
-      const img=new Image();img.crossOrigin='anonymous';
-      img.onload=()=>{S.mesaImg=img;S.mesaImgNome=nome;S.mesaImgStack=[];S.mesaCropRect=null;S.mesaAnots=[];S.mesaOX=0;S.mesaOY=0;if(CV){const sx=CV.width/img.width,sy=CV.height/img.height;S.mesaZoom=Math.min(sx,sy,1);}document.getElementById('mesa-empty')&&(document.getElementById('mesa-empty').style.display='none');redraw();};
-      img.src=url;
-      toast('Imagem carregada na mesa ✓');
-    }
-  } else {
-    const img=new Image();img.crossOrigin='anonymous';
-    img.onload=()=>{S.mesaImg=img;S.mesaImgNome=nome;S.mesaImgStack=[];S.mesaCropRect=null;S.mesaAnots=[];S.mesaOX=0;S.mesaOY=0;if(CV){const sx=CV.width/img.width,sy=CV.height/img.height;S.mesaZoom=Math.min(sx,sy,1);}document.getElementById('mesa-empty')&&(document.getElementById('mesa-empty').style.display='none');redraw();render();};
-    img.src=url;toast('Imagem carregada ✓');
-  }
-}
-
-function abrirMesaDoPQ(pqId){
-  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);
-  S.pqId=pqId;stab('mesa');
-  if(pq&&pq.pdf_path){setTimeout(()=>carregarArqNaMesa(pq.pdf_path,pq.tipo+' '+pq.numero,'application/pdf'),150);}
-}
-
-function abrirViewerBtn(btn){const url=btn.getAttribute('data-vurl')||'';const nome=btn.getAttribute('data-nome')||'arquivo';const mime=btn.getAttribute('data-mime')||'';abrirViewer(url,nome,mime);}
-
-
-// ── MÁSCARAS DE INPUT ─────────────────────────────────────────────────────
-function mascaraData(el){
-  let v=el.value.replace(/\D/g,'');
-  if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2);
-  if(v.length>5)v=v.slice(0,5)+'/'+v.slice(5);
-  el.value=v.slice(0,10);
-}
-function mascaraCNJ(el){
-  let v=el.value.replace(/\D/g,'');
-  // formato: 7-2.4.1.2.4 = nnnnnnn-nn.nnnn.8.19.nnnn
-  let r='';
-  if(v.length>0) r=v.slice(0,7);
-  if(v.length>7) r+='-'+v.slice(7,9);
-  if(v.length>9) r+='.'+v.slice(9,13);
-  if(v.length>13) r+='.'+v.slice(13,14);
-  if(v.length>14) r+='.'+v.slice(14,16);
-  if(v.length>16) r+='.'+v.slice(16,20);
-  el.value=r;
-}
-function aplicarMascaras(){
-  document.querySelectorAll('input[data-mask="data"]').forEach(el=>{
-    if(!el._maskBound){el._maskBound=true;el.addEventListener('input',()=>mascaraData(el));}
-  });
-  document.querySelectorAll('input[data-mask="cnj"]').forEach(el=>{
-    if(!el._maskBound){el._maskBound=true;el.addEventListener('input',()=>mascaraCNJ(el));}
+function salvarValoresQuesitos(){
+  if(!S.proc._quesitos)return;
+  ['autor','re'].forEach(tipo=>{
+    (S.proc._quesitos[tipo]||[]).forEach((q,i)=>{
+      const tid=tipo+'-'+i;
+      const qp=document.getElementById('qp-'+tid);
+      const qr=document.getElementById('qr-'+tid);
+      if(qp)q.pergunta=qp.value;
+      if(qr)q.resposta=qr.value;
+    });
   });
 }
-// Observar mudanças no DOM para aplicar máscaras em inputs dinâmicos
-const _maskObs=new MutationObserver(()=>aplicarMascaras());
-_maskObs.observe(document.getElementById('main')||document.body,{childList:true,subtree:true});
-
-
-// ── EDIÇÃO DE PQ ──────────────────────────────────────────────────────────
-S._editingPQId = null;
-
-function abrirEditarPQ(pqId){
-  S._editingPQId = pqId;
-  render();
-  // scroll até o form
-  setTimeout(()=>{const el=document.getElementById('form-editar-pq');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},100);
+function setQuesito(tipo,idx,campo,valor){
+  if(!S.proc._quesitos)return;
+  S.proc._quesitos[tipo][idx][campo]=valor;
 }
-function cancelarEditarPQ(){S._editingPQId=null;render();}
-
-async function salvarEditarPQ(){
-  const pqId=S._editingPQId;
-  if(!pqId)return;
-  const pq=(S.proc.pqs||[]).find(q=>q.id===pqId);
-  if(!pq)return;
-  const tipo=document.getElementById('epq-tipo')?.value||pq.tipo;
-  const numero=document.getElementById('epq-num')?.value||pq.numero;
-  const data_doc=document.getElementById('epq-data')?.value||pq.data_doc;
-  const fls=document.getElementById('epq-fls')?.value||pq.fls;
-  const id_proc=document.getElementById('epq-idp')?.value||pq.id_proc;
-  Object.assign(pq,{tipo,numero,data_doc,fls,id_proc});
-  // Novo PDF?
-  const file=document.getElementById('epq-file')?.files?.[0];
-  if(file){
-    toast('Enviando PDF…',8000);
-    try{
-      const path=`processos/${S.proc.id}/pqs/${pqId}/${file.name}`;
-      const url=await sb.upload('peritare-docs',path,file);
-      pq.pdf_path=url;
-      await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{pdf_path:url});
-    }catch(e){pq.pdf_path=URL.createObjectURL(file);}
-  }
+async function salvarQuesitos(){
+  const p=S.proc;if(!p)return;
+  // Coletar valores atuais do DOM
+  salvarValoresQuesitos();
+  const dados={quesitos:p._quesitos||{autor:[],re:[]},conclusao_custom:p._conclusao_custom||''};
   try{
-    await sb.patch(`bee3d_peritare_pqs?id=eq.${pqId}`,{tipo,numero,data_doc,fls,id_proc});
-    toast('PQ atualizado ✓');
+    await sb.patch('bee3d_peritare_processos?id=eq.'+p.id,{intro_extra:JSON.stringify(dados)});
+    toast('Quesitos salvos ✓');
   }catch(e){toast('Salvo localmente');}
-  S._editingPQId=null;render();
 }
 
 
-// ── VIEWER: RESIZE, MAXIMIZE, ABRIR EXTERNO ──────────────────────────────
-let _vResizing=false, _vStartX=0, _vStartW=0;
 
-function initViewerResize(e){
-  const panel=document.getElementById('viewer-panel');
-  if(!panel.classList.contains('open'))return;
-  _vResizing=true;
-  _vStartX=e.clientX;
-  _vStartW=panel.offsetWidth;
-  const handle=document.getElementById('viewer-resize-handle');
-  handle.classList.add('dragging');
-  document.body.style.cursor='col-resize';
-  document.body.style.userSelect='none';
-  e.preventDefault();
-}
-document.addEventListener('mousemove',function(e){
-  if(!_vResizing)return;
-  const panel=document.getElementById('viewer-panel');
-  const delta=_vStartX-e.clientX;  // arrastar para esquerda = aumentar
-  const newW=Math.max(280,Math.min(window.innerWidth*0.85,_vStartW+delta));
-  panel.style.width=newW+'px';
-  panel.style.transition='none';
-});
-document.addEventListener('mouseup',function(){
-  if(!_vResizing)return;
-  _vResizing=false;
-  document.getElementById('viewer-resize-handle').classList.remove('dragging');
-  document.body.style.cursor='';
-  document.body.style.userSelect='';
-  const panel=document.getElementById('viewer-panel');
-  panel.style.transition='width .25s';
-});
-
-let _viewerMaximized=false;
-function toggleMaxViewer(){
-  const panel=document.getElementById('viewer-panel');
-  const btn=document.getElementById('viewer-max-btn');
-  _viewerMaximized=!_viewerMaximized;
-  if(_viewerMaximized){
-    panel.classList.add('maximized');
-    btn.textContent='⛶';
-    btn.title='Restaurar';
-    // re-renderizar PDF na nova dimensão
-    if(viewerPdfDoc) setTimeout(()=>renderViewerPage(viewerPdfPage),100);
-  } else {
-    panel.classList.remove('maximized');
-    btn.textContent='⛶';
-    btn.title='Maximizar';
-    panel.style.width='';  // volta ao tamanho anterior
-    if(viewerPdfDoc) setTimeout(()=>renderViewerPage(viewerPdfPage),300);
-  }
-}
-// Fechar maximizado com Esc
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'&&_viewerMaximized) toggleMaxViewer();
-});
-
-function abrirExterno(){
-  if(viewerUrl) window.open(viewerUrl,'_blank');
-}
-
-// Sobrescrever abrirViewer para mostrar botão externo
-const _origAbrirViewer=abrirViewer;
-abrirViewer=async function(url,nome,mime){
-  await _origAbrirViewer(url,nome,mime);
-  // mostrar botão abrir externo
-  const extBtn=document.getElementById('viewer-ext-btn');
-  if(extBtn) extBtn.style.display='inline-flex';
-};
-
-// Sobrescrever fecharViewer para reset
-const _origFecharViewer=fecharViewer;
-fecharViewer=function(){
-  _origFecharViewer();
-  if(_viewerMaximized) toggleMaxViewer();
-  const extBtn=document.getElementById('viewer-ext-btn');
-  if(extBtn) extBtn.style.display='none';
-  const panel=document.getElementById('viewer-panel');
-  panel.style.width='';
-};
-
-
-// ── STAGING DE ARQUIVOS (visualização + cadastro inline) ──────────────────
-// Arquivos que foram classificados como PQ mas ainda não viraram um registro PQ
-S._stagingArquivos = []; // {arq, pdfDoc, page, zoom, formData}
-
-async function classificarEAbrir(arqId, novaClasse, el){
-  const arq = S.arquivos.find(a=>a.id===arqId);
-  if(!arq) return;
-  arq.classificacao = novaClasse;
-  try{ await sb.patch('bee3d_peritare_arquivos?id=eq.'+arqId, {classificacao: novaClasse}); }catch(e){}
-
-  if(novaClasse === 'pq'){
-    // Fechar viewer lateral se estiver aberto
-    fecharViewer();
-
-    // Não duplicar no staging
-    if(S._stagingArquivos.find(s=>s.arq.id===arqId)) {
-      render();
-      return;
-    }
-
-    const staging = {
-      arq,
-      pdfDoc: null, page: 1, total: 1, zoom: 1.2,
-      formData: { tipo:'', numero:'', data_doc:'', fls:'', id_proc:'' }
-    };
-
-    // Carregar PDF em background
-    if(arq.tipo_mime && arq.tipo_mime.includes('pdf') && arq.url_publica){
-      try{
-        staging.pdfDoc = await pdfjsLib.getDocument(arq.url_publica).promise;
-        staging.total = staging.pdfDoc.numPages;
-      }catch(e){ console.warn('Staging PDF load:', e.message); }
-    }
-
-    S._stagingArquivos.push(staging);
-    render();
-
-    // Scroll e render do canvas
-    setTimeout(async ()=>{
-      const card = document.getElementById('staging-'+arqId);
-      if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
-      await renderStagingCanvas(arqId);
-    }, 120);
-
-  } else {
-    // Remover do staging se estava lá
-    S._stagingArquivos = S._stagingArquivos.filter(s=>s.arq.id!==arqId);
-    render();
-  }
-}
-
-
-async function renderStagingCanvas(arqId){
-  const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
-  if(!st) return;
-  const cv = document.getElementById('stcv-'+arqId);
-  if(!cv) return;
-
-  if(st.pdfDoc){
-    const page = await st.pdfDoc.getPage(st.page);
-    const vp = page.getViewport({scale: st.zoom});
-    cv.width = vp.width; cv.height = vp.height;
-    await page.render({canvasContext: cv.getContext('2d'), viewport: vp}).promise;
-    const lbl = document.getElementById('stpg-'+arqId);
-    if(lbl) lbl.textContent = st.page+'/'+st.total;
-    const zlbl = document.getElementById('stzm-'+arqId);
-    if(zlbl) zlbl.textContent = Math.round(st.zoom*100)+'%';
-  } else if(st.arq.url_publica){
-    const img = document.getElementById('stimg-'+arqId);
-    if(img){ img.src = st.arq.url_publica; img.style.display='block'; cv.style.display='none'; }
-  }
-}
-
-async function stagingNav(arqId, dir){
-  const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
-  if(!st||!st.pdfDoc) return;
-  const n = st.page + dir;
-  if(n<1||n>st.total) return;
-  st.page = n;
-  await renderStagingCanvas(arqId);
-}
-
-async function stagingZoom(arqId, d){
-  const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
-  if(!st) return;
-  st.zoom = Math.max(0.4, Math.min(4, st.zoom + d));
-  await renderStagingCanvas(arqId);
-}
-
-function stagingField(arqId, campo, valor){
-  const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
-  if(st) st.formData[campo] = valor;
-}
-
-async function criarPQDoStaging(arqId){
-  const st = S._stagingArquivos.find(s=>s.arq.id===arqId);
-  if(!st) return;
-  const fd = st.formData;
-  if(!fd.tipo){ alert('Selecione o tipo do documento.'); return; }
-
-  const pq = {
-    processo_id: S.proc.id,
-    ordem: (S.proc.pqs||[]).length + 1,
-    tipo: fd.tipo,
-    numero: fd.numero||'',
-    data_doc: fd.data_doc||'',
-    fls: fd.fls||'',
-    id_proc: fd.id_proc||'',
-    status: 'pending',
-    pdf_path: st.arq.url_publica||''
-  };
-
+// ── ANOTAÇÕES DA MESA — SALVAR/CARREGAR ──────────────────────────────────
+async function salvarAnotacoesMesa(pqId){
+  if(!pqId||!S.mesaAnots.length){toast('Nenhuma anotação para salvar');return;}
   try{
-    const[c] = await sb.post('bee3d_peritare_pqs', pq);
-    pq.id = c.id;
-    // vincular arquivo ao PQ
-    await sb.patch(`bee3d_peritare_arquivos?id=eq.${arqId}`, {pq_id: c.id});
-    toast('PQ criado e vinculado ao PDF ✓');
-  }catch(e){
-    pq.id = 'local_'+Date.now();
-    toast('PQ criado localmente');
-  }
-
-  pq.eog = novoEOG();
-  S.proc.pqs = [...(S.proc.pqs||[]), pq];
-  // Remover do staging
-  S._stagingArquivos = S._stagingArquivos.filter(s=>s.arq.id!==arqId);
-  registrarFeed(S.proc.id, '📄', 'PQ criado', `${fd.tipo} nº ${fd.numero}`);
-  render();
-  // Ir para aba 2 para ver o PQ criado
-  setTimeout(()=>stab('pqs'), 300);
+    try{await sb.del('bee3d_peritare_anotacoes?pq_id=eq.'+pqId);}catch(e){}
+    for(const a of S.mesaAnots){
+      await sb.post('bee3d_peritare_anotacoes',{
+        pq_id:pqId,tipo:a.tipo||'Linha',
+        x1:Math.round(a.x1||0),y1:Math.round(a.y1||0),
+        x2:Math.round(a.x2||0),y2:Math.round(a.y2||0),
+        cor:a.cor||'#e74c3c',espessura:a.esp||2,
+        criterio_id:a.criterio||null,medida:a.medida||null
+      });
+    }
+    toast(S.mesaAnots.length+' anotações salvas ✓');
+    registrarFeed(pqId,'🖊','Anotações salvas','Mesa gráfica');
+  }catch(e){toast('Anotações salvas localmente (erro: '+e.message+')');}
 }
 
-function descartarStaging(arqId){
-  S._stagingArquivos = S._stagingArquivos.filter(s=>s.arq.id!==arqId);
-  // voltar classificação para 'outro'
-  const arq = S.arquivos.find(a=>a.id===arqId);
-  if(arq){ arq.classificacao='outro'; try{sb.patch(`bee3d_peritare_arquivos?id=eq.${arqId}`,{classificacao:'outro'});}catch(e){} }
-  render();
-}
-
-function stagingCardHtml(st){
-  const a = st.arq;
-  const isPdf = !!(a.tipo_mime && a.tipo_mime.includes('pdf'));
-  const nome = (a.nome||'').replace(/</g,'&lt;');
-  const url  = a.url_publica||'';
-  const aid  = a.id;
-
-  // Barra de navegação PDF
-  const pdfNav = isPdf
-    ? '<div class="inline-viewer-nav">'
-        + '<button class="btn bs bsm" onclick="stagingNav(\''+aid+'\',-1)">‹</button>'
-        + '<span id="stpg-'+aid+'" style="font-size:var(--fs-sm);color:var(--text3)">'+st.page+'/'+st.total+'</span>'
-        + '<button class="btn bs bsm" onclick="stagingNav(\''+aid+'\',1)">›</button>'
-        + '<div style="margin-left:auto;display:flex;gap:3px">'
-          + '<button class="btn bs bsm" onclick="stagingZoom(\''+aid+'\',-0.2)">-</button>'
-          + '<span id="stzm-'+aid+'" style="font-size:var(--fs-sm);color:var(--text3);padding:3px 5px">'+Math.round(st.zoom*100)+'%</span>'
-          + '<button class="btn bs bsm" onclick="stagingZoom(\''+aid+'\',0.2)">+</button>'
-        + '</div>'
-        + '<button class="btn bs bsm" onclick="window.open(\''+url+'\',\'_blank\')" title="Abrir em nova aba">⤢</button>'
-      + '</div>'
-    : '';
-
-  // Área do documento
-  const docArea = isPdf
-    ? '<div style="flex:1;overflow:auto;background:#555;padding:8px;display:flex;justify-content:center;align-items:flex-start">'
-        + '<canvas id="stcv-'+aid+'" style="display:block;max-width:100%;box-shadow:0 2px 8px rgba(0,0,0,.4)"></canvas>'
-      + '</div>'
-    : '<div style="flex:1;overflow:auto;background:#555;padding:8px;display:flex;align-items:center;justify-content:center">'
-        + '<img src="'+url+'" style="max-width:100%;max-height:500px;object-fit:contain;box-shadow:0 2px 8px rgba(0,0,0,.4)">'
-      + '</div>';
-
-  // Opções do tipo de documento
-  const tipoOpts = TIPOS_DOC.map(function(t){
-    return '<option value="'+t+'" '+(st.formData.tipo===t?'selected':'')+'>'+t+'</option>';
-  }).join('');
-
-  return ''
-    + '<div class="pq-staging-card" id="staging-'+aid+'">'
-      + '<div class="pq-staging-hd">'
-        + '<div style="display:flex;align-items:center;gap:8px">'
-          + '<span style="font-size:18px">📄</span>'
-          + '<div>'
-            + '<div style="font-size:var(--fs);font-weight:500">'+nome+'</div>'
-            + '<div style="font-size:var(--fs-sm);color:var(--text3)">Preencha os dados à direita e clique em Criar PQ</div>'
-          + '</div>'
-        + '</div>'
-        + '<button class="btn bd bsm" onclick="descartarStaging(\''+aid+'\')">Descartar</button>'
-      + '</div>'
-      + '<div class="pq-staging-body">'
-        // PDF à esquerda
-        + '<div class="pq-staging-pdf">'
-          + pdfNav
-          + docArea
-        + '</div>'
-        // Formulário à direita
-        + '<div class="pq-staging-form">'
-          + '<div style="font-size:var(--fs-sm);font-weight:500;color:var(--navy);margin-bottom:12px">Dados do documento questionado (PQ)</div>'
-          + '<div style="margin-bottom:10px"><label class="lbl">Tipo do documento <span style="color:#991b1b">*</span></label>'
-            + '<select onchange="stagingField(\''+aid+'\',\'tipo\',this.value)">'
-              + '<option value="">Selecione…</option>'
-              + tipoOpts
-            + '</select>'
-          + '</div>'
-          + '<div style="margin-bottom:10px"><label class="lbl">Número do contrato / documento</label>'
-            + '<input value="'+st.formData.numero+'" placeholder="ex: 582434573" oninput="stagingField(\''+aid+'\',\'numero\',this.value)">'
-          + '</div>'
-          + '<div style="margin-bottom:10px"><label class="lbl">Data do documento</label>'
-            + '<input data-mask="data" value="'+st.formData.data_doc+'" placeholder="DD/MM/AAAA" oninput="stagingField(\''+aid+'\',\'data_doc\',this.value)">'
-          + '</div>'
-          + '<div style="margin-bottom:10px"><label class="lbl">Folhas (fls.)</label>'
-            + '<input value="'+st.formData.fls+'" placeholder="ex: 1 e 2" oninput="stagingField(\''+aid+'\',\'fls\',this.value)">'
-          + '</div>'
-          + '<div style="margin-bottom:16px"><label class="lbl">ID processual</label>'
-            + '<input value="'+st.formData.id_proc+'" placeholder="ex: 23926099" oninput="stagingField(\''+aid+'\',\'id_proc\',this.value)">'
-          + '</div>'
-          + '<div class="obox" style="margin-bottom:12px;font-size:var(--fs-sm)">O PDF ficará vinculado a este PQ e disponível na Mesa Gráfica.</div>'
-          + '<button class="btn bp" style="width:100%;padding:10px" onclick="criarPQDoStaging(\''+aid+'\')">'
-            + '✓ Criar PQ e vincular PDF'
-          + '</button>'
-        + '</div>'
-      + '</div>'
-    + '</div>';
+async function carregarAnotacoesMesa(pqId){
+  if(!pqId)return;
+  try{
+    const rows=await sb.get('bee3d_peritare_anotacoes?pq_id=eq.'+pqId+'&order=created_at.asc');
+    if(rows&&rows.length){
+      S.mesaAnots=(rows).map(r=>({
+        tipo:r.tipo||'Linha',x1:r.x1,y1:r.y1,x2:r.x2,y2:r.y2,
+        cor:r.cor||'#e74c3c',esp:r.espessura||2,
+        criterio:r.criterio_id,medida:r.medida
+      }));
+      if(typeof redraw==='function')redraw();
+      toast(S.mesaAnots.length+' anotação(ões) carregada(s) ✓');
+    }
+  }catch(e){console.warn('Erro ao carregar anotações:',e.message);}
 }
 
 
-function onFileClassChange(el){
-  // data-origid tem o ID real do arquivo (data-id pode ter caracteres substituídos)
-  const origid = el.getAttribute('data-origid') || el.getAttribute('data-id');
-  const val = el.value;
-  // Encontrar o arquivo pelo ID original primeiro, senão pelo safeid
-  let arq = S.arquivos.find(a=>a.id===origid);
-  if(!arq){
-    // Tentar encontrar pelo id sem underscores (safeid reverso não é possível, mas podemos buscar por similaridade)
-    arq = S.arquivos.find(a=>a.id.replace(/[^a-zA-Z0-9_-]/g,'_')===origid);
-  }
-  if(!arq){ console.error('Arquivo não encontrado para ID:', origid); toast('Erro: arquivo não encontrado'); return; }
-  classificarEAbrir(arq.id, val, el);
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────
-carregarTudo();
 </script>
+
 </body>
 </html>
