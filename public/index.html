@@ -453,6 +453,12 @@ function render() {
   if (S.view==='dashboard') m.innerHTML = rDash();
   else if (S.view==='proc') { m.innerHTML = rProc(); if(S.sub==='mesa') setTimeout(initMesa,50); }
   else if (S.view==='modelos') m.innerHTML = rModelos();
+  // Renderizar canvases de staging após DOM atualizado
+  if(S._stagingArquivos && S._stagingArquivos.length > 0){
+    setTimeout(function(){
+      S._stagingArquivos.forEach(function(st){ renderStagingCanvas(st.arq.id); });
+    }, 80);
+  }
 }
 function buildNav() {
   const vs=[{v:'dashboard',l:'Dashboard'},{v:'modelos',l:'Petições & E-mails'}];
@@ -1412,12 +1418,16 @@ async function carregarTudo(){
 
 async function abrirProcesso(id){
   const p=S.processos.find(x=>x.id===id);if(!p)return;
+  // Carregar EOG de cada PQ
   for(const pq of(p.pqs||[])){
-    try{pq.eog=await sb.get(`bee3d_peritare_eog?pq_id=eq.${pq.id}`);}
+    try{pq.eog=await sb.get('bee3d_peritare_eog?pq_id=eq.'+pq.id);}
     catch(e){pq.eog=novoEOG();}
     if(!pq.eog||pq.eog.length===0)pq.eog=novoEOG();
   }
+  // Carregar feed e arquivos
   await carregarFeed(p.id);
+  try{S.arquivos=await sb.get('bee3d_peritare_arquivos?processo_id=eq.'+p.id+'&order=created_at.asc');}
+  catch(e){S.arquivos=[];}
   S.proc=p;S.view='proc';S.sub='info';S._stagingArquivos=[];render();
 }
 
@@ -1441,13 +1451,33 @@ async function novoProcesso(){
 
 async function salvarInfo(){
   const p=S.proc;
-  const stVal=document.getElementById('f-st')?.value||'cadastramento'; const b={numero:document.getElementById('f-num')?.value||'',autor:document.getElementById('f-aut')?.value||'',reu:document.getElementById('f-reu')?.value||'',vara:document.getElementById('f-vara')?.value||'',comarca:document.getElementById('f-com')?.value||'',status:stVal,nomeacao_id:document.getElementById('f-nid')?.value||'',nomeacao_data:document.getElementById('f-ndt')?.value||''};
+  const stVal=document.getElementById('f-st')?.value||'cadastramento';
+  const b={
+    numero:document.getElementById('f-num')?.value||'',
+    autor:document.getElementById('f-aut')?.value||'',
+    reu:document.getElementById('f-reu')?.value||'',
+    vara:document.getElementById('f-vara')?.value||'',
+    comarca:document.getElementById('f-com')?.value||'',
+    status:stVal,
+    nomeacao_id:document.getElementById('f-nid')?.value||'',
+    nomeacao_data:document.getElementById('f-ndt')?.value||''
+  };
   const oldStatus=p.status;
-  if(b.status!==oldStatus) pushUndo('status_proc',{id:p.id,status:oldStatus},'Alterar status do processo');
+  if(b.status!==oldStatus) pushUndo('status_proc',{id:p.id,status:oldStatus},'Alterar status');
   Object.assign(p,b);
-  try{await sb.patch(`bee3d_peritare_processos?id=eq.${p.id}`,b);toast('Dados salvos ✓');}
-  catch(e){toast('Salvo localmente');}
-  registrarFeed(p.id,'✏️','Dados do processo atualizados','');
+  // Se ID é local (sem UUID), fazer POST para criar o registro real primeiro
+  const isLocal = !p.id || String(p.id).startsWith('local_') || /^\d{10,}$/.test(String(p.id));
+  if(isLocal){
+    try{
+      const[c]=await sb.post('bee3d_peritare_processos',{...b,metodologia_items:[0,1,2,3,4,5,6,7,8,9]});
+      p.id=c.id;
+      toast('Processo criado e salvo ✓');
+    }catch(e){toast('Erro ao salvar: '+e.message,4000); return;}
+  } else {
+    try{await sb.patch('bee3d_peritare_processos?id=eq.'+p.id,b);toast('Dados salvos ✓');}
+    catch(e){toast('Erro ao salvar: '+e.message,4000); return;}
+  }
+  registrarFeed(p.id,'✏️','Dados atualizados','');
   render();
 }
 
