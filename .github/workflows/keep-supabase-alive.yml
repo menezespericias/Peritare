@@ -1,0 +1,18 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    - cron: '0 8 */3 * *'  # Roda a cada 3 dias às 8h
+  workflow_dispatch:        # Permite rodar manualmente também
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: |
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
+            "https://uhmvxyqmbbimuocabomt.supabase.co/rest/v1/bee3d_peritare_processos?limit=1"
+          echo "Ping enviado com sucesso"
