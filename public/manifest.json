@@ -1,16 +1,36 @@
 {
   "name": "Peritare – Perícia Grafotécnica",
   "short_name": "Peritare",
-  "description": "Plataforma digital de perícia grafotécnica",
+  "description": "Plataforma digital de perícia grafotécnica – Carlos Eduardo Soares Menezes",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#f8f7f4",
+  "background_color": "#1a2744",
   "theme_color": "#1a2744",
-  "orientation": "landscape",
+  "orientation": "landscape-primary",
+  "lang": "pt-BR",
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ],
   "categories": ["productivity", "utilities"],
-  "lang": "pt-BR"
+  "shortcuts": [
+    {
+      "name": "Novo processo",
+      "short_name": "Novo",
+      "description": "Criar um novo processo pericial",
+      "url": "/?acao=novo",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
 }
